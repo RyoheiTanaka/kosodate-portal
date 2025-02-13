@@ -8,6 +8,7 @@ export default withNuxt(
     rules: {
       'vue/require-v-for-key': 'error',
       'vue/no-use-v-if-with-v-for': 'error',
+      'vue/multi-word-component-names': 'off',
     },
   },
   stylistic.configs.customize({
