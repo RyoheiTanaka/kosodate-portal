@@ -1,76 +1,7 @@
 <script setup lang="ts">
-const nurseries = [
-  {
-    id: 1,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 2,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 3,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 4,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 5,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 6,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 7,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 8,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 9,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-  {
-    id: 10,
-    classification: '公立',
-    type: '保育所',
-    name: '大穂保育所',
-    address1: '大曽根',
-  },
-]
+const { nurseries } = useNurseries()
+
+const randomShops = computed(() => [...nurseries.value].sort(() => Math.random() - 0.5).slice(0, 5))
 </script>
 
 <template>
@@ -85,7 +16,7 @@ const nurseries = [
 
       <UCarousel
         v-slot="{ item }"
-        :items="nurseries"
+        :items="randomShops"
         :ui="{ item: 'basis-full sm:basis-1/2 md:basis-1/3' }"
       >
         <UCard
@@ -106,7 +37,7 @@ const nurseries = [
             class="mt-2 w-full h-40 object-cover rounded-lg"
           >
           <ULink
-            :to="`nurseries/${item.id}`"
+            :to="`nurseries/${item._id}`"
             class="block text-right underline"
             active-class="text-primary"
             inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
