@@ -62,7 +62,6 @@ onMounted(() => {
             <p><strong>区分:</strong> {{ item.classification }}</p>
             <p><strong>種別:</strong> {{ item.type }}</p>
             <p><strong>住所:</strong> {{ item.address1 }}</p>
-            {{ item.image }}
             <img
               src="~/assets/no_image.png"
               alt="保育所画像"
