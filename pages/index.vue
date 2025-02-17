@@ -16,7 +16,7 @@ onMounted(() => {
     </h2>
     <UContainer class="py-6 w-full max-w-screen-2xl mx-auto">
       <h3 class="text-2xl font-bold text-center mb-4">
-        保育所
+        認可保育所
       </h3>
 
       <UCarousel
@@ -38,7 +38,6 @@ onMounted(() => {
           <p><strong>区分:</strong> {{ item.classification }}</p>
           <p><strong>種別:</strong> {{ item.type }}</p>
           <p><strong>住所:</strong> {{ item.address1 }}</p>
-          {{ item.image }}
           <img
             src="~/assets/no_image.png"
             alt="保育所画像"

@@ -9,7 +9,7 @@
       to="/nurseries"
       active-class="text-primary"
       inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-    >保育所</ULink>
+    >認可保育所</ULink>
     <ULink
       to="/contact"
       active-class="text-primary"
