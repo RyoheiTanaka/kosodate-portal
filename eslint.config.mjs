@@ -17,4 +17,9 @@ export default withNuxt(
     quotes: 'single',
     semi: false,
   }),
+  {
+    rules: {
+      '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+    },
+  },
 )
