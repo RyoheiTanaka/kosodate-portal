@@ -1,5 +1,151 @@
+<script setup lang="ts">
+import type { FormError } from '#ui/types'
+
+interface ContactForm {
+  name: string
+  email: string
+  message: string
+}
+
+interface FormErrors {
+  email?: string
+  message?: string
+}
+
+const form = reactive<ContactForm>({
+  name: '',
+  email: '',
+  message: '',
+})
+
+const errors = reactive<FormErrors>({})
+
+const loading = ref(false)
+const successMessage = ref('')
+const errorMessage = ref('')
+
+const validateForm = (): FormError<string>[] => {
+  const validationErrors: FormError<string>[] = []
+  if (!form.email.trim()) {
+    errors.email = 'メールアドレスは必須です'
+    validationErrors.push({ path: 'email', message: errors.email })
+  } else {
+    errors.email = ''
+  }
+
+  if (!form.message.trim()) {
+    errors.message = 'お問い合わせ内容は必須です'
+    validationErrors.push({ path: 'message', message: errors.message })
+  } else {
+    errors.message = ''
+  }
+
+  return validationErrors
+}
+
+const handleSubmit = async () => {
+  if (validateForm().length > 0) return
+
+  loading.value = true
+  successMessage.value = ''
+  errorMessage.value = ''
+
+  try {
+    const response = await $fetch<{ message: string, status: number }>('/api/contacts', {
+      method: 'POST',
+      body: form,
+    })
+
+    if (response.status === 200) {
+      successMessage.value = response.message
+      Object.assign(form, { name: '', email: '', message: '' })
+    } else {
+      errorMessage.value = response.message
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message)
+      errorMessage.value = '送信に失敗しました'
+    } else {
+      errorMessage.value = '送信に失敗しました'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
 <template>
   <UContainer>
-    <h2>お問い合わせ</h2>
+    <UCard>
+      <template #header>
+        <h2 class="text-3xl font-bold text-center">
+          お問い合わせ
+        </h2>
+      </template>
+      <UForm
+        :state="form"
+        :validate="validateForm"
+        @submit="handleSubmit"
+      >
+        <UFormGroup
+          label="お名前"
+          name="name"
+        >
+          <UInput
+            v-model="form.name"
+            placeholder="お名前を入力してください"
+            icon="i-heroicons-pencil"
+          />
+        </UFormGroup>
+        <UFormGroup
+          label="メールアドレス"
+          name="email"
+          class="mt-4"
+          :error="errors.email"
+          required
+        >
+          <UInput
+            v-model="form.email"
+            type="email"
+            placeholder="メールアドレスを入力してください"
+            icon="i-heroicons-envelope"
+          />
+        </UFormGroup>
+        <UFormGroup
+          label="お問い合わせ内容"
+          name="message"
+          class="mt-4"
+          :error="errors.message"
+          required
+        >
+          <UTextarea
+            v-model="form.message"
+            placeholder="お問い合わせ内容を入力してください"
+          />
+        </UFormGroup>
+        <UButton
+          type="submit"
+          :loading="loading"
+          class="mt-4"
+          block
+        >
+          送信
+        </UButton>
+      </UForm>
+      <UAlert
+        v-if="successMessage"
+        class="mt-4"
+        :title="successMessage"
+        icon="i-heroicons-rocket-launch"
+      />
+      <UAlert
+        v-if="errorMessage"
+        color="red"
+        class="mt-4"
+        :title="errorMessage"
+        icon="i-heroicons-x-circle"
+      />
+    </UCard>
   </UContainer>
 </template>
