@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   oauth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN })
 
   const accessToken = await oauth2Client.getAccessToken()
-  console.log(accessToken)
+
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
