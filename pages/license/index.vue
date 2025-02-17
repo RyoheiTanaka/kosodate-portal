@@ -1,3 +1,9 @@
+<script setup lang="ts">
+useHead({
+  title: 'ライセンス',
+})
+</script>
+
 <template>
   <UContainer>
     <UCard>

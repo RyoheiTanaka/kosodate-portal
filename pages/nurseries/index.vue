@@ -18,6 +18,10 @@ function groupBy<T extends Record<K, string | number>, K extends keyof T>(
   }, {} as Record<string, T[]>)
 }
 
+useHead({
+  title: '認可保育所一覧',
+})
+
 onMounted(() => {
   isMounted.value = true
 })
@@ -26,7 +30,7 @@ onMounted(() => {
 <template>
   <div>
     <h2 class="text-3xl font-bold text-center mb-4">
-      保育所一覧
+      認可保育所一覧
     </h2>
     <template v-if="isMounted">
       <UContainer

@@ -73,6 +73,10 @@ const handleSubmit = async () => {
     loading.value = false
   }
 }
+
+useHead({
+  title: 'お問い合わせ',
+})
 </script>
 
 <template>

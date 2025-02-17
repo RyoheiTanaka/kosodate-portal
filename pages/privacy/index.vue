@@ -1,3 +1,9 @@
+<script setup lang="ts">
+useHead({
+  title: 'プライバシーポリシー',
+})
+</script>
+
 <template>
   <UContainer>
     <UCard>

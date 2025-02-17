@@ -6,6 +6,10 @@ const isMounted = ref(false)
 
 const nursery = computed(() => nurseries.value.find(item => item._id === route.params.id))
 
+useHead({
+  title: nursery.value ? `${nursery.value.name}` : '保育所詳細',
+})
+
 onMounted(() => {
   isMounted.value = true
 })

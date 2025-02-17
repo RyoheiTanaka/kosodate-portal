@@ -1,3 +1,9 @@
+<script setup lang="ts">
+useHead({
+  title: '利用規約',
+})
+</script>
+
 <template>
   <UContainer>
     <UCard>
