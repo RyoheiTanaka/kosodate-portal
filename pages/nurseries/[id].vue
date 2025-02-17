@@ -313,6 +313,6 @@ onMounted(() => {
       class="block text-right underline"
       active-class="text-primary"
       inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-    >保育所一覧へ</ULink>
+    >認可保育所一覧へ</ULink>
   </div>
 </template>
