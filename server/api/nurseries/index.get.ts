@@ -1,5 +1,3 @@
-import { defineEventHandler } from 'h3'
-import { connectDB } from '~/server/utils/mongo'
 import { Nursery } from '~/server/models/Nursery'
 import type { INursery } from '~/server/types/nursery'
 
