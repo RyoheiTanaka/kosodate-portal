@@ -1,7 +1,12 @@
 <script setup lang="ts">
 const { nurseries } = useNurseries()
+const isMounted = ref(false)
 
 const randomShops = computed(() => [...nurseries.value].sort(() => Math.random() - 0.5).slice(0, 5))
+
+onMounted(() => {
+  isMounted.value = true
+})
 </script>
 
 <template>
@@ -11,13 +16,16 @@ const randomShops = computed(() => [...nurseries.value].sort(() => Math.random()
     </h2>
     <UContainer class="py-6 w-full max-w-screen-2xl mx-auto">
       <h3 class="text-2xl font-bold text-center mb-4">
-        保育所一覧
+        保育所
       </h3>
 
       <UCarousel
+        v-if="isMounted"
         v-slot="{ item }"
         :items="randomShops"
-        :ui="{ item: 'basis-full sm:basis-1/2 md:basis-1/3' }"
+        :ui="{ container: 'p-3', item: 'basis-full sm:basis-1/2 md:basis-1/3' }"
+        arrows
+        indicators
       >
         <UCard
           class="p-4 mx-auto max-w-md"
