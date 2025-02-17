@@ -19,7 +19,7 @@ export interface INursery {
   establishment_date: string
   approval_date: string
   tel: string
-  Fax: string
+  fax: string
   corporate_number: string
   corporate_name: string
   childcare_age: string
