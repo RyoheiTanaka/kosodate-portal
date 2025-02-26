@@ -12,6 +12,18 @@ interface FormErrors {
   message?: string
 }
 
+const links = [
+  {
+    label: 'トップ',
+    icon: 'i-heroicons-home',
+    to: '/',
+  },
+  {
+    label: 'お問い合わせ',
+    icon: 'i-heroicons-link',
+  },
+]
+
 const form = reactive<ContactForm>({
   name: '',
   email: '',
@@ -90,76 +102,82 @@ useHead({
 </script>
 
 <template>
-  <UContainer>
-    <UCard>
-      <template #header>
-        <h2 class="text-3xl font-bold text-center">
-          お問い合わせ
-        </h2>
-      </template>
-      <UForm
-        :state="form"
-        :validate="validateForm"
-        @submit="handleSubmit"
-      >
-        <UFormGroup
-          label="お名前"
-          name="name"
+  <main class="py-4">
+    <UBreadcrumb
+      class="container pb-4"
+      :links="links"
+    />
+    <UContainer class="max-w-screen-xl w-full">
+      <UCard>
+        <template #header>
+          <h2 class="text-3xl font-bold text-center">
+            お問い合わせ
+          </h2>
+        </template>
+        <UForm
+          :state="form"
+          :validate="validateForm"
+          @submit="handleSubmit"
         >
-          <UInput
-            v-model="form.name"
-            placeholder="お名前を入力してください"
-            icon="i-heroicons-pencil"
-          />
-        </UFormGroup>
-        <UFormGroup
-          label="メールアドレス"
-          name="email"
+          <UFormGroup
+            label="お名前"
+            name="name"
+          >
+            <UInput
+              v-model="form.name"
+              placeholder="お名前を入力してください"
+              icon="i-heroicons-pencil"
+            />
+          </UFormGroup>
+          <UFormGroup
+            label="メールアドレス"
+            name="email"
+            class="mt-4"
+            :error="errors.email"
+            required
+          >
+            <UInput
+              v-model="form.email"
+              type="email"
+              placeholder="メールアドレスを入力してください"
+              icon="i-heroicons-envelope"
+            />
+          </UFormGroup>
+          <UFormGroup
+            label="お問い合わせ内容"
+            name="message"
+            class="mt-4"
+            :error="errors.message"
+            required
+          >
+            <UTextarea
+              v-model="form.message"
+              placeholder="お問い合わせ内容を入力してください"
+            />
+          </UFormGroup>
+          <UButton
+            type="submit"
+            :loading="loading"
+            class="mt-4"
+            block
+          >
+            送信
+          </UButton>
+        </UForm>
+        <UAlert
+          v-if="successMessage"
           class="mt-4"
-          :error="errors.email"
-          required
-        >
-          <UInput
-            v-model="form.email"
-            type="email"
-            placeholder="メールアドレスを入力してください"
-            icon="i-heroicons-envelope"
-          />
-        </UFormGroup>
-        <UFormGroup
-          label="お問い合わせ内容"
-          name="message"
+          :title="successMessage"
+          icon="i-heroicons-rocket-launch"
+        />
+        <UAlert
+          v-if="errorMessage"
+          color="red"
           class="mt-4"
-          :error="errors.message"
-          required
-        >
-          <UTextarea
-            v-model="form.message"
-            placeholder="お問い合わせ内容を入力してください"
-          />
-        </UFormGroup>
-        <UButton
-          type="submit"
-          :loading="loading"
-          class="mt-4"
-          block
-        >
-          送信
-        </UButton>
-      </UForm>
-      <UAlert
-        v-if="successMessage"
-        class="mt-4"
-        :title="successMessage"
-        icon="i-heroicons-rocket-launch"
-      />
-      <UAlert
-        v-if="errorMessage"
-        color="red"
-        class="mt-4"
-        :title="errorMessage"
-        icon="i-heroicons-x-circle"
-      />
-    </UCard>
-  </UContainer>
+          :title="errorMessage"
+          icon="i-heroicons-x-circle"
+        />
+      </UCard>
+    </UContainer>
+  </main>
 </template>
