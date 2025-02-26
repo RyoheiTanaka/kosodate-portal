@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer'
-import { google } from 'googleapis'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -11,37 +10,44 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GMAIL_CLIENT_ID,
-    process.env.GMAIL_CLIENT_SECRET,
+  const recaptchaToken = body.recaptchaToken
+
+  const recaptchaRes = await $fetch<{ success: boolean, score: number }>(
+    'https://www.google.com/recaptcha/api/siteverify',
+    {
+      method: 'POST',
+      body: new URLSearchParams({
+        secret: process.env.GOOGLE_RECAPTCHA_SECRET_KEY as string,
+        response: recaptchaToken,
+      }),
+    },
   )
 
-  oauth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN })
-
-  const accessToken = await oauth2Client.getAccessToken()
+  // スコアが低すぎる場合は拒否
+  if (!recaptchaRes.success || recaptchaRes.score < 0.5) {
+    throw createError({ statusCode: 400, statusMessage: 'reCAPTCHA認証に失敗しました' })
+  }
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: process.env.GMAIL_SMTP_HOST,
+    port: Number(process.env.GMAIL_SMTP_PORT),
+    secure: true,
     auth: {
-      type: 'OAuth2',
-      user: process.env.GMAIL_USER,
-      clientId: process.env.GMAIL_CLIENT_ID,
-      clientSecret: process.env.GMAIL_CLIENT_SECRET,
-      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-      accessToken: accessToken.token || '',
+      user: process.env.GMAIL_SMTP_USER,
+      pass: process.env.GMAIL_SMTP_PASS,
     },
   })
 
   try {
     await transporter.sendMail({
-      from: `"お問い合わせフォーム" <${process.env.GMAIL_USER}>`,
-      to: process.env.GMAIL_USER,
+      from: `"お問い合わせフォーム" <${process.env.GMAIL_SMTP_USER}>`,
+      to: process.env.GMAIL_SMTP_FROM,
       subject: 'お問い合わせがありました',
       text: `お名前: ${body.name}\nメールアドレス: ${body.email}\n\nお問い合わせ内容:\n${body.message}`,
     })
     return { status: 200, message: 'お問い合わせを送信しました' }
   } catch (error) {
-    console.error('メール送信エラー:', error)
-    return { status: 500, message: 'メールの送信に失敗しました' }
+    console.error('お問い合わせ送信エラー:', error)
+    return { status: 500, message: 'お問い合わせの送信に失敗しました' }
   }
 })

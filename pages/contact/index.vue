@@ -20,6 +20,8 @@ const form = reactive<ContactForm>({
 
 const errors = reactive<FormErrors>({})
 
+const siteKey = import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY
+
 const loading = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
@@ -51,9 +53,13 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
+    const recaptchaToken = await grecaptcha.execute(siteKey, { action: 'submit' })
     const response = await $fetch<{ message: string, status: number }>('/api/contacts', {
       method: 'POST',
-      body: form,
+      body: {
+        ...form,
+        recaptchaToken,
+      },
     })
 
     if (response.status === 200) {
@@ -76,6 +82,10 @@ const handleSubmit = async () => {
 
 useHead({
   title: 'お問い合わせ',
+  script: [
+    { src: `https://www.google.com/recaptcha/api.js?render=${siteKey}`, async: true, defer: true },
+  ],
+
 })
 </script>
 
