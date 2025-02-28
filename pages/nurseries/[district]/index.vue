@@ -45,12 +45,12 @@ useHead({
       {{ districtName }}
     </h2>
     <UContainer
-      class="py-6 w-full max-w-screen-2xl mx-auto grid grid-cols-3 gap-4"
+      class="py-6 w-full max-w-screen-2xl mx-auto md:grid md:grid-cols-4 md:gap-4"
     >
       <UCard
         v-for="(districtnursery) in districtnurseries"
         :key="districtnursery.name"
-        class="w-full"
+        class="w-full mt-4 md:mt-0"
       >
         <template #header>
           <h4 class="text-lg font-semibold text-center">
@@ -64,6 +64,8 @@ useHead({
         <p><strong>区分:</strong> {{ districtnursery.classification }}</p>
         <p><strong>種別:</strong> {{ districtnursery.type }}</p>
         <p><strong>住所:</strong> {{ districtnursery.city }}{{ districtnursery.address1 }}{{ districtnursery.address2 }}{{ districtnursery.address3 }}</p>
+        <p><strong>保育年齢:</strong> {{ districtnursery.childcare_age }}</p>
+        <p><strong>利用可能曜日:</strong> {{ districtnursery.available_day }}</p>
         <img
           src="~/assets/no_image.png"
           alt="保育所画像"
