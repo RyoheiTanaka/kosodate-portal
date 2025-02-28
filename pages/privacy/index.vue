@@ -7,7 +7,7 @@ const links = [
   },
   {
     label: 'プライバシーポリシー',
-    icon: 'i-heroicons-link',
+    icon: 'i-heroicons-lock-closed',
   },
 ]
 

@@ -7,7 +7,7 @@ const links = [
   },
   {
     label: 'ライセンス',
-    icon: 'i-heroicons-link',
+    icon: 'i-heroicons-document',
   },
 ]
 

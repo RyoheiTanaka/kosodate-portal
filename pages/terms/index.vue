@@ -7,7 +7,7 @@ const links = [
   },
   {
     label: '利用規約',
-    icon: 'i-heroicons-link',
+    icon: 'i-heroicons-scale',
   },
 ]
 

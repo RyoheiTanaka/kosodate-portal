@@ -20,7 +20,7 @@ const links = [
   },
   {
     label: 'お問い合わせ',
-    icon: 'i-heroicons-link',
+    icon: 'i-heroicons-envelope',
   },
 ]
 
