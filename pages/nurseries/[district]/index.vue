@@ -55,7 +55,7 @@ useHead({
         <template #header>
           <h4 class="text-lg font-semibold text-center">
             <ULink
-              :to="`/nurseries/${districtnursery.district_alphabet}/${districtnursery._id}`"
+              :to="`/nurseries/${districtnursery.district_alphabet}/${districtnursery.nursery_id}`"
               class="underline"
             >{{ districtnursery.name }}
             </ULink>
@@ -72,7 +72,7 @@ useHead({
           class="mt-2 w-full h-1/2 rounded-lg "
         >
         <ULink
-          :to="`/nurseries/${districtnursery.district_alphabet}/${districtnursery._id}`"
+          :to="`/nurseries/${districtnursery.district_alphabet}/${districtnursery.nursery_id}`"
           class="block text-right underline"
           active-class="text-primary"
           inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"

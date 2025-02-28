@@ -41,6 +41,7 @@ const NurserySchema = new Schema<INurseryDocument>({
   is_temporary_care: { type: Boolean, required: true },
   url: { type: String, required: true },
   remark: { type: String, required: true },
+  nursery_id: { type: Number, required: true },
 })
 
 export const Nursery = model<INurseryDocument>('Nursery', NurserySchema)

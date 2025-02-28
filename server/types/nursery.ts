@@ -36,4 +36,5 @@ export interface INursery {
   is_temporary_care: boolean
   url: string
   remark: string
+  nursery_id: number
 }
