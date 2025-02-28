@@ -81,7 +81,7 @@ useHead({
       認可保育所一覧
     </h2>
     <section class="container">
-      <h3 class="text-2xl font-bold text-center">
+      <h3 class="text-2xl font-bold text-center mb-4">
         フィルター
       </h3>
       <div class="flex flex-col md:flex-row md:justify-between">
@@ -96,7 +96,7 @@ useHead({
         </UFormGroup>
         <UFormGroup
           label="区分でフィルター"
-          class="mt-4"
+          class="mt-4 md:mt-0"
         >
           <USelect
             v-model="classificationFilter"
@@ -106,7 +106,7 @@ useHead({
         </UFormGroup>
         <UFormGroup
           label="種別でフィルター"
-          class="mt-4"
+          class="mt-4 md:mt-0"
         >
           <USelect
             v-model="typeFilter"
