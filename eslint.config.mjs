@@ -20,6 +20,7 @@ export default withNuxt(
   {
     rules: {
       '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      'no-control-regex': 'off',
     },
   },
 )

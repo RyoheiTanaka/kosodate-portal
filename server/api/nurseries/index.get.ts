@@ -1,9 +1,19 @@
 import { Nursery } from '~/server/models/Nursery'
 import type { INursery } from '~/server/types/nursery'
 
+const escapeRegex = (text: string) => {
+  text = text.replace(/[\x00-\x1F\x7F]/g, '')
+  return text.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+
 export default defineEventHandler(async (event): Promise<INursery[]> => {
   const query = getQuery(event)
-  const keyword = query.keyword
+  let keyword = query.keyword ? String(query.keyword).trim() : ''
+
+  if (keyword) {
+    keyword = escapeRegex(keyword)
+  }
+
   const filter = keyword
     ? { $or: [
         { name: { $regex: keyword, $options: 'i' } },
