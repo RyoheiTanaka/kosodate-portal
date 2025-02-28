@@ -12,6 +12,7 @@ export interface INursery {
   address2: string
   address3: string
   district: string
+  district_alphabet: string
   longitude: number
   latitude: number
   access: string

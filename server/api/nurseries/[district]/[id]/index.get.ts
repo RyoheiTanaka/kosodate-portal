@@ -4,17 +4,17 @@ import { connectDB } from '~/server/utils/mongo'
 import { Nursery } from '~/server/models/Nursery'
 
 export default defineEventHandler(async (event) => {
-  await connectDB()
-
   const id = event.context.params?.id
+
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid ID' })
   }
 
-  const shop = await Nursery.findById(id)
-  if (!shop) {
+  await connectDB()
+  const nursery = await Nursery.findById(id)
+  if (!nursery) {
     throw createError({ statusCode: 404, statusMessage: 'Nursery not found' })
   }
 
-  return shop
+  return nursery
 })
