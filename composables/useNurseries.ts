@@ -1,14 +1,9 @@
 import type { INursery } from '~/server/types/nursery'
 
-export const useNurseries = () => {
-  const nurseries = useState<INursery[]>('nurseries', () => [])
-
-  const { data } = useAsyncData<INursery[]>('nurseries', async () => {
-    const response = await $fetch<INursery[]>('/api/nurseries')
-    return response ?? []
+export const useNurseries = (keyword: string) => {
+  return useAsyncData<INursery[] | null>(`nurseries-${keyword}`, async () => {
+    const query = keyword ? `?keyword=${keyword}` : ''
+    const { data } = await useFetch<INursery[]>(`/api/nurseries/${query}`)
+    return data.value ?? null
   })
-
-  nurseries.value = data.value ?? []
-
-  return { nurseries }
 }
