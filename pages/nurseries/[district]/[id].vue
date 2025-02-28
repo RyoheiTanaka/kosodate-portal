@@ -75,7 +75,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.classification }}
                   </p>
                 </div>
@@ -87,7 +87,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.type }}
                   </p>
                 </div>
@@ -99,7 +99,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.prefecture }}{{ nursery.city }}{{ nursery.address1 }}{{ nursery.address2 }}{{ nursery.address3 }}
                   </p>
                 </div>
@@ -111,7 +111,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.access }}
                   </p>
                 </div>
@@ -123,7 +123,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.capacity }}人
                   </p>
                 </div>
@@ -135,7 +135,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.childcare_age }}
                   </p>
                 </div>
@@ -147,7 +147,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.available_day }}
                   </p>
                 </div>
@@ -159,7 +159,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.available_day_note }}
                   </p>
                 </div>
@@ -171,7 +171,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.open_weekday }} ~ {{ nursery.close_weekday }}
                   </p>
                 </div>
@@ -183,7 +183,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.open_saturday }} ~ {{ nursery.close_saturday }}
                   </p>
                 </div>
@@ -195,7 +195,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.standard_childcare_hour_11 }}
                   </p>
                 </div>
@@ -207,7 +207,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.standard_childcare_hour_8 }}
                   </p>
                 </div>
@@ -219,7 +219,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.tel }}
                   </p>
                 </div>
@@ -231,7 +231,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.fax }}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.shuttle_bus ? '有' : '無' }}
                   </p>
                 </div>
@@ -255,7 +255,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.is_temporary_care ? '有' : '無' }}
                   </p>
                 </div>
@@ -267,7 +267,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.corporate_number }}
                   </p>
                 </div>
@@ -279,7 +279,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.corporate_name }}
                   </p>
                 </div>
@@ -291,7 +291,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.establishment_date }}
                   </p>
                 </div>
@@ -303,7 +303,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.approval_date }}
                   </p>
                 </div>
@@ -315,7 +315,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.url }}
                   </p>
                 </div>
@@ -327,7 +327,7 @@ useHead({
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base">
+                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.remark }}
                   </p>
                 </div>

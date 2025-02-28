@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-40 bg-white shadow-sm shadow-light-500">
+  <header class="sticky top-0 z-40 bg-white shadow-sm shadow-light-500 dark:bg-black">
     <div class="container flex items-center justify-between py-4">
       <h1 class="text-xl font-bold">
         <ULink to="/">子育てポータル</ULink>
