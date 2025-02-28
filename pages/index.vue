@@ -1,12 +1,41 @@
 <script setup lang="ts">
-const { nurseries } = useNurseries()
-const isMounted = ref(false)
+import type { FormError } from '#ui/types'
 
-const randomShops = computed(() => [...nurseries.value].sort(() => Math.random() - 0.5).slice(0, 5))
+interface SearchForm {
+  keyword: string
+}
 
-onMounted(() => {
-  isMounted.value = true
+interface FormErrors {
+  keyword?: string
+}
+
+const router = useRouter()
+const form = reactive<SearchForm>({
+  keyword: '',
 })
+
+const errors = reactive<FormErrors>({})
+
+// 検索ボタンを押した際の処理
+const search = (e: Event): void => {
+  e.preventDefault()
+  if (validateForm().length > 0) return
+
+  if (!form.keyword.trim()) return
+  router.push({ path: '/nurseries', query: { keyword: form.keyword } })
+}
+
+const validateForm = (): FormError<string>[] => {
+  const validationErrors: FormError<string>[] = []
+  if (!form.keyword.trim()) {
+    errors.keyword = 'キーワードは必須です'
+    validationErrors.push({ path: 'keyword', message: errors.keyword })
+  } else {
+    errors.keyword = ''
+  }
+
+  return validationErrors
+}
 </script>
 
 <template>
@@ -26,12 +55,12 @@ onMounted(() => {
         placeholder-class="blur-xl"
       />
       <div class="container absolute inset-0 flex flex-col items-start justify-center bg-gradient-to-l from-gray-200 md:bg-none">
-        <h1 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
+        <h2 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
           子育てポータル
-        </h1>
-        <h2 class="text-lg font-bold md:mb-4 lg:text-3xl">
-          子育て情報掲載サイト
         </h2>
+        <h3 class="text-lg font-bold md:mb-4 lg:text-3xl">
+          子育て情報掲載サイト
+        </h3>
         <div class="max-w-sm mb-8 text-md font-light lg:max-w-md text-balance">
           <p>つくば市が公開しているデータをまとめて掲載しています。</p>
         </div>
@@ -45,49 +74,147 @@ onMounted(() => {
       <h3 class="text-2xl font-bold text-center mb-4">
         認可保育所
       </h3>
-
-      <UCarousel
-        v-if="isMounted"
-        v-slot="{ item }"
-        :items="randomShops"
-        :ui="{ container: 'p-3', item: 'basis-full sm:basis-1/2 md:basis-1/3' }"
-        arrows
-        indicators
-      >
-        <UCard
-          class="p-4 mx-auto max-w-md"
+      <section class="mt-4">
+        <h3 class="text-2xl font-bold text-center mb-4">
+          キーワード検索
+        </h3>
+        <UForm
+          :state="form"
+          :validation="validateForm"
+          class="flex justify-center"
+          @submit="search"
         >
-          <template #header>
-            <h4 class="text-lg font-semibold text-center">
-              {{ item.name }}
-            </h4>
-          </template>
-          <p><strong>区分:</strong> {{ item.classification }}</p>
-          <p><strong>種別:</strong> {{ item.type }}</p>
-          <p><strong>住所:</strong> {{ item.address1 }}</p>
-          <img
-            src="~/assets/no_image.png"
-            alt="保育所画像"
-            class="mt-2 w-full h-40 object-cover rounded-lg"
+          <UInput
+            v-model="form.keyword"
+            name="keyword"
+            label="検索キーワード"
+            placeholder="検索キーワードを入力"
+            class="w-full max-w-md"
+          />
+          <UButton
+            :disabled="!form.keyword.trim()"
+            class="ml-4"
+            type="submit"
           >
-          <ULink
-            :to="`nurseries/${item._id}`"
-            class="block text-right underline"
-            active-class="text-primary"
-            inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-          >
-            詳細へ
-          </ULink>
-        </UCard>
-      </UCarousel>
-    </div>
-    <div class="container text-right py-6">
-      <ULink
-        class="underline "
-        to="/nurseries"
-        active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-      >認可保育所一覧へ</ULink>
+            検索
+          </UButton>
+        </UForm>
+      </section>
+      <section class="mt-4">
+        <h3 class="text-2xl font-bold text-center mb-4">
+          地域別一覧
+        </h3>
+        <div class="container md:grid md:grid-cols-3 md:gap-4">
+          <div class="mt-4 text-center">
+            <ULink
+              to="/nurseries/oho"
+              class="inline-block"
+            >
+              <NuxtImg
+                src="/images/oho.png"
+                alt="大穂地区"
+                class="border rounded-md mx-auto"
+                loading="eager"
+                preload
+                placeholder
+                placeholder-class="blur-xl"
+              />
+            </ULink>
+          </div>
+          <div class="mt-4 text-center">
+            <ULink
+              to="/nurseries/toyosato"
+              class="inline-block"
+            >
+              <NuxtImg
+                src="/images/toyosato.png"
+                alt="豊里地区"
+                class="border rounded-md mx-auto"
+                loading="eager"
+                preload
+                placeholder
+                placeholder-class="blur-xl"
+              />
+            </ULink>
+          </div>
+          <div class="mt-4 text-center">
+            <ULink
+              to="/nurseries/yatabe"
+              class="inline-block"
+            >
+              <NuxtImg
+                src="/images/yatabe.png"
+                alt="谷田部地区"
+                class="border rounded-md mx-auto"
+                loading="eager"
+                preload
+                placeholder
+                placeholder-class="blur-xl"
+              />
+            </ULink>
+          </div>
+          <div class="mt-4 text-center">
+            <ULink
+              to="/nurseries/sakura"
+              class="inline-block"
+            >
+              <NuxtImg
+                src="/images/sakura.png"
+                alt="桜地区"
+                class="border rounded-md mx-auto"
+                loading="eager"
+                preload
+                placeholder
+                placeholder-class="blur-xl"
+              />
+            </ULink>
+          </div>
+          <div class="mt-4 text-center">
+            <ULink
+              to="/nurseries/tsukuba"
+              class="inline-block"
+            >
+              <NuxtImg
+                src="/images/tsukuba.png"
+                alt="筑波地区"
+                class="border rounded-md mx-auto"
+                loading="eager"
+                preload
+                placeholder
+                placeholder-class="blur-xl"
+              />
+            </ULink>
+          </div>
+          <div class="mt-4 text-center">
+            <ULink
+              to="/nurseries/kukisaki"
+              class="inline-block"
+            >
+              <NuxtImg
+                src="/images/kukisaki.png"
+                alt="茎崎地区"
+                class="border rounded-md mx-auto"
+                loading="eager"
+                preload
+                placeholder
+                placeholder-class="blur-xl"
+              />
+            </ULink>
+          </div>
+        </div>
+      </section>
+      <div>
+        <div class="container text-right py-6">
+          <div>
+            <ULink
+              class="underline "
+              to="/nurseries"
+              active-class="text-primary"
+              inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            >認可保育所一覧へ</ULink>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </template>
