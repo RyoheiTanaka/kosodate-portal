@@ -1,75 +1,48 @@
-# Nuxt Minimal Starter
+# 🎨 子育てポータル ウェブアプリ
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 📌 概要
 
-## Setup
+このリポジトリは、子育てポータルウェブアプリのソースコードです。 市が公開しているオープンデータをもとに情報の検索・閲覧が可能になるようにしています。
 
-Make sure to install dependencies:
+---
 
-```bash
-# npm
-npm install
+## 🛠 技術スタック
 
-# pnpm
-pnpm install
+- **フレームワーク:** Nuxt 3
+- **アーキテクチャ:** Composition API
+- **スタイル:** Tailwind CSS
+- **データベース** : MongoDB
+- **デプロイ:** Vercel
 
-# yarn
-yarn install
+---
 
-# bun
-bun install
-```
+## 📂 機能一覧
 
-## Development Server
+- 📊 **保育所データ閲覧:** キーワード検索、地域別一覧、詳細と保育所のデータを閲覧できる
+- 📅 **保育所データ検索:** トップページからキーワードにより保育所のデータを検索できる
+- 📧 **お問い合わせ機能:** お問い合わせフォームからお問い合わせメールの送信ができる
+---
 
-Start the development server on `http://localhost:3000`:
+## 🛡 セキュリティ対策
 
-```bash
-# npm
-npm run dev
+- **環境変数の管理:** `.env` ファイルを `.gitignore` に追加
+- **入力バリデーション:** フォーム入力時のバリデーションを実装
 
-# pnpm
-pnpm dev
+---
 
-# yarn
-yarn dev
+## 📝 ライセンス
 
-# bun
-bun run dev
-```
+このプロジェクトのソースコードの **改変・複製・再配布を禁止** します。 詳細は [`LICENSE`](./LICENSE) をご覧ください。
 
-## Production
+---
 
-Build the application for production:
+## 📬 お問い合わせ
 
-```bash
-# npm
-npm run build
+何か質問があれば、お気軽にご連絡ください！
 
-# pnpm
-pnpm build
+📧 **Email:** [ryohei.tanaka@coolat.net](mailto\:ryohei.tanaka@coolat.net)\
 
-# yarn
-yarn build
+---
 
-# bun
-bun run build
-```
+🚀 **ご覧いただき、ありがとうございます！** 🙌
 
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
