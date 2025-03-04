@@ -1,0 +1,21 @@
+name: Add Self as Reviewer
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  add_reviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add self as reviewer
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              reviewers: [context.actor]
+            });
