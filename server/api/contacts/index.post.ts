@@ -10,6 +10,13 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    return {
+      status: 400,
+      message: '無効なメールアドレスです',
+    }
+  }
+
   const recaptchaToken = body.recaptchaToken
 
   const recaptchaRes = await $fetch<{ success: boolean, score: number }>(
@@ -31,10 +38,6 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const sanitizeInput = (input: string) => {
-    return input.replace(/<[^>]*>/g, '') // HTMLタグを削除
-  }
-
   const safeName = sanitizeInput(body.name)
   const safeEmail = sanitizeInput(body.email)
   const safeMessage = sanitizeInput(body.message)
@@ -42,7 +45,7 @@ export default defineEventHandler(async (event) => {
   const transporter = nodemailer.createTransport({
     host: process.env.GMAIL_SMTP_HOST,
     port: Number(process.env.GMAIL_SMTP_PORT),
-    secure: true,
+    secure: Number(process.env.GMAIL_SMTP_PORT) === 465,
     auth: {
       user: process.env.GMAIL_SMTP_USER,
       pass: process.env.GMAIL_SMTP_PASS,
@@ -62,3 +65,9 @@ export default defineEventHandler(async (event) => {
     return { status: 500, message: 'お問い合わせの送信に失敗しました' }
   }
 })
+
+function sanitizeInput(input: string) {
+  return input.replace(/<[^>]*>/g, '') // HTMLタグを削除
+    .replace(/[\r\n]+/g, ' ') // 改行をスペースに変換
+    .trim()
+}
