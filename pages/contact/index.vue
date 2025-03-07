@@ -77,9 +77,14 @@ const handleSubmit = async () => {
     } else {
       errorMessage.value = response.message || 'エラーが発生しました'
     }
-  } catch (error: any) {
-    console.error('APIエラー:', error)
-    errorMessage.value = error?.data?.message || '送信に失敗しました'
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('APIエラー:', error.message)
+      errorMessage.value = error.message || '送信に失敗しました'
+    } else {
+      console.error('予期しないエラー:', error)
+      errorMessage.value = '送信に失敗しました'
+    }
   } finally {
     loading.value = false
   }
