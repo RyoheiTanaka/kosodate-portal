@@ -24,9 +24,20 @@ export default defineEventHandler(async (event) => {
   )
 
   // スコアが低すぎる場合は拒否
-  if (!recaptchaRes.success || recaptchaRes.score < 0.5) {
-    throw createError({ statusCode: 400, statusMessage: 'reCAPTCHA認証に失敗しました' })
+  if (!recaptchaRes.success || recaptchaRes.score < 0.7) {
+    return {
+      status: 400,
+      message: 'reCAPTCHA認証に失敗しました。スパムの可能性があります。',
+    }
   }
+
+  const sanitizeInput = (input: string) => {
+    return input.replace(/<[^>]*>/g, '') // HTMLタグを削除
+  }
+
+  const safeName = sanitizeInput(body.name)
+  const safeEmail = sanitizeInput(body.email)
+  const safeMessage = sanitizeInput(body.message)
 
   const transporter = nodemailer.createTransport({
     host: process.env.GMAIL_SMTP_HOST,
@@ -43,7 +54,7 @@ export default defineEventHandler(async (event) => {
       from: `"お問い合わせフォーム" <${process.env.GMAIL_SMTP_USER}>`,
       to: process.env.GMAIL_SMTP_FROM,
       subject: 'お問い合わせがありました',
-      text: `お名前: ${body.name}\nメールアドレス: ${body.email}\n\nお問い合わせ内容:\n${body.message}`,
+      text: `お名前: ${safeName}\nメールアドレス: ${safeEmail}\n\nお問い合わせ内容:\n${safeMessage}`,
     })
     return { status: 200, message: 'お問い合わせを送信しました' }
   } catch (error) {

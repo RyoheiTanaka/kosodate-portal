@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import type { FormError } from '#ui/types'
-
 interface SearchForm {
   keyword: string
-}
-
-interface FormErrors {
-  keyword?: string
 }
 
 const router = useRouter()
@@ -14,24 +8,19 @@ const form = reactive<SearchForm>({
   keyword: '',
 })
 
-const errors = reactive<FormErrors>({})
-
 // 検索ボタンを押した際の処理
 const search = (e: Event): void => {
   e.preventDefault()
-  if (validateForm().length > 0) return
+  if (Object.keys(validateForm()).length > 0) return
 
   if (!form.keyword.trim()) return
   router.push({ path: '/nurseries', query: { keyword: form.keyword } })
 }
 
-const validateForm = (): FormError<string>[] => {
-  const validationErrors: FormError<string>[] = []
+const validateForm = (): Record<string, string | undefined> => {
+  const validationErrors: Record<string, string | undefined> = {}
   if (!form.keyword.trim()) {
-    errors.keyword = 'キーワードは必須です'
-    validationErrors.push({ path: 'keyword', message: errors.keyword })
-  } else {
-    errors.keyword = ''
+    validationErrors.keyword = 'キーワードは必須です'
   }
 
   return validationErrors

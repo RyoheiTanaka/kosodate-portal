@@ -38,27 +38,22 @@ const loading = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
 
-const validateForm = (): FormError<string>[] => {
+const validateForm = (state: ContactForm): FormError<string>[] => {
   const validationErrors: FormError<string>[] = []
-  if (!form.email.trim()) {
-    errors.email = 'メールアドレスは必須です'
-    validationErrors.push({ path: 'email', message: errors.email })
-  } else {
-    errors.email = ''
+
+  if (!state.email.trim()) {
+    validationErrors.push({ path: 'email', message: 'メールアドレスは必須です' })
   }
 
-  if (!form.message.trim()) {
-    errors.message = 'お問い合わせ内容は必須です'
-    validationErrors.push({ path: 'message', message: errors.message })
-  } else {
-    errors.message = ''
+  if (!state.message.trim()) {
+    validationErrors.push({ path: 'message', message: 'お問い合わせ内容は必須です' })
   }
 
   return validationErrors
 }
 
 const handleSubmit = async () => {
-  if (validateForm().length > 0) return
+  if (validateForm(form).length > 0) return
 
   loading.value = true
   successMessage.value = ''
