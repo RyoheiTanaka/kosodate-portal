@@ -12,6 +12,8 @@ interface FormErrors {
   message?: string
 }
 
+const { $csrfFetch } = useNuxtApp()
+
 const links = [
   {
     label: 'トップ',
@@ -63,7 +65,7 @@ const handleSubmit = async () => {
 
   try {
     const recaptchaToken = await grecaptcha.execute(siteKey, { action: 'submit' })
-    const response = await $fetch<{ message: string, status: number }>('/api/contacts', {
+    const response = await $csrfFetch<{ message: string, status: number }>('/api/contacts', {
       method: 'POST',
       body: {
         ...form,
