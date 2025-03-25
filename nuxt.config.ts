@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/image', 'nuxt-csurf'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss'],
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
@@ -14,11 +14,6 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: '2024-11-01',
-  eslint: {
-    config: {
-      stylistic: true,
-    },
-  },
   image: {
     screens: {
       'xs': 320,
