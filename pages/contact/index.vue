@@ -45,8 +45,7 @@ const validateForm = (state: ContactForm): FormError<string>[] => {
 
   if (!state.email.trim()) {
     validationErrors.push({ path: 'email', message: 'メールアドレスは必須です' })
-  }
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
     validationErrors.push({ path: 'email', message: '正しいメールアドレスを入力してください' })
   }
 
@@ -77,22 +76,18 @@ const handleSubmit = async () => {
     if (response.status === 200) {
       successMessage.value = response.message
       Object.assign(form, { name: '', email: '', message: '' })
-    }
-    else {
+    } else {
       errorMessage.value = response.message || 'エラーが発生しました'
     }
-  }
-  catch (error) {
+  } catch (error) {
     if (error instanceof Error) {
       console.error('APIエラー:', error.message)
       errorMessage.value = error.message || '送信に失敗しました'
-    }
-    else {
+    } else {
       console.error('予期しないエラー:', error)
       errorMessage.value = '送信に失敗しました'
     }
-  }
-  finally {
+  } finally {
     loading.value = false
   }
 }
