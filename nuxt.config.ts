@@ -1,12 +1,6 @@
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
   devtools: { enabled: true },
-  eslint: {
-    checker: true,
-    config: {
-      stylistic: true
-    }
-  },
   runtimeConfig: {
     public: {
       globalDistricts: [
@@ -20,6 +14,14 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: '2024-11-01',
+  eslint: {
+    checker: true,
+    config: {
+      stylistic: {
+        braceStyle: '1tbs',
+      },
+    },
+  },
   image: {
     screens: {
       'xs': 320,
