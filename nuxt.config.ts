@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/image', 'nuxt-csurf'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
@@ -15,8 +15,11 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2024-11-01',
   eslint: {
+    checker: true,
     config: {
-      stylistic: true,
+      stylistic: {
+        braceStyle: '1tbs',
+      },
     },
   },
   image: {
