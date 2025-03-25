@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
