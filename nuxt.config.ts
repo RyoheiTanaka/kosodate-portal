@@ -1,6 +1,12 @@
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
   devtools: { enabled: true },
+  eslint: {
+    checker: true,
+    config: {
+      stylistic: true
+    }
+  },
   runtimeConfig: {
     public: {
       globalDistricts: [
