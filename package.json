@@ -16,7 +16,7 @@
     "@nuxt/ui": "^2.21.0",
     "mongoose": "^8.22.1",
     "nodemailer": "^8.0.5",
-    "nuxt": "^3.19.0",
+    "nuxt": "^3.21.6",
     "nuxt-csurf": "^1.6.5",
     "vue": "latest",
     "vue-router": "latest"
