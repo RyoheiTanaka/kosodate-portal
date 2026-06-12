@@ -16,13 +16,13 @@
     "@nuxt/ui": "^2.21.0",
     "mongoose": "^8.22.1",
     "nodemailer": "^8.0.5",
-    "nuxt": "^3.19.0",
+    "nuxt": "^3.21.8",
     "nuxt-csurf": "^1.6.5",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^1.0.0",
+    "@nuxt/eslint": "^1.16.0",
     "eslint": "^9.0.0",
     "@nuxtjs/tailwindcss": "^6.13.2",
     "@types/nodemailer": "^6.4.17",
