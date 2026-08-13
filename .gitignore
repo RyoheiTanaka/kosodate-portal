@@ -18,6 +18,15 @@ logs
 .fleet
 .idea
 
+# Claude Code のローカル設定・ワークツリー
+.claude
+
+# 手元用のメモ（公開しない下書き置き場）
+docs/local
+
+# DB backups
+backups
+
 # Local env files
 .env
 .env.*

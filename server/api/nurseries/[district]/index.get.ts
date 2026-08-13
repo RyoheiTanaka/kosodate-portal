@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
 
   await connectDB()
 
-  const nurseries = await Nursery.find({ district_alphabet: district })
+  // 閉園した施設は一覧に含めない（詳細ページはURL維持のため残す）
+  const nurseries = await Nursery.find({ district_alphabet: district, is_active: { $ne: false } })
   if (!nurseries) {
     throw createError({ statusCode: 404, statusMessage: 'Nursery not found' })
   }

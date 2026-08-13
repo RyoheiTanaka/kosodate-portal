@@ -8,6 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "backup:nurseries": "node scripts/backup-nurseries.mjs",
+    "import:nurseries": "node scripts/import-nurseries.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

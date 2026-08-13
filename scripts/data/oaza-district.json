@@ -1,0 +1,290 @@
+{
+  "さくらの森": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "みどりの": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "みどりの中央": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "上ノ室": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "上横場": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "上萱丸": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "上郷": {
+    "name": "豊里地区",
+    "alphabet": "toyosato"
+  },
+  "上野": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "下岩崎": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "下平塚": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "下河原崎": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "下萱丸": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "並木": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "二の宮": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "今鹿島": {
+    "name": "豊里地区",
+    "alphabet": "toyosato"
+  },
+  "作谷": {
+    "name": "筑波地区",
+    "alphabet": "tsukuba"
+  },
+  "倉掛": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "北条": {
+    "name": "筑波地区",
+    "alphabet": "tsukuba"
+  },
+  "千現": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "吉沼": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "吾妻": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "土田": {
+    "name": "豊里地区",
+    "alphabet": "toyosato"
+  },
+  "大曽根": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "大角豆": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "天宝喜": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "妻木": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "学園の森": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "学園南": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "小田": {
+    "name": "筑波地区",
+    "alphabet": "tsukuba"
+  },
+  "小野崎": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "島": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "島名": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "手代木": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "春日": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "東光台": {
+    "name": "豊里地区",
+    "alphabet": "toyosato"
+  },
+  "東岡": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "東平塚": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "東新井": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "松代": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "松塚": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "柴崎": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "桜": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "水堀": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "水守": {
+    "name": "筑波地区",
+    "alphabet": "tsukuba"
+  },
+  "沼崎": {
+    "name": "豊里地区",
+    "alphabet": "toyosato"
+  },
+  "沼田": {
+    "name": "筑波地区",
+    "alphabet": "tsukuba"
+  },
+  "流星台": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "真瀬": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "研究学園": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "稲岡": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "竹園": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "花室": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "花島新田": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "花畑": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "苅間": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "蓮沼": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "西大井": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "西大橋": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "西岡": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "西平塚": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "西栗山": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "要": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "要元中根": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "観音台": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "谷田部": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "赤塚": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "遠東": {
+    "name": "豊里地区",
+    "alphabet": "toyosato"
+  },
+  "金田": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "面野井": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "高崎": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "高見原": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "鬼ケ窪": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  }
+}
