@@ -56,6 +56,18 @@ useHead({
             <h2 class="text-3xl font-bold text-center mb-4">
               {{ nursery.name }}
             </h2>
+            <div
+              v-if="nursery.is_active === false"
+              class="mb-4 rounded-md border border-amber-400 bg-amber-50 p-4 dark:bg-amber-950/40"
+            >
+              <p class="text-sm font-bold text-amber-800 dark:text-amber-200">
+                この施設は現在募集を行っていません
+              </p>
+              <p class="mt-1 text-sm text-amber-800 dark:text-amber-200">
+                閉園または統廃合により、つくば市の最新の認可保育所等一覧に掲載されていません。
+                掲載内容は{{ nursery.source_date || '過去' }}時点の情報です。
+              </p>
+            </div>
             <iframe
               class="w-full h-[30rem]"
               frameborder="0"
@@ -101,18 +113,6 @@ useHead({
                 <div class="p-2.5 xl:p-5">
                   <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.prefecture }}{{ nursery.city }}{{ nursery.address1 }}{{ nursery.address2 }}{{ nursery.address3 }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    アクセス方法
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.access }}
                   </p>
                 </div>
               </div>
@@ -227,24 +227,17 @@ useHead({
               <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
                 <div class="p-2.5 xl:p-5">
                   <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    FAX番号
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.fax }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
                     送迎バス
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
                   <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.shuttle_bus ? '有' : '無' }}
+                    <template v-if="nursery.shuttle_bus === null || nursery.shuttle_bus === undefined">
+                      <span class="text-gray-500">情報なし（施設へお問い合わせください）</span>
+                    </template>
+                    <template v-else>
+                      {{ nursery.shuttle_bus ? '有' : '無' }}
+                    </template>
                   </p>
                 </div>
               </div>
@@ -257,18 +250,6 @@ useHead({
                 <div class="p-2.5 xl:p-5">
                   <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
                     {{ nursery.is_temporary_care ? '有' : '無' }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    法人番号
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.corporate_number }}
                   </p>
                 </div>
               </div>
@@ -299,30 +280,6 @@ useHead({
               <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
                 <div class="p-2.5 xl:p-5">
                   <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    認可等年月日
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.approval_date }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    URL
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.url }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
                     備考
                   </h3>
                 </div>
@@ -333,6 +290,11 @@ useHead({
                 </div>
               </div>
             </div>
+            <p class="mt-6 text-sm text-gray-500 dark:text-gray-400">
+              掲載内容はつくば市が公開している情報をもとにしています（{{ nursery.source_date || '公開時点' }}時点）。
+              定員・開所時間・送迎バス・一時預かりなどは変更される場合があります。
+              <strong class="font-bold">最新の情報は各施設へ直接お問い合わせください。</strong>
+            </p>
           </div>
         </UCard>
       </UContainer>

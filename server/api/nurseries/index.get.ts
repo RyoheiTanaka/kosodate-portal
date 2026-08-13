@@ -11,10 +11,13 @@ export default defineEventHandler(async (event): Promise<INursery[]> => {
     keyword = escapeRegex(keyword)
   }
 
-  const filter = keyword
-    ? { $or: ['name', 'name_kana', 'prefecture', 'city', 'address1', 'address2', 'address3', 'childcare_age']
-        .map(field => ({ [field]: { $regex: escapeRegex(keyword), $options: 'i' } })) }
-    : {}
+  // 閉園した施設は一覧に含めない（詳細ページはURL維持のため残す）
+  const filter: Record<string, unknown> = { is_active: { $ne: false } }
+
+  if (keyword) {
+    filter.$or = ['name', 'name_kana', 'prefecture', 'city', 'address1', 'address2', 'address3', 'childcare_age']
+      .map(field => ({ [field]: { $regex: escapeRegex(keyword), $options: 'i' } }))
+  }
 
   await connectDB()
 
