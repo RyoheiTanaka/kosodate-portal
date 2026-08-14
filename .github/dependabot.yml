@@ -1,0 +1,33 @@
+version: 2
+
+updates:
+  # npm の依存を毎週チェックする。
+  # これまで dependabot.yml が無く、脆弱性が出たときしか PR が来なかったため、
+  # @nuxt/ui 2.21 → 4.8 のような大きなジャンプが発生していた。
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
+    groups:
+      # minor / patch はまとめて1本にしてレビュー負荷を下げる。
+      # major はこのグループから外れて個別 PR になるので、
+      # 「単独で慎重に検証すべきもの」が一目で分かる。
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # ワークフローで使う action 自体も更新対象にする
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore(ci)
