@@ -124,7 +124,7 @@ useHead({
     </section>
     <section>
       <UContainer
-        class="py-6 w-full max-w-screen-2xl mx-auto md:grid md:grid-cols-4 md:gap-4"
+        class="py-6 w-full max-w-(--breakpoint-2xl) mx-auto md:grid md:grid-cols-4 md:gap-4"
       >
         <UCard
           v-for="(nursery) in filteredNurseries"

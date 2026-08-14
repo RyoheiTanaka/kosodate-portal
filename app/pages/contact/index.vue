@@ -107,7 +107,7 @@ useHead({
       class="container pb-4"
       :items="links"
     />
-    <UContainer class="max-w-screen-xl w-full">
+    <UContainer class="max-w-(--breakpoint-xl) w-full">
       <UCard>
         <template #header>
           <h2 class="text-3xl font-bold text-center">

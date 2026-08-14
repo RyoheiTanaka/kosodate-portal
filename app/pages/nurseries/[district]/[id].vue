@@ -46,7 +46,7 @@ useHead({
       />
       <UContainer>
         <UCard
-          class="mb-6 w-full max-w-screen-2xl mx-auto border-0"
+          class="mb-6 w-full max-w-(--breakpoint-2xl) mx-auto border-0"
           :ui="{ root: 'ring-0 md:ring shadow-none md:shadow-md' }"
         >
           <template #header>

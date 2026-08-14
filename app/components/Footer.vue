@@ -1,6 +1,6 @@
 <template>
   <UContainer
-    class="py-4 text-center w-full max-w-screen-xl mx-auto border-t text-gray-700 p-6"
+    class="py-4 text-center w-full max-w-(--breakpoint-xl) mx-auto border-t text-gray-700 p-6"
     as="footer"
   >
     <UContainer class="flex justify-between flex-col lg:flex-row">
