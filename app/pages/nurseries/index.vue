@@ -2,40 +2,48 @@
 const route = useRoute()
 const keyword = ref<string>(route.query.keyword as string || '')
 
-const classificationFilter = ref('')
-const keywordFilter = ref('')
-const typeFilter = ref('')
+/**
+ * 「すべて」を表す番兵。
+ * reka-ui の SelectItem は空文字の value を許さない（空文字は選択解除の意味を持つ）ため、
+ * v3 のように value: '' の選択肢を置けない。
+ */
+const ALL = 'all'
 
+const classificationFilter = ref(ALL)
+const keywordFilter = ref('')
+const typeFilter = ref(ALL)
+
+// USelect の既定の labelKey は label なので、v3 の name から付け替えている
 const classificationOptions = [
   {
-    name: 'すべての区分',
-    value: '',
+    label: 'すべての区分',
+    value: ALL,
   },
   {
-    name: '公立',
+    label: '公立',
     value: '公立',
   },
   {
-    name: '民間',
+    label: '民間',
     value: '民間',
   },
 ]
 
 const typeOptions = [
   {
-    name: 'すべての種別',
-    value: '',
+    label: 'すべての種別',
+    value: ALL,
   },
   {
-    name: '保育所',
+    label: '保育所',
     value: '保育所',
   },
   {
-    name: '認定こども園',
+    label: '認定こども園',
     value: '認定こども園',
   },
   {
-    name: '小規模保育事業所',
+    label: '小規模保育事業所',
     value: '小規模保育事業所',
   },
 ]
@@ -45,9 +53,9 @@ const filteredNurseries = computed(() => {
   if (!nurseries.value) return []
 
   return nurseries.value.filter((nursery) => {
-    const matchClassification = !classificationFilter.value || nursery.classification === classificationFilter.value
+    const matchClassification = classificationFilter.value === ALL || nursery.classification === classificationFilter.value
     const matchKeyword = !keywordFilter.value || nursery.name.includes(keywordFilter.value)
-    const matchType = !typeFilter.value || nursery.type === typeFilter.value
+    const matchType = typeFilter.value === ALL || nursery.type === typeFilter.value
 
     return matchClassification && matchKeyword && matchType
   })
@@ -75,7 +83,7 @@ useHead({
   <main class="py-4">
     <UBreadcrumb
       class="container pb-4"
-      :links="links"
+      :items="links"
     />
     <h2 class="text-3xl font-bold text-center mb-4">
       認可保育所一覧
@@ -85,7 +93,7 @@ useHead({
         フィルター
       </h3>
       <div class="flex flex-col md:flex-row md:justify-between">
-        <UFormGroup
+        <UFormField
           label="名前でフィルター"
         >
           <UInput
@@ -93,32 +101,30 @@ useHead({
             variant="outline"
             placeholder="名前を入力してください"
           />
-        </UFormGroup>
-        <UFormGroup
+        </UFormField>
+        <UFormField
           label="区分でフィルター"
           class="mt-4 md:mt-0"
         >
           <USelect
             v-model="classificationFilter"
-            :options="classificationOptions"
-            option-attribute="name"
+            :items="classificationOptions"
           />
-        </UFormGroup>
-        <UFormGroup
+        </UFormField>
+        <UFormField
           label="種別でフィルター"
           class="mt-4 md:mt-0"
         >
           <USelect
             v-model="typeFilter"
-            :options="typeOptions"
-            option-attribute="name"
+            :items="typeOptions"
           />
-        </UFormGroup>
+        </UFormField>
       </div>
     </section>
     <section>
       <UContainer
-        class="py-6 w-full max-w-screen-2xl mx-auto md:grid md:grid-cols-4 md:gap-4"
+        class="py-6 w-full max-w-(--breakpoint-2xl) mx-auto md:grid md:grid-cols-4 md:gap-4"
       >
         <UCard
           v-for="(nursery) in filteredNurseries"

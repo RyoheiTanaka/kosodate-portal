@@ -105,9 +105,9 @@ useHead({
   <main class="py-4">
     <UBreadcrumb
       class="container pb-4"
-      :links="links"
+      :items="links"
     />
-    <UContainer class="max-w-screen-xl w-full">
+    <UContainer class="max-w-(--breakpoint-xl) w-full">
       <UCard>
         <template #header>
           <h2 class="text-3xl font-bold text-center">
@@ -119,7 +119,7 @@ useHead({
           :validate="validateForm"
           @submit="handleSubmit"
         >
-          <UFormGroup
+          <UFormField
             label="お名前"
             name="name"
           >
@@ -128,8 +128,8 @@ useHead({
               placeholder="お名前を入力してください"
               icon="i-heroicons-pencil"
             />
-          </UFormGroup>
-          <UFormGroup
+          </UFormField>
+          <UFormField
             label="メールアドレス"
             name="email"
             class="mt-4"
@@ -142,8 +142,8 @@ useHead({
               placeholder="メールアドレスを入力してください"
               icon="i-heroicons-envelope"
             />
-          </UFormGroup>
-          <UFormGroup
+          </UFormField>
+          <UFormField
             label="お問い合わせ内容"
             name="message"
             class="mt-4"
@@ -154,7 +154,7 @@ useHead({
               v-model="form.message"
               placeholder="お問い合わせ内容を入力してください"
             />
-          </UFormGroup>
+          </UFormField>
           <UButton
             type="submit"
             :loading="loading"
@@ -172,7 +172,7 @@ useHead({
         />
         <UAlert
           v-if="errorMessage"
-          color="red"
+          color="error"
           class="mt-4"
           :title="errorMessage"
           icon="i-heroicons-x-circle"

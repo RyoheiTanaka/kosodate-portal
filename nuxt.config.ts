@@ -1,6 +1,8 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint'],
   devtools: { enabled: true },
+  // Tailwind v4 は設定ファイルではなく CSS 側で定義する
+  css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
       globalDistricts: [
@@ -13,7 +15,7 @@ export default defineNuxtConfig({
       ],
     },
   },
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: '2026-08-14',
   eslint: {
     checker: true,
     config: {

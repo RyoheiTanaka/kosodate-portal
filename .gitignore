@@ -33,3 +33,5 @@ backups
 !.env.example
 
 .vscode
+# ESLint のキャッシュ（絶対パスを含むのでコミットしない）
+.eslintcache

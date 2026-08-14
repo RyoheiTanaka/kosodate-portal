@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { District } from '~/types/global'
-import type { NurseryRouteParams } from '~/types/route'
-
 const route = useRoute()
 const params = route.params as Partial<NurseryRouteParams>
 const district = params.district ?? ''
@@ -39,13 +36,13 @@ useHead({
   <main class="py-4">
     <UBreadcrumb
       class="container pb-4"
-      :links="links"
+      :items="links"
     />
     <h2 class="text-3xl font-bold text-center mb-4">
       {{ districtName }}
     </h2>
     <UContainer
-      class="py-6 w-full max-w-screen-2xl mx-auto md:grid md:grid-cols-4 md:gap-4"
+      class="py-6 w-full max-w-(--breakpoint-2xl) mx-auto md:grid md:grid-cols-4 md:gap-4"
     >
       <UCard
         v-for="(districtnursery) in districtnurseries"

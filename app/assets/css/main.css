@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/*
+ * Tailwind v4 では tailwind.config.ts ではなく CSS 側でテーマを定義する。
+ * 旧 tailwind.config.ts の theme.extend.colors をそのまま移設したもの。
+ * Nuxt UI v4 は 950 シェードまで要求するため、900 より暗い値を追加している。
+ */
+@theme static {
+  /* ビビッドピンク（メインカラー） */
+  --color-kosodate-pink-50: #ffe4ec; /* パステルピンク */
+  --color-kosodate-pink-100: #ffccdc;
+  --color-kosodate-pink-200: #ff99b8;
+  --color-kosodate-pink-300: #ff6693;
+  --color-kosodate-pink-400: #ff336f;
+  --color-kosodate-pink-500: #ff69b4; /* メインカラー */
+  --color-kosodate-pink-600: #e0559d;
+  --color-kosodate-pink-700: #c04787;
+  --color-kosodate-pink-800: #a03a71;
+  --color-kosodate-pink-900: #802d5b;
+  --color-kosodate-pink-950: #4d1b37;
+
+  /* 明るい黄色（アクセント） */
+  --color-kosodate-yellow-50: #fff7d4;
+  --color-kosodate-yellow-100: #ffeeaa;
+  --color-kosodate-yellow-200: #ffe480;
+  --color-kosodate-yellow-300: #ffda59;
+  --color-kosodate-yellow-400: #ffd033;
+  --color-kosodate-yellow-500: #ffde59; /* メインの黄色 */
+  --color-kosodate-yellow-600: #e6c051;
+  --color-kosodate-yellow-700: #c0a246;
+  --color-kosodate-yellow-800: #9a843c;
+  --color-kosodate-yellow-900: #746630;
+  --color-kosodate-yellow-950: #453d1d;
+}
+
+/*
+ * v4 の container ユーティリティは設定を受け取らないので、
+ * 旧 theme.container の center / padding を @utility で再現する。
+ */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+}

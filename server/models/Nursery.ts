@@ -1,6 +1,5 @@
 import type { Document, Types } from 'mongoose'
 import { Schema, model } from 'mongoose'
-import type { INursery } from '~/server/types/nursery'
 
 interface INurseryDocument extends INursery, Document {
   _id: Types.ObjectId

@@ -15,22 +15,21 @@
   },
   "dependencies": {
     "@nuxt/image": "^2.1.0",
-    "@nuxt/ui": "^2.21.0",
+    "@nuxt/ui": "^4.8.1",
     "mongoose": "^8.24.1",
     "nodemailer": "^9.0.1",
-    "nuxt": "^3.21.10",
+    "nuxt": "^4.5.2",
     "nuxt-csurf": "^1.6.5",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@iconify-json/heroicons": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.123",
     "@nuxt/eslint": "^1.16.0",
-    "eslint": "^9.0.0",
-    "@nuxtjs/tailwindcss": "^6.13.2",
     "@types/nodemailer": "^6.4.17",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.14",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "eslint": "^9.38.0",
+    "typescript": "^5.7.3",
+    "vite-plugin-eslint2": "^5.3.0"
   }
 }

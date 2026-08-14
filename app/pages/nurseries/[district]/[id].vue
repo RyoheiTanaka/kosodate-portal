@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { District } from '~/types/global'
-import type { NurseryRouteParams } from '~/types/route'
-
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const route = useRoute()
@@ -25,7 +22,7 @@ useHead({
     <template v-if="nursery">
       <UBreadcrumb
         class="container pb-4"
-        :links="[
+        :items="[
           {
             label: 'トップ',
             icon: 'i-heroicons-home',
@@ -49,8 +46,8 @@ useHead({
       />
       <UContainer>
         <UCard
-          class="mb-6 w-full max-w-screen-2xl mx-auto border-0"
-          :ui="{ ring: 'ring-0 md:ring-1', shadow: 'shadow-none md:shadow' }"
+          class="mb-6 w-full max-w-(--breakpoint-2xl) mx-auto border-0"
+          :ui="{ root: 'ring-0 md:ring shadow-none md:shadow-md' }"
         >
           <template #header>
             <h2 class="text-3xl font-bold text-center mb-4">
