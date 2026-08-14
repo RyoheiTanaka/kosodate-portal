@@ -36,7 +36,7 @@ useHead({
   <main class="py-4">
     <UBreadcrumb
       class="container pb-4"
-      :links="links"
+      :items="links"
     />
     <h2 class="text-3xl font-bold text-center mb-4">
       {{ districtName }}

@@ -20,7 +20,7 @@ useHead({
   <main class="py-4">
     <UBreadcrumb
       class="container pb-4"
-      :links="links"
+      :items="links"
     />
     <UContainer class="max-w-screen-xl w-full">
       <UCard>
