@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# 同じブランチで新しい push があったら古い実行は打ち切る
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # npm install ではなく npm ci を使う。
+      # lockfile と package.json のズレを検知するため（issue #91 はこれが無くて半年埋もれた）。
+      - name: 依存をインストール
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: ビルド
+        run: npm run build
+
+      # ビルドが通っても実行時に壊れていることがある。
+      # Nuxt 4 移行時、アイコンの全滅とページの 500 はどちらもビルド成功のまま起きた。
+      # DB が要るページは Actions から Atlas に繋げないので、静的ページで検証する。
+      - name: スモークテスト
+        run: |
+          set -euo pipefail
+
+          node .output/server/index.mjs &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+
+          echo "サーバーの起動を待機"
+          for i in $(seq 1 60); do
+            if curl -sf -o /dev/null http://localhost:3000/contact; then
+              echo "起動を確認"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "::error::サーバーが 60 秒以内に起動しなかった"
+              exit 1
+            fi
+            sleep 1
+          done
+
+          echo "静的ページが 200 を返すか"
+          for path in / /contact /privacy /terms /license; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:3000$path")
+            echo "  $code $path"
+            if [ "$code" != "200" ]; then
+              echo "::error::$path が $code を返した"
+              exit 1
+            fi
+          done
+
+          echo "アイコンが解決できているか"
+          # @iconify-json/* が抜けると、ビルドは通るのにアイコンが一切出なくなる
+          curl -sf http://localhost:3000/contact -o page.html
+          if ! grep -q 'i-heroicons:' page.html; then
+            echo "::error::heroicons のクラスが SSR 出力に無い。@iconify-json/heroicons の導入を確認"
+            exit 1
+          fi
+          echo "  検出: $(grep -o 'i-heroicons:[a-z0-9-]*' page.html | sort -u | tr '\n' ' ')"
+
+          echo "404 が 404 を返すか"
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/no-such-page)
+          if [ "$code" != "404" ]; then
+            echo "::error::存在しないパスが $code を返した"
+            exit 1
+          fi
+
+          echo "スモークテスト成功"

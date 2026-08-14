@@ -19,9 +19,7 @@
     "mongoose": "^8.24.1",
     "nodemailer": "^9.0.1",
     "nuxt": "^4.5.2",
-    "nuxt-csurf": "^1.6.5",
-    "vue": "latest",
-    "vue-router": "latest"
+    "nuxt-csurf": "^1.6.5"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.3",
