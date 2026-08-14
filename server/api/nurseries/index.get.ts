@@ -1,6 +1,7 @@
-import { Nursery } from '~/server/models/Nursery'
-import type { INursery } from '~/server/types/nursery'
+import { Nursery } from '~~/server/models/Nursery'
 
+// 制御文字の除去が目的なので no-control-regex は意図的に無効化する
+// eslint-disable-next-line no-control-regex
 const escapeRegex = (text: string) => text.replace(/[\x00-\x1F\x7F]/g, '').replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
 
 export default defineEventHandler(async (event): Promise<INursery[]> => {

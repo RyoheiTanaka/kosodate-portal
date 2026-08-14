@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { District } from '~/types/global'
-import type { NurseryRouteParams } from '~/types/route'
-
 const route = useRoute()
 const params = route.params as Partial<NurseryRouteParams>
 const district = params.district ?? ''

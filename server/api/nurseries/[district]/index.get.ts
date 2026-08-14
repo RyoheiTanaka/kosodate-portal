@@ -1,7 +1,4 @@
-import { defineEventHandler, createError } from 'h3'
-import { connectDB } from '~/server/utils/mongo'
-import { Nursery } from '~/server/models/Nursery'
-import type { District } from '~/types/global'
+import { Nursery } from '~~/server/models/Nursery'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()

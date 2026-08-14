@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { District } from '~/types/global'
-import type { NurseryRouteParams } from '~/types/route'
-
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const route = useRoute()
