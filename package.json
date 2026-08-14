@@ -24,9 +24,12 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@iconify-json/heroicons": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.123",
     "@nuxt/eslint": "^1.16.0",
     "@types/nodemailer": "^6.4.17",
     "eslint": "^9.38.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite-plugin-eslint2": "^5.3.0"
   }
 }
