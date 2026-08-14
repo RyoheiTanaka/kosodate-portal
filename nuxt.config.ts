@@ -1,6 +1,8 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxtjs/tailwindcss', '@nuxt/eslint'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint'],
   devtools: { enabled: true },
+  // Tailwind v4 は設定ファイルではなく CSS 側で定義する
+  css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
       globalDistricts: [
