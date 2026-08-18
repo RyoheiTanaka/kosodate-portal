@@ -12,6 +12,8 @@ const globalDistrict = globalDistricts.find(globalDistrict => globalDistrict.alp
 
 const { data: nursery } = useNursery(district, id)
 
+const detailRows = computed(() => nursery.value ? buildNurseryDetailRows(nursery.value) : [])
+
 useHead({
   title: nursery.value?.name,
 })
@@ -77,212 +79,22 @@ useHead({
 
           <div class="w-full">
             <div class="flex flex-col">
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
+              <div
+                v-for="row in detailRows"
+                :key="row.label"
+                class="grid grid-cols-2 rounded-sm border-b border-stroke"
+              >
                 <div class="p-2.5 xl:p-5">
                   <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    区分
+                    {{ row.label }}
                   </h3>
                 </div>
                 <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.classification }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    種別
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.type }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    住所
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.address }}{{ nursery.address_note }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    定員
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.capacity }}人
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    保育年齢
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.childcare_age }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    利用可能曜日
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.available_day }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    利用可能日時特記事項
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.available_day_note }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    開園（平日）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.open_weekday }} ~ {{ nursery.close_weekday }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    開園（土曜日）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.open_saturday }} ~ {{ nursery.close_saturday }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    保育標準時間（施設が定める11時間）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.standard_childcare_hour_11 }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    保育標準時間（施設が定める8時間）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.standard_childcare_hour_8 }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    電話
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.tel }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    送迎バス
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    <template v-if="nursery.shuttle_bus === null || nursery.shuttle_bus === undefined">
-                      <span class="text-gray-500">情報なし（施設へお問い合わせください）</span>
-                    </template>
-                    <template v-else>
-                      {{ nursery.shuttle_bus ? '有' : '無' }}
-                    </template>
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    一時預かりの有無
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.is_temporary_care ? '有' : '無' }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    団体名
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.corporate_name }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    設立年月日
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.establishment_date }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    備考
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.remark }}
+                  <p
+                    class="text-sm font-medium xsm:text-base"
+                    :class="row.muted ? 'text-gray-500' : 'text-black dark:text-gray-200'"
+                  >
+                    {{ row.value }}
                   </p>
                 </div>
               </div>
