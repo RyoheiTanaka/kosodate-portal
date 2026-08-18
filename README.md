@@ -61,7 +61,12 @@ npm install
 npm run dev
 ```
 
-> `.env` ファイルに Google Maps API キー、MongoDB 接続文字列、CSRF 設定などが必要です。
+`.env.example` をコピーして `.env` を作り、Google Maps API キーや MongoDB 接続文字列を設定してください。
+
+> MongoDB は開発用（`kosodate_dev`）と本番用（`kosodate`）を分けています。
+> `MONGODB_URI` は DB名を含まない接続文字列、`MONGODB_DB` が接続先のDB名です。
+> ローカルの `.env` の `MONGODB_DB` には**必ず `kosodate_dev`** を設定してください。
+> 取り込みスクリプトは開発用DB以外への書き込みに `--prod` を要求します。
 
 ---
 

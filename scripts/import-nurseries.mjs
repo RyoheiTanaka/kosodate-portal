@@ -11,6 +11,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import dns from 'node:dns'
 import mongoose from 'mongoose'
+import { assertWritable, resolveUri } from './lib/db.mjs'
 
 // この開発環境では Atlas の SRV レコードがローカルDNSで解決できないため、明示的に指定する
 dns.setServers(['8.8.8.8', '1.1.1.1'])
@@ -26,14 +27,6 @@ const getOpt = (name, fallback) => {
 const DRY_RUN = hasFlag('dry-run')
 const CSV_PATH = path.resolve(ROOT, getOpt('file', 'scripts/data/nurseries-2026.csv'))
 const SOURCE_DATE = getOpt('source-date', '2026-04-01')
-
-const readEnv = () => {
-  if (process.env.MONGODB_URI) return process.env.MONGODB_URI
-  const envPath = path.join(ROOT, '.env')
-  if (!fs.existsSync(envPath)) return null
-  const line = fs.readFileSync(envPath, 'utf8').split(/\r?\n/).find(l => l.startsWith('MONGODB_URI='))
-  return line ? line.slice('MONGODB_URI='.length).replace(/^["']|["']$/g, '').trim() : null
-}
 
 // Excel から書き出したCSVは先頭にBOMが付くため取り除く
 const stripBom = text => (text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text)
@@ -138,8 +131,9 @@ const validate = (rows) => {
 }
 
 const main = async () => {
-  const uri = readEnv()
-  if (!uri) throw new Error('MONGODB_URI が見つかりません（.env を確認してください）')
+  const { uri, dbName } = resolveUri()
+  // dry-run は読むだけなので、本番を指していても止めない
+  if (!DRY_RUN) assertWritable(dbName, args)
   if (!fs.existsSync(CSV_PATH)) throw new Error(`CSVが見つかりません: ${CSV_PATH}`)
 
   const rows = parseCsv(stripBom(fs.readFileSync(CSV_PATH, 'utf8')))
@@ -163,7 +157,7 @@ const main = async () => {
     console.warn('  scripts/data/oaza-district.json への追記を検討してください')
   }
 
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 20000 })
+  await mongoose.connect(uri, { dbName, serverSelectionTimeoutMS: 20000 })
   // Nuxt のモデル定義は TypeScript のため、素の Node からはコレクションを直接操作する
   const col = mongoose.connection.db.collection('nurseries')
 

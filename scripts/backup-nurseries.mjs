@@ -4,12 +4,15 @@
 //   node scripts/backup-nurseries.mjs --list                バックアップ一覧
 //   node scripts/backup-nurseries.mjs --restore=<ファイル>   復元（全件置き換え）
 //
+// 復元先が開発用DB（_dev で終わる名前）でない場合は --prod が必要。
+//
 // mongodump が使える環境ではそちらを推奨（インデックスやBSON型もそのまま保存できる）。
 // このスクリプトは追加インストールなしで使える簡易版。
 import fs from 'node:fs'
 import path from 'node:path'
 import dns from 'node:dns'
 import mongoose from 'mongoose'
+import { assertWritable, resolveUri } from './lib/db.mjs'
 
 dns.setServers(['8.8.8.8', '1.1.1.1'])
 
@@ -20,14 +23,6 @@ const getOpt = (name) => {
   const hit = args.find(a => a === `--${name}` || a.startsWith(`--${name}=`))
   if (!hit) return null
   return hit.includes('=') ? hit.slice(name.length + 3) : true
-}
-
-const readUri = () => {
-  if (process.env.MONGODB_URI) return process.env.MONGODB_URI
-  const envPath = path.join(ROOT, '.env')
-  if (!fs.existsSync(envPath)) return null
-  const line = fs.readFileSync(envPath, 'utf8').split(/\r?\n/).find(l => l.startsWith('MONGODB_URI='))
-  return line ? line.slice('MONGODB_URI='.length).replace(/^["']|["']$/g, '').trim() : null
 }
 
 const list = () => {
@@ -53,10 +48,11 @@ const main = async () => {
     return
   }
 
-  const uri = readUri()
-  if (!uri) throw new Error('MONGODB_URI が見つかりません（.env を確認してください）')
+  const { uri, dbName } = resolveUri()
+  // バックアップの作成は読むだけ。復元は全件置き換えなので書き込み扱いにする
+  if (getOpt('restore')) assertWritable(dbName, args)
 
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 20000 })
+  await mongoose.connect(uri, { dbName, serverSelectionTimeoutMS: 20000 })
   const col = mongoose.connection.db.collection('nurseries')
 
   const restoreFrom = getOpt('restore')
