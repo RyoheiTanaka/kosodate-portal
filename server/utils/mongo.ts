@@ -3,7 +3,9 @@ import mongoose from 'mongoose'
 
 // MONGODB_URI は DB名を含まない。接続先は MONGODB_DB で切り替える
 const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
-const MONGO_DB = process.env.MONGODB_DB || 'kosodate_dev'
+// 本番で未設定のまま開発用DBにフォールバックすると、気づかないまま別DBを向く。
+// 既定値は開発時のみ。本番は明示を必須にする。
+const MONGO_DB = process.env.MONGODB_DB || (import.meta.dev ? 'kosodate_dev' : '')
 
 // mongodb+srv:// は接続時にSRVレコードを引く。
 // ルーターやISPのDNSがSRVクエリを拒否する環境では querySrv ECONNREFUSED になるため、
@@ -15,6 +17,12 @@ if (import.meta.dev) {
 export const connectDB = async () => {
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection
+  }
+
+  // dbName に undefined を渡すと URI 側の指定（無ければ test）に落ちて 0 件になる。
+  // 黙って別DBを向くより、接続前に止めたほうが原因が分かる。
+  if (!MONGO_DB) {
+    throw new Error('MONGODB_DB が設定されていません（接続先のデータベース名を指定してください）')
   }
 
   // 本番の接続ユーザーは kosodate への read のみを持つ。
