@@ -61,6 +61,19 @@ const filteredNurseries = computed(() => {
   })
 })
 
+/** 1つでも絞り込みが効いていればリセットを出す */
+const hasActiveFilters = computed(() =>
+  keywordFilter.value !== ''
+  || classificationFilter.value !== ALL
+  || typeFilter.value !== ALL,
+)
+
+const resetFilters = () => {
+  keywordFilter.value = ''
+  classificationFilter.value = ALL
+  typeFilter.value = ALL
+}
+
 const links = [
   {
     label: 'トップ',
@@ -88,53 +101,66 @@ useHead({
     <h2 class="text-3xl font-bold text-center mb-4">
       認可保育所一覧
     </h2>
+    <!--
+      フィルターは一覧を絞るための道具なので、主役であるカードより目立たせない。
+      見出しは支援技術のために残しつつ、視覚的には控えめなツールバーとして扱う。
+    -->
     <section class="container">
-      <h3 class="text-2xl font-bold text-center mb-4">
-        フィルター
+      <h3 class="sr-only">
+        絞り込み
       </h3>
-      <div class="flex flex-col md:flex-row md:justify-between">
+      <div class="rounded-lg border border-default p-4 flex flex-col gap-4 md:flex-row md:items-end">
         <UFormField
-          label="名前でフィルター"
+          label="名前"
+          class="md:flex-1"
         >
           <UInput
             v-model="keywordFilter"
             variant="outline"
+            icon="i-heroicons-magnifying-glass"
             placeholder="名前を入力してください"
+            class="w-full"
           />
         </UFormField>
-        <UFormField
-          label="区分でフィルター"
-          class="mt-4 md:mt-0"
-        >
+        <UFormField label="区分">
           <USelect
             v-model="classificationFilter"
             :items="classificationOptions"
+            class="w-full md:w-44"
           />
         </UFormField>
-        <UFormField
-          label="種別でフィルター"
-          class="mt-4 md:mt-0"
-        >
+        <UFormField label="種別">
           <USelect
             v-model="typeFilter"
             :items="typeOptions"
+            class="w-full md:w-52"
           />
         </UFormField>
+        <UButton
+          v-if="hasActiveFilters"
+          color="neutral"
+          variant="ghost"
+          icon="i-heroicons-x-mark"
+          @click="resetFilters"
+        >
+          条件をクリア
+        </UButton>
       </div>
     </section>
     <section>
       <NurseryCardList
         :nurseries="filteredNurseries"
         :status="status"
+        :total="nurseries?.length"
       />
     </section>
-    <div class="text-right">
+    <UContainer class="text-right">
       <ULink
         to="/"
         class="underline"
         active-class="text-primary"
         inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
       >トップページへ</ULink>
-    </div>
+    </UContainer>
   </main>
 </template>

@@ -17,6 +17,13 @@ const accentClass = computed(() =>
 const ages = computed(() => parseChildcareAges(props.nursery.childcare_age))
 const days = computed(() => parseAvailableDays(props.nursery.available_day))
 
+/** `なし`（土曜の開所なし）や空欄のときは時間帯を組み立てない */
+const formatHours = (open: string, close: string) =>
+  open && close && open !== 'なし' && close !== 'なし' ? `${open}〜${close}` : null
+
+const weekdayHours = computed(() => formatHours(props.nursery.open_weekday, props.nursery.close_weekday))
+const saturdayHours = computed(() => formatHours(props.nursery.open_saturday, props.nursery.close_saturday))
+
 /**
  * 年齢セルと曜日ドットで共用する塗り分け。
  *
@@ -29,8 +36,13 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
 </script>
 
 <template>
+  <!--
+    カード全体を詳細ページへのリンクにする。
+    見出しのリンクに after で透明な面を敷いて広げているため、
+    カード内に別のリンクを置くと重なって押せなくなる点に注意。
+  -->
   <UCard
-    class="w-full mt-4 md:mt-0 border-t-4"
+    class="w-full border-t-4 relative transition-colors hover:bg-elevated/50 focus-within:ring-2 focus-within:ring-primary"
     :class="accentClass"
     :ui="{ body: 'space-y-4' }"
   >
@@ -39,7 +51,7 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
         <h4 class="text-lg font-semibold text-center">
           <ULink
             :to="detailPath"
-            class="underline"
+            class="after:absolute after:inset-0 after:content-[''] focus:outline-none"
           >{{ nursery.name }}</ULink>
         </h4>
         <div class="flex justify-center gap-2">
@@ -96,7 +108,7 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
 
     <div>
       <p class="text-xs text-muted mb-1">
-        開所曜日
+        開所曜日・時間
       </p>
       <!-- 1カラム表示でも丸が間延びしないよう、曜日だけはサイズを固定する -->
       <div
@@ -116,6 +128,33 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
       >
         {{ nursery.available_day }}
       </p>
+      <dl
+        v-if="weekdayHours || saturdayHours"
+        class="mt-2 text-sm space-y-0.5"
+      >
+        <div
+          v-if="weekdayHours"
+          class="flex gap-2"
+        >
+          <dt class="text-muted shrink-0">
+            平日
+          </dt>
+          <dd class="tabular-nums">
+            {{ weekdayHours }}
+          </dd>
+        </div>
+        <div
+          v-if="saturdayHours"
+          class="flex gap-2"
+        >
+          <dt class="text-muted shrink-0">
+            土曜
+          </dt>
+          <dd class="tabular-nums">
+            {{ saturdayHours }}
+          </dd>
+        </div>
+      </dl>
       <p
         v-if="nursery.available_day_note"
         class="text-xs text-muted mt-1"
@@ -124,13 +163,12 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
       </p>
     </div>
 
-    <ULink
-      :to="detailPath"
-      class="block text-right underline"
-      active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+    <!-- カード全体がリンクなので、ここは押せる場所を示すだけの装飾。入れ子のリンクにはしない -->
+    <p
+      class="text-right text-sm underline text-toned"
+      aria-hidden="true"
     >
       詳細へ
-    </ULink>
+    </p>
   </UCard>
 </template>
