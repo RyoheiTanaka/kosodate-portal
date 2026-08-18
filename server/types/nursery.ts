@@ -6,14 +6,19 @@ export interface INursery {
   type: string
   name: string
   name_kana: string
-  /** フル住所。将来的に prefecture / city / address1-3 を置き換える (#84) */
+  /** フル住所。表示・検索はすべてこれを参照する (#84) */
   address: string
   /** 方書（ビル名・街区など） */
   address_note: string
+  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
   prefecture: string
+  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
   city: string
+  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
   address1: string
+  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
   address2: string
+  /** @deprecated address_note に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
   address3: string
   district: string
   district_alphabet: string
