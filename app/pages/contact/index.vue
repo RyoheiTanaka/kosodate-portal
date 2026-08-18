@@ -65,7 +65,7 @@ const handleSubmit = async () => {
 
   try {
     const recaptchaToken = await grecaptcha.execute(siteKey, { action: 'submit' })
-    const response = await $csrfFetch<{ message: string, status: number }>('/api/contacts', {
+    const response = await $csrfFetch<{ message: string }>('/api/contacts', {
       method: 'POST',
       body: {
         ...form,
@@ -73,20 +73,16 @@ const handleSubmit = async () => {
       },
     })
 
-    if (response.status === 200) {
-      successMessage.value = response.message
-      Object.assign(form, { name: '', email: '', message: '' })
-    } else {
-      errorMessage.value = response.message || 'エラーが発生しました'
-    }
+    successMessage.value = response.message
+    Object.assign(form, { name: '', email: '', message: '' })
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('APIエラー:', error.message)
-      errorMessage.value = error.message || '送信に失敗しました'
-    } else {
-      console.error('予期しないエラー:', error)
-      errorMessage.value = '送信に失敗しました'
-    }
+    console.error('お問い合わせ送信エラー:', error)
+
+    // API は createError で投げるので、画面に出す文言は data.message に入る。
+    // 500 は Nitro が message を伏せるため、その場合はこちらの文言を使う
+    const data = (error as { data?: { message?: string } }).data
+
+    errorMessage.value = data?.message || '送信に失敗しました。しばらくしてからお試しください。'
   } finally {
     loading.value = false
   }

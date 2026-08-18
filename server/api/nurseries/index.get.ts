@@ -1,4 +1,5 @@
 import { Nursery } from '~~/server/models/Nursery'
+import type { INursery } from '~~/server/types/nursery'
 
 // 制御文字の除去が目的なので no-control-regex は意図的に無効化する
 // eslint-disable-next-line no-control-regex
@@ -26,8 +27,5 @@ export default defineEventHandler(async (event): Promise<INursery[]> => {
 
   const nurseries = await Nursery.find(filter).lean()
 
-  return nurseries.map(nursery => ({
-    ...nursery,
-    _id: nursery._id.toString(),
-  }))
+  return nurseries.map(serializeNursery)
 })

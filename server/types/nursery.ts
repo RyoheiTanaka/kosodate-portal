@@ -1,7 +1,9 @@
-import type { Types } from 'mongoose'
-
+/**
+ * API が返す保育所の形。DB 側のドキュメント型は `server/models/Nursery.ts` の
+ * `INurseryDocument`。`_id` は JSON 化した時点で文字列になるのでこちらは string で持つ。
+ */
 export interface INursery {
-  _id: string | Types.ObjectId
+  _id: string
   classification: string
   type: string
   name: string
