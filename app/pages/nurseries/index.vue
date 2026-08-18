@@ -47,7 +47,7 @@ const typeOptions = [
     value: '小規模保育事業所',
   },
 ]
-const { data: nurseries } = useNurseries(keyword.value)
+const { data: nurseries, status } = useNurseries(keyword.value)
 
 const filteredNurseries = computed(() => {
   if (!nurseries.value) return []
@@ -60,6 +60,19 @@ const filteredNurseries = computed(() => {
     return matchClassification && matchKeyword && matchType
   })
 })
+
+/** 1つでも絞り込みが効いていればリセットを出す */
+const hasActiveFilters = computed(() =>
+  keywordFilter.value !== ''
+  || classificationFilter.value !== ALL
+  || typeFilter.value !== ALL,
+)
+
+const resetFilters = () => {
+  keywordFilter.value = ''
+  classificationFilter.value = ALL
+  typeFilter.value = ALL
+}
 
 const links = [
   {
@@ -88,86 +101,66 @@ useHead({
     <h2 class="text-3xl font-bold text-center mb-4">
       認可保育所一覧
     </h2>
+    <!--
+      フィルターは一覧を絞るための道具なので、主役であるカードより目立たせない。
+      見出しは支援技術のために残しつつ、視覚的には控えめなツールバーとして扱う。
+    -->
     <section class="container">
-      <h3 class="text-2xl font-bold text-center mb-4">
-        フィルター
+      <h3 class="sr-only">
+        絞り込み
       </h3>
-      <div class="flex flex-col md:flex-row md:justify-between">
+      <div class="rounded-lg border border-default p-4 flex flex-col gap-4 md:flex-row md:items-end">
         <UFormField
-          label="名前でフィルター"
+          label="名前"
+          class="md:flex-1"
         >
           <UInput
             v-model="keywordFilter"
             variant="outline"
+            icon="i-heroicons-magnifying-glass"
             placeholder="名前を入力してください"
+            class="w-full"
           />
         </UFormField>
-        <UFormField
-          label="区分でフィルター"
-          class="mt-4 md:mt-0"
-        >
+        <UFormField label="区分">
           <USelect
             v-model="classificationFilter"
             :items="classificationOptions"
+            class="w-full md:w-44"
           />
         </UFormField>
-        <UFormField
-          label="種別でフィルター"
-          class="mt-4 md:mt-0"
-        >
+        <UFormField label="種別">
           <USelect
             v-model="typeFilter"
             :items="typeOptions"
+            class="w-full md:w-52"
           />
         </UFormField>
+        <UButton
+          v-if="hasActiveFilters"
+          color="neutral"
+          variant="ghost"
+          icon="i-heroicons-x-mark"
+          @click="resetFilters"
+        >
+          条件をクリア
+        </UButton>
       </div>
     </section>
     <section>
-      <UContainer
-        class="py-6 w-full max-w-(--breakpoint-2xl) mx-auto md:grid md:grid-cols-4 md:gap-4"
-      >
-        <UCard
-          v-for="(nursery) in filteredNurseries"
-          :key="nursery.name"
-          class="w-full mt-4 md:mt-0"
-        >
-          <template #header>
-            <h4 class="text-lg font-semibold text-center">
-              <ULink
-                :to="`/nurseries/${nursery.district_alphabet}/${nursery.nursery_id}`"
-                class="underline"
-              >{{ nursery.name }}
-              </ULink>
-            </h4>
-          </template>
-          <p><strong>区分:</strong> {{ nursery.classification }}</p>
-          <p><strong>種別:</strong> {{ nursery.type }}</p>
-          <p><strong>住所:</strong> {{ nursery.address }}{{ nursery.address_note }}</p>
-          <p><strong>保育年齢:</strong> {{ nursery.childcare_age }}</p>
-          <p><strong>利用可能曜日:</strong> {{ nursery.available_day }}</p>
-          <img
-            src="~/assets/no_image.png"
-            alt="保育所画像"
-            class="mt-2 w-full h-1/2 rounded-lg "
-          >
-          <ULink
-            :to="`/nurseries/${nursery.district_alphabet}/${nursery.nursery_id}`"
-            class="block text-right underline"
-            active-class="text-primary"
-            inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-          >
-            詳細へ
-          </ULink>
-        </UCard>
-      </UContainer>
+      <NurseryCardList
+        :nurseries="filteredNurseries"
+        :status="status"
+        :total="nurseries?.length"
+      />
     </section>
-    <div class="text-right">
+    <UContainer class="text-right">
       <ULink
         to="/"
         class="underline"
         active-class="text-primary"
         inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
       >トップページへ</ULink>
-    </div>
+    </UContainer>
   </main>
 </template>

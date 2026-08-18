@@ -8,7 +8,7 @@ const globalDistricts = config.public.globalDistricts as Array<District>
 const globalDistrict = globalDistricts.find(globalDistrict => globalDistrict.alphabet == district) || { alphabet: '', name: '' }
 const districtName = globalDistrict.name
 
-const { data: districtnurseries } = useDistrictNurseries(district)
+const { data: districtnurseries, status } = useDistrictNurseries(district)
 
 const links = [
   {
@@ -41,50 +41,17 @@ useHead({
     <h2 class="text-3xl font-bold text-center mb-4">
       {{ districtName }}
     </h2>
-    <UContainer
-      class="py-6 w-full max-w-(--breakpoint-2xl) mx-auto md:grid md:grid-cols-4 md:gap-4"
-    >
-      <UCard
-        v-for="(districtnursery) in districtnurseries"
-        :key="districtnursery.name"
-        class="w-full mt-4 md:mt-0"
-      >
-        <template #header>
-          <h4 class="text-lg font-semibold text-center">
-            <ULink
-              :to="`/nurseries/${districtnursery.district_alphabet}/${districtnursery.nursery_id}`"
-              class="underline"
-            >{{ districtnursery.name }}
-            </ULink>
-          </h4>
-        </template>
-        <p><strong>区分:</strong> {{ districtnursery.classification }}</p>
-        <p><strong>種別:</strong> {{ districtnursery.type }}</p>
-        <p><strong>住所:</strong> {{ districtnursery.address }}{{ districtnursery.address_note }}</p>
-        <p><strong>保育年齢:</strong> {{ districtnursery.childcare_age }}</p>
-        <p><strong>利用可能曜日:</strong> {{ districtnursery.available_day }}</p>
-        <img
-          src="~/assets/no_image.png"
-          alt="保育所画像"
-          class="mt-2 w-full h-1/2 rounded-lg "
-        >
-        <ULink
-          :to="`/nurseries/${districtnursery.district_alphabet}/${districtnursery.nursery_id}`"
-          class="block text-right underline"
-          active-class="text-primary"
-          inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-        >
-          詳細へ
-        </ULink>
-      </UCard>
-    </UContainer>
-    <div class="text-right">
+    <NurseryCardList
+      :nurseries="districtnurseries"
+      :status="status"
+    />
+    <UContainer class="text-right">
       <ULink
         to="/"
         class="underline"
         active-class="text-primary"
         inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
       >トップページへ</ULink>
-    </div>
+    </UContainer>
   </main>
 </template>
