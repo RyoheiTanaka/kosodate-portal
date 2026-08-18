@@ -1,7 +1,9 @@
 import type { Document, Types } from 'mongoose'
 import { Schema, model } from 'mongoose'
+import type { INursery } from '~~/server/types/nursery'
 
-interface INurseryDocument extends INursery, Document {
+// API 側の `INursery` は `_id: string` なので、DB 側は差し替えて ObjectId で持つ
+interface INurseryDocument extends Omit<INursery, '_id'>, Document {
   _id: Types.ObjectId
 }
 
