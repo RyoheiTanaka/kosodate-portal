@@ -60,7 +60,7 @@ useHead({
         </template>
         <p><strong>区分:</strong> {{ districtnursery.classification }}</p>
         <p><strong>種別:</strong> {{ districtnursery.type }}</p>
-        <p><strong>住所:</strong> {{ districtnursery.city }}{{ districtnursery.address1 }}{{ districtnursery.address2 }}{{ districtnursery.address3 }}</p>
+        <p><strong>住所:</strong> {{ districtnursery.address }}{{ districtnursery.address_note }}</p>
         <p><strong>保育年齢:</strong> {{ districtnursery.childcare_age }}</p>
         <p><strong>利用可能曜日:</strong> {{ districtnursery.available_day }}</p>
         <img

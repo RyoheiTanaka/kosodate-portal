@@ -70,7 +70,7 @@ useHead({
               frameborder="0"
               style="border:0"
               referrerpolicy="no-referrer-when-downgrade"
-              :src="`https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${nursery.name},${nursery.prefecture}${nursery.city}${nursery.address1}${nursery.address2}${nursery.address3}&center=${nursery.latitude},${nursery.longitude}`"
+              :src="`https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${nursery.name},${nursery.address}&center=${nursery.latitude},${nursery.longitude}`"
               allowfullscreen
             />
           </template>
@@ -109,7 +109,7 @@ useHead({
                 </div>
                 <div class="p-2.5 xl:p-5">
                   <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.prefecture }}{{ nursery.city }}{{ nursery.address1 }}{{ nursery.address2 }}{{ nursery.address3 }}
+                    {{ nursery.address }}{{ nursery.address_note }}
                   </p>
                 </div>
               </div>

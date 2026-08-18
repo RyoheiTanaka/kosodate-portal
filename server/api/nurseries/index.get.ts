@@ -8,6 +8,8 @@ export default defineEventHandler(async (event): Promise<INursery[]> => {
   const query = getQuery(event)
   let keyword = query.keyword ? String(query.keyword).trim() : ''
 
+  // エスケープはここで1回だけ行う。$or の組み立て時に再度かけると
+  // バックスラッシュが二重になり、記号を含むキーワードがヒットしなくなる
   if (keyword) {
     keyword = escapeRegex(keyword)
   }
@@ -16,8 +18,8 @@ export default defineEventHandler(async (event): Promise<INursery[]> => {
   const filter: Record<string, unknown> = { is_active: { $ne: false } }
 
   if (keyword) {
-    filter.$or = ['name', 'name_kana', 'prefecture', 'city', 'address1', 'address2', 'address3', 'childcare_age']
-      .map(field => ({ [field]: { $regex: escapeRegex(keyword), $options: 'i' } }))
+    filter.$or = ['name', 'name_kana', 'address', 'childcare_age']
+      .map(field => ({ [field]: { $regex: keyword, $options: 'i' } }))
   }
 
   await connectDB()

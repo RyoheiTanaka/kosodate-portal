@@ -142,7 +142,7 @@ useHead({
           </template>
           <p><strong>区分:</strong> {{ nursery.classification }}</p>
           <p><strong>種別:</strong> {{ nursery.type }}</p>
-          <p><strong>住所:</strong> {{ nursery.city }}{{ nursery.address1 }}{{ nursery.address2 }}{{ nursery.address3 }}</p>
+          <p><strong>住所:</strong> {{ nursery.address }}{{ nursery.address_note }}</p>
           <p><strong>保育年齢:</strong> {{ nursery.childcare_age }}</p>
           <p><strong>利用可能曜日:</strong> {{ nursery.available_day }}</p>
           <img
