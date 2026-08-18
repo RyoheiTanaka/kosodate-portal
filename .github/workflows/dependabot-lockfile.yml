@@ -1,0 +1,101 @@
+name: Dependabot lockfile 修復
+
+# Dependabot が生成する package-lock.json はネストしたエントリを取りこぼすため、
+# そのままだと npm ci が EUSAGE で必ず失敗する（issue #91）。
+#
+#   main  : packages 1459
+#   PR    : packages 1171   ← 316 件（うち 289 件がネスト）が欠落
+#
+#   例: node_modules/@dxup/nuxt/node_modules/@oxc-parser/binding-*
+#
+# 根本原因は nuxt 本体の依存ツリー（@dxup/nuxt → oxc-parser が 2 系統 ×
+# 各 24 個のプラットフォームバイナリ）にあり、こちら側では解消できない。
+# そのため lockfile を修復してから検証する。
+#
+# pull_request ではなく pull_request_target を使う理由:
+#   Dependabot の PR に対する pull_request では GITHUB_TOKEN が読み取り専用に
+#   固定され、workflow 側で permissions を指定しても書き込みに昇格できない。
+#   PR ブランチへ push し返すには pull_request_target が必要。
+#
+# pull_request_target で PR の内容をチェックアウトするのは通常は危険だが、
+# 修復に使う npm install には --ignore-scripts を付けており、
+# サードパーティのコードは一切実行されない。
+# 検証ステップ（npm ci 以降）は修復コミットを push した後に走るため、
+# その時点のコードは PR にレビュー可能な形で載っている。
+
+on:
+  pull_request_target:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependabot-lockfile-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  fix-and-verify:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      # --package-lock-only: node_modules を作らず lockfile だけ解決し直す
+      # --ignore-scripts  : postinstall 等を実行しない（サードパーティのコードを走らせない）
+      - name: lockfile を修復
+        id: fix
+        run: |
+          npm install --package-lock-only --ignore-scripts
+          if git diff --quiet package-lock.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "lockfile に修復は不要だった"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "lockfile を修復した:"
+            git diff --stat package-lock.json
+          fi
+
+      - name: 修復をコミットして push
+        if: steps.fix.outputs.changed == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore(deps): lockfile の欠落エントリを修復
+
+          Dependabot が生成した package-lock.json はネストしたエントリを
+          取りこぼすため、そのままでは npm ci が失敗する（issue #91）。
+          npm install --package-lock-only で解決し直した。"
+          git push
+
+      # checkout は push 用に GITHUB_TOKEN を .git/config に残す。
+      # このワークフローは contents: write なので、残したままだと
+      # 以降の npm ci / build で走る依存パッケージのスクリプトから
+      # 書き込み権限のあるトークンが読めてしまう。push は済んでいるので破棄する。
+      - name: push 用の認証情報を破棄
+        run: git config --unset-all http.https://github.com/.extraheader || true
+
+      # ここから先は CI (ci.yml) と同じ検証。
+      # GITHUB_TOKEN による push では workflow が再実行されないため、
+      # 修復に続けてこのジョブ内で検証まで済ませる。
+      - name: 依存をインストール
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: ビルド
+        run: npm run build
+
+      - name: スモークテスト
+        run: bash scripts/ci-smoke.sh
