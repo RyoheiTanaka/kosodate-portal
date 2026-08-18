@@ -16,7 +16,7 @@
   "dependencies": {
     "@nuxt/image": "^2.1.0",
     "@nuxt/ui": "^4.8.1",
-    "mongoose": "^8.24.1",
+    "mongoose": "^9.9.2",
     "nodemailer": "^9.0.5",
     "nuxt": "^4.5.2",
     "nuxt-csurf": "^1.6.6"
