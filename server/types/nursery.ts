@@ -10,16 +10,6 @@ export interface INursery {
   address: string
   /** 方書（ビル名・街区など） */
   address_note: string
-  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
-  prefecture: string
-  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
-  city: string
-  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
-  address1: string
-  /** @deprecated address に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
-  address2: string
-  /** @deprecated address_note に一本化済み。参照はすべて廃止した。スキーマとDBからの削除は #84 の後続PRで行う */
-  address3: string
   district: string
   district_alphabet: string
   longitude: number

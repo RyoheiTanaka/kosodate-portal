@@ -76,19 +76,6 @@ const parseCsv = (text) => {
   return rows.filter(r => r.some(v => v !== '')).map(r => Object.fromEntries(header.map((h, i) => [h.trim(), (r[i] ?? '').trim()])))
 }
 
-// フル住所を既存の分割カラムに展開する。CSV の address が唯一の正で、ここは導出のみ (#84 で廃止予定)
-const splitAddress = (address, note) => {
-  const rest = String(address).replace(/^茨城県/, '').replace(/^つくば市/, '')
-  const m = rest.match(/^([^0-9０-９]+)(.*)$/)
-  return {
-    prefecture: '茨城県',
-    city: 'つくば市',
-    address1: m ? m[1] : rest,
-    address2: m ? m[2] : '',
-    address3: note || '',
-  }
-}
-
 const toDoc = row => ({
   nursery_id: Number(row.nursery_id),
   classification: row.classification,
@@ -97,7 +84,6 @@ const toDoc = row => ({
   name_kana: row.name_kana,
   address: row.address,
   address_note: row.address_note,
-  ...splitAddress(row.address, row.address_note),
   district: row.district,
   district_alphabet: row.district_alphabet,
   longitude: Number(row.longitude),
@@ -121,7 +107,12 @@ const toDoc = row => ({
 
 // つくば市が提供をやめ、他に出典も無いため廃止したフィールド。
 // スキーマから消しても既存ドキュメントには残るため $unset で削除する。
-const REMOVED = ['access', 'approval_date', 'fax', 'corporate_number', 'url']
+// prefecture 以降は address / address_note に一本化して廃止した分割カラム (#84)。
+// address が唯一の正で、これらはそこからの導出でしかなかった。
+const REMOVED = [
+  'access', 'approval_date', 'fax', 'corporate_number', 'url',
+  'prefecture', 'city', 'address1', 'address2', 'address3',
+]
 
 // 取り込み対象外（既存値を保持する）フィールド
 // establishment_date / corporate_name は公立園のみ、かつ過去の事実なので陳腐化しない。
@@ -223,6 +214,17 @@ const main = async () => {
     closed.forEach(d => console.log(`  - ${d.nursery_id} ${d.name}`))
   }
 
+  // 廃止フィールドは全ドキュメントから削除する。
+  // スキーマから消しても既存ドキュメントには残るため、取り込みのたびに掃除する。
+  // --dry-run でも件数を出す。フィールド廃止時はここが実質のマイグレーションになるため、
+  // 流す前に対象件数を確認できないと困る。
+  const hasRemoved = existing.filter(d => REMOVED.some(f => d[f] !== undefined))
+  if (hasRemoved.length) {
+    const fields = REMOVED.filter(f => existing.some(d => d[f] !== undefined))
+    console.log(`\n=== 廃止フィールドの削除 ===`)
+    console.log(`  対象 ${hasRemoved.length}件 / 実在するフィールド: ${fields.join(', ')}`)
+  }
+
   if (DRY_RUN) {
     console.log('\n--dry-run のため書き込みは行いませんでした')
     await mongoose.disconnect()
@@ -253,26 +255,13 @@ const main = async () => {
     ops.push({ updateOne: { filter: { nursery_id: d.nursery_id }, update: { $set: { is_active: false, updatedAt: new Date() } } } })
   }
 
-  // 廃止フィールドは全ドキュメントから削除する。
-  // スキーマから消しても既存ドキュメントには残るため、取り込みのたびに掃除する。
-  const hasRemoved = existing.filter(d => REMOVED.some(f => d[f] !== undefined))
   if (hasRemoved.length) {
-    console.log(`\n廃止フィールドを削除: ${hasRemoved.length}件（${REMOVED.join(', ')}）`)
     ops.push({ updateMany: { filter: {}, update: { $unset: unset } } })
   }
 
-  // CSVに載らない施設（閉園済み）のフル住所を分割カラムから補完する
-  for (const d of existing.filter(x => !csvIds.has(x.nursery_id) && !x.address)) {
-    ops.push({
-      updateOne: {
-        filter: { nursery_id: d.nursery_id },
-        update: { $set: {
-          address: `${d.city ?? ''}${d.address1 ?? ''}${d.address2 ?? ''}`,
-          address_note: d.address3 ?? '',
-        } },
-      },
-    })
-  }
+  // 閉園済み施設のフル住所を分割カラムから補完する処理はここにあったが、
+  // 全件の address が埋まった時点で役目を終えたため削除した (#84)。
+  // 補完元の分割カラム自体が上の $unset で消えるため、復活させることもできない。
 
   if (ops.length) {
     const res = await col.bulkWrite(ops)
