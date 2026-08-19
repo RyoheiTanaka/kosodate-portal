@@ -7,9 +7,16 @@ const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
 // 既定値は開発時のみ。本番は明示を必須にする。
 const MONGO_DB = process.env.MONGODB_DB || (import.meta.dev ? 'kosodate_dev' : '')
 
-// mongodb+srv:// は接続時にSRVレコードを引く。
-// ルーターやISPのDNSがSRVクエリを拒否する環境では querySrv ECONNREFUSED になるため、
-// 開発時のみ公開DNSを使う。本番（Vercel）はDNSが正常なのでこの回避は不要。
+// mongodb+srv:// は接続前に必ず SRV レコードを引く。
+//
+// Node の名前解決には2経路ある。dns.lookup() は OS の resolver を使うので Windows の
+// 設定どおりに動くが、SRV を引く dns.resolveSrv() は Node 内蔵の c-ares が自前で
+// DNS サーバーへ問い合わせる。この開発機では c-ares がアダプタの DNS 設定を読めず、
+// フォールバックの 127.0.0.1 を掴む。そこには何も待ち受けていないので
+// querySrv ECONNREFUSED になる（SRV に限らず c-ares 経由の問い合わせは全滅する）。
+// ルーターやISPがSRVを拒否しているわけではない。
+//
+// 本番（Vercel）では c-ares が正しく設定を読めるため、この回避は不要。
 if (import.meta.dev) {
   dns.setServers(['8.8.8.8', '1.1.1.1'])
 }

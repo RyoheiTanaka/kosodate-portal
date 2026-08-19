@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "mongodb": {
+      "command": "npx",
+      "args": ["-y", "mongodb-mcp-server@2.1.0", "--readOnly"],
+      "env": {
+        "MDB_MCP_CONNECTION_STRING": "${MONGODB_URI_STANDARD}"
+      }
+    }
+  }
+}

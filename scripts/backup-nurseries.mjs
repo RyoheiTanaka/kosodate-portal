@@ -14,6 +14,9 @@ import dns from 'node:dns'
 import mongoose from 'mongoose'
 import { assertWritable, resolveUri } from './lib/db.mjs'
 
+// この開発機では Node 内蔵の DNS クライアント（c-ares）がアダプタの設定を読めず
+// 127.0.0.1 を掴むため、mongodb+srv:// の SRV 解決が ECONNREFUSED で落ちる。
+// 明示的に公開DNSを指定して回避する。詳細は server/utils/mongo.ts のコメント。
 dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 const ROOT = path.resolve(import.meta.dirname, '..')
