@@ -94,6 +94,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: 型チェック
+        run: npm run typecheck
+
       - name: ビルド
         run: npm run build
 

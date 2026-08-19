@@ -44,13 +44,13 @@ const validateForm = (state: ContactForm): FormError<string>[] => {
   const validationErrors: FormError<string>[] = []
 
   if (!state.email.trim()) {
-    validationErrors.push({ path: 'email', message: 'メールアドレスは必須です' })
+    validationErrors.push({ name: 'email', message: 'メールアドレスは必須です' })
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    validationErrors.push({ path: 'email', message: '正しいメールアドレスを入力してください' })
+    validationErrors.push({ name: 'email', message: '正しいメールアドレスを入力してください' })
   }
 
   if (!state.message.trim()) {
-    validationErrors.push({ path: 'message', message: 'お問い合わせ内容は必須です' })
+    validationErrors.push({ name: 'message', message: 'お問い合わせ内容は必須です' })
   }
 
   return validationErrors

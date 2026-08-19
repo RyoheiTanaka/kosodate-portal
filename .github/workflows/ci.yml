@@ -42,6 +42,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # ビルド（Vite）は型を見ずにトランスパイルするため、型エラーは素通りする（issue #121）。
+      # ここで vue-tsc を通す。tsc と違い .vue のテンプレート内も見る。
+      - name: 型チェック
+        run: npm run typecheck
+
       - name: ビルド
         run: npm run build
 
