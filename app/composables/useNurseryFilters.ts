@@ -203,11 +203,22 @@ export const useNurseryFilters = (fixed: NurseryFilterFixed = {}) => {
    */
   const KEYWORD_FIELDS = ['name', 'name_kana', 'address', 'childcare_age'] as const
 
+  /*
+   * 比較の前に、入力と対象の両方をカタカナへ寄せる (#128)。
+   *
+   * `name_kana` はカタカナで格納されているため、ひらがなで打つと一致しなかった。
+   * スマホの日本語入力は既定がひらがななので、「さくら」と打って0件になっていた。
+   *
+   * 対象側も変換するのは、園名にひらがな表記のもの（ひまわり保育園）があるため。
+   * 片方向だけだと、今度はカタカナで打ったときにその園が引けなくなる。
+   */
+  const normalizeForSearch = (value: string) => toKatakana(value.toLowerCase())
+
   const matches = (nursery: INursery, keyword: string, ignore?: 'bus') => {
     const matchBus = ignore === 'bus' || !state.bus || nursery.shuttle_bus === true
 
     return (state.classification === ALL || nursery.classification === state.classification)
-      && (!keyword || KEYWORD_FIELDS.some(field => (nursery[field] ?? '').toLowerCase().includes(keyword)))
+      && (!keyword || KEYWORD_FIELDS.some(field => normalizeForSearch(nursery[field] ?? '').includes(keyword)))
       && (state.type === ALL || nursery.type === state.type)
       && (state.area === ALL || nursery.area_alphabet === state.area)
       && (state.district === ALL || nursery.district_alphabet === state.district)
@@ -218,7 +229,7 @@ export const useNurseryFilters = (fixed: NurseryFilterFixed = {}) => {
   const filtered = computed(() => {
     if (!nurseries.value) return []
 
-    const keyword = state.keyword.trim().toLowerCase()
+    const keyword = normalizeForSearch(state.keyword.trim())
 
     return nurseries.value.filter(nursery => matches(nursery, keyword))
   })
@@ -240,7 +251,7 @@ export const useNurseryFilters = (fixed: NurseryFilterFixed = {}) => {
   const hiddenUnknownShuttleBusCount = computed(() => {
     if (!state.bus || !nurseries.value) return 0
 
-    const keyword = state.keyword.trim().toLowerCase()
+    const keyword = normalizeForSearch(state.keyword.trim())
 
     return nurseries.value.filter((nursery) => {
       if (nursery.shuttle_bus !== null && nursery.shuttle_bus !== undefined) return false
