@@ -11,11 +11,26 @@ const ALL = 'all'
 
 const config = useRuntimeConfig()
 const globalAreas = config.public.globalAreas as Array<Area>
+const globalDistricts = config.public.globalDistricts as Array<District>
 
 // エリアは一覧の主導線 (#86)。区分・種別より前に置く
 const areaOptions = [
   { label: 'すべてのエリア', value: ALL },
   ...globalAreas.map(area => ({ label: area.name, value: area.alphabet })),
+]
+
+/*
+ * 地区は市の公式区分。主導線はエリアだが (#86)、市の資料や他のサイトは地区で書かれているため、
+ * 地区で探したい人のために残す (#108)。
+ *
+ * 地区別ページ（/nurseries/[district]）と違い、ここでは他の条件と組み合わせられる。
+ * 「谷田部と桜を見比べたい」のような、1地区に収まらない探し方は地区別ページではできない。
+ *
+ * 選択肢は runtimeConfig から作る。ここでハードコードすると増減のたびに2箇所直すことになる。
+ */
+const districtOptions = [
+  { label: 'すべての地区', value: ALL },
+  ...globalDistricts.map(district => ({ label: district.name, value: district.alphabet })),
 ]
 
 // USelect の既定の labelKey は label なので、v3 の name から付け替えている
@@ -71,21 +86,31 @@ const readQuery = (key: string, fallback: string, allowed?: string[]) => {
 }
 
 const areaValues = areaOptions.map(o => o.value)
+const districtValues = districtOptions.map(o => o.value)
 const classificationValues = classificationOptions.map(o => o.value)
 const typeValues = typeOptions.map(o => o.value)
 
+/** 真偽の条件は URL では '1' のみを真として扱う。それ以外の文字列は無視する */
+const readFlag = (key: string) => route.query[key] === '1'
+
 const keywordFilter = ref(readQuery('keyword', ''))
 const areaFilter = ref(readQuery('area', ALL, areaValues))
+const districtFilter = ref(readQuery('district', ALL, districtValues))
 const classificationFilter = ref(readQuery('classification', ALL, classificationValues))
 const typeFilter = ref(readQuery('type', ALL, typeValues))
+const shuttleBusFilter = ref(readFlag('bus'))
+const temporaryCareFilter = ref(readFlag('temporary'))
 
 /** 既定値の条件は URL に出さない。共有されたURLが読める長さに収まるようにする */
 const toQuery = () => {
   const query: Record<string, string> = {}
   if (keywordFilter.value) query.keyword = keywordFilter.value
   if (areaFilter.value !== ALL) query.area = areaFilter.value
+  if (districtFilter.value !== ALL) query.district = districtFilter.value
   if (classificationFilter.value !== ALL) query.classification = classificationFilter.value
   if (typeFilter.value !== ALL) query.type = typeFilter.value
+  if (shuttleBusFilter.value) query.bus = '1'
+  if (temporaryCareFilter.value) query.temporary = '1'
   return query
 }
 
@@ -96,7 +121,7 @@ const toQuery = () => {
 const serialize = (query: Record<string, string | undefined>) =>
   Object.entries(query).filter(([, v]) => v).sort().map(([k, v]) => `${k}=${v}`).join('&')
 
-watch([keywordFilter, areaFilter, classificationFilter, typeFilter], () => {
+watch([keywordFilter, areaFilter, districtFilter, classificationFilter, typeFilter, shuttleBusFilter, temporaryCareFilter], () => {
   const query = toQuery()
   if (serialize(query) === serialize(route.query as Record<string, string>)) return
   // push ではなく replace。1文字打つたびに履歴が積まれると「戻る」が使い物にならなくなる
@@ -106,8 +131,11 @@ watch([keywordFilter, areaFilter, classificationFilter, typeFilter], () => {
 watch(() => route.query, () => {
   keywordFilter.value = readQuery('keyword', '')
   areaFilter.value = readQuery('area', ALL, areaValues)
+  districtFilter.value = readQuery('district', ALL, districtValues)
   classificationFilter.value = readQuery('classification', ALL, classificationValues)
   typeFilter.value = readQuery('type', ALL, typeValues)
+  shuttleBusFilter.value = readFlag('bus')
+  temporaryCareFilter.value = readFlag('temporary')
 })
 
 /*
@@ -145,9 +173,39 @@ const filteredNurseries = computed(() => {
     const matchKeyword = !keyword || KEYWORD_FIELDS.some(field => (nursery[field] ?? '').toLowerCase().includes(keyword))
     const matchType = typeFilter.value === ALL || nursery.type === typeFilter.value
     const matchArea = areaFilter.value === ALL || nursery.area_alphabet === areaFilter.value
+    const matchDistrict = districtFilter.value === ALL || nursery.district_alphabet === districtFilter.value
+    // shuttle_bus の null は「不明」。=== true で見るので、不明の園は「あり」に含めない
+    const matchShuttleBus = !shuttleBusFilter.value || nursery.shuttle_bus === true
+    const matchTemporaryCare = !temporaryCareFilter.value || nursery.is_temporary_care === true
 
     return matchClassification && matchKeyword && matchType && matchArea
+      && matchDistrict && matchShuttleBus && matchTemporaryCare
   })
+})
+
+/*
+ * 送迎バスで絞ったときに、情報が公開されていないために消えた園の数。
+ *
+ * shuttle_bus の null は「無」ではなく「不明」で、市が送迎バスの情報を
+ * 公開していない公立保育所がこれに当たる（119件中15件、すべて公立）。
+ * 黙って消すと「この条件では該当が少ない」と読まれてしまうため、件数を添えて断る。
+ */
+const hiddenUnknownShuttleBusCount = computed(() => {
+  if (!shuttleBusFilter.value || !nurseries.value) return 0
+
+  const keyword = keywordFilter.value.trim().toLowerCase()
+
+  return nurseries.value.filter((nursery) => {
+    if (nursery.shuttle_bus !== null && nursery.shuttle_bus !== undefined) return false
+
+    // 送迎バス以外の条件は満たしているのに、送迎バスの条件だけで落ちた園を数える
+    return (classificationFilter.value === ALL || nursery.classification === classificationFilter.value)
+      && (!keyword || KEYWORD_FIELDS.some(field => (nursery[field] ?? '').toLowerCase().includes(keyword)))
+      && (typeFilter.value === ALL || nursery.type === typeFilter.value)
+      && (areaFilter.value === ALL || nursery.area_alphabet === areaFilter.value)
+      && (districtFilter.value === ALL || nursery.district_alphabet === districtFilter.value)
+      && (!temporaryCareFilter.value || nursery.is_temporary_care === true)
+  }).length
 })
 
 /** 1つでも絞り込みが効いていればリセットを出す */
@@ -155,7 +213,10 @@ const hasActiveFilters = computed(() =>
   keywordFilter.value !== ''
   || classificationFilter.value !== ALL
   || typeFilter.value !== ALL
-  || areaFilter.value !== ALL,
+  || areaFilter.value !== ALL
+  || districtFilter.value !== ALL
+  || shuttleBusFilter.value
+  || temporaryCareFilter.value,
 )
 
 const resetFilters = () => {
@@ -163,6 +224,9 @@ const resetFilters = () => {
   classificationFilter.value = ALL
   typeFilter.value = ALL
   areaFilter.value = ALL
+  districtFilter.value = ALL
+  shuttleBusFilter.value = false
+  temporaryCareFilter.value = false
 }
 
 const links = [
@@ -228,15 +292,16 @@ useHead({
       <h3 class="sr-only">
         絞り込み
       </h3>
-      <div class="rounded-lg border border-default p-4 flex flex-col gap-4 md:flex-row md:items-end">
+      <!--
+        条件が7つに増えたので (#108)、1行に並べるのをやめて役割ごとに段を分けている。
+        キーワード / 場所と属性のセレクト / 設備のトグル の3段。
+      -->
+      <div class="rounded-lg border border-default p-4 flex flex-col gap-4">
         <!--
           トップページの「キーワード検索」と同じものなので、呼び方を揃えている (#106)。
           以前はここだけ「名前」で、対象も name のみだった。
         -->
-        <UFormField
-          label="キーワード"
-          class="md:flex-1"
-        >
+        <UFormField label="キーワード">
           <UInput
             v-model="keywordFilter"
             variant="outline"
@@ -245,36 +310,91 @@ useHead({
             class="w-full"
           />
         </UFormField>
-        <UFormField label="エリア">
-          <USelect
-            v-model="areaFilter"
-            :items="areaOptions"
-            class="w-full md:w-56"
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
+          <UFormField
+            label="エリア"
+            class="sm:flex-1 sm:min-w-52"
+          >
+            <USelect
+              v-model="areaFilter"
+              :items="areaOptions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            label="地区"
+            class="sm:flex-1 sm:min-w-40"
+          >
+            <USelect
+              v-model="districtFilter"
+              :items="districtOptions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            label="区分"
+            class="sm:flex-1 sm:min-w-36"
+          >
+            <USelect
+              v-model="classificationFilter"
+              :items="classificationOptions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            label="種別"
+            class="sm:flex-1 sm:min-w-48"
+          >
+            <USelect
+              v-model="typeFilter"
+              :items="typeOptions"
+              class="w-full"
+            />
+          </UFormField>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <UCheckbox
+            v-model="shuttleBusFilter"
+            label="送迎バスあり"
           />
-        </UFormField>
-        <UFormField label="区分">
-          <USelect
-            v-model="classificationFilter"
-            :items="classificationOptions"
-            class="w-full md:w-44"
+          <UCheckbox
+            v-model="temporaryCareFilter"
+            label="一時預かりあり"
           />
-        </UFormField>
-        <UFormField label="種別">
-          <USelect
-            v-model="typeFilter"
-            :items="typeOptions"
-            class="w-full md:w-52"
-          />
-        </UFormField>
-        <UButton
-          v-if="hasActiveFilters"
-          color="neutral"
-          variant="ghost"
-          icon="i-heroicons-x-mark"
-          @click="resetFilters"
+          <UButton
+            v-if="hasActiveFilters"
+            color="neutral"
+            variant="ghost"
+            icon="i-heroicons-x-mark"
+            class="ms-auto"
+            @click="resetFilters"
+          >
+            条件をクリア
+          </UButton>
+        </div>
+
+        <!--
+          送迎バスの情報が公開されていない園（すべて公立）は「あり」で絞ると消える。
+          データが未公開なだけで、送迎バスが無いと確定したわけではないので断っておく (#108)。
+        -->
+        <p
+          v-if="hiddenUnknownShuttleBusCount > 0"
+          class="flex items-start gap-2 text-sm text-muted"
+          role="status"
         >
-          条件をクリア
-        </UButton>
+          <UIcon
+            name="i-heroicons-information-circle"
+            class="size-4 shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
+          <span>
+            送迎バスの情報が公開されていない
+            <span class="tabular-nums">{{ hiddenUnknownShuttleBusCount }}</span> 件（公立保育所）は結果に含まれていません。
+            送迎バスが無いと確定したわけではないため、各施設へお問い合わせください。
+          </span>
+        </p>
       </div>
     </section>
     <section>
