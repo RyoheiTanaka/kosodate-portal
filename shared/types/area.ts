@@ -11,4 +11,15 @@ export interface Area {
   alphabet: string
   /** そのエリアに含まれる範囲の説明。フィルターや一覧の見出しで補足に使う */
   description: string
+  /**
+   * エリアを表すアイコン（`i-lucide-*`）。
+   * 一覧が文字だけだと拾い読みしづらいので、エリアごとの目印として使う。
+   * 装飾なので、これが無くても意味は通るようにしておくこと。
+   */
+  icon: string
+  /**
+   * カードの色味。`kosodate-pink` / `kosodate-yellow` のどちらを敷くか。
+   * 隣り合うエリアが同じ色で続かないように配分している。
+   */
+  tone: 'pink' | 'yellow'
 }

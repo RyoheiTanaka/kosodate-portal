@@ -76,8 +76,11 @@ useHead({
         :key="other.alphabet"
         :to="`/nurseries/area/${other.alphabet}`"
         :color="other.alphabet === areaAlphabet ? 'primary' : 'neutral'"
-        :variant="other.alphabet === areaAlphabet ? 'solid' : 'outline'"
+        :variant="other.alphabet === areaAlphabet ? 'subtle' : 'outline'"
+        :icon="other.icon"
         size="sm"
+        class="rounded-full font-bold"
+        :aria-current="other.alphabet === areaAlphabet ? 'page' : undefined"
       >
         {{ other.name }}
       </UButton>

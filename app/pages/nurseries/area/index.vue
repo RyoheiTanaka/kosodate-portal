@@ -54,25 +54,14 @@ useHead({
       つくば市の認可保育所等を、TXの駅と生活圏を軸にした7エリアに分けています。
     </p>
     <UContainer class="max-w-(--breakpoint-xl)">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <ULink
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- 読み込み中に 0 件と出すと「その区分には無い」と読めてしまうので、件数は伏せて渡す -->
+        <AreaCard
           v-for="area in globalAreas"
           :key="area.alphabet"
-          :to="`/nurseries/area/${area.alphabet}`"
-          class="rounded-lg border border-default p-4 transition-colors hover:bg-elevated/50 focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <p class="font-semibold flex items-baseline justify-between gap-2">
-            <span>{{ area.name }}</span>
-            <!-- 読み込み中に 0 件と出すと「その区分には無い」と読めてしまうので伏せる -->
-            <span
-              v-if="status !== 'pending'"
-              class="text-sm text-muted tabular-nums shrink-0"
-            >{{ countByArea[area.alphabet] ?? 0 }} 件</span>
-          </p>
-          <p class="text-sm text-muted mt-1">
-            {{ area.description }}
-          </p>
-        </ULink>
+          :area="area"
+          :count="status === 'pending' ? undefined : (countByArea[area.alphabet] ?? 0)"
+        />
       </div>
     </UContainer>
     <UContainer class="text-right mt-6">

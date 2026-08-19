@@ -22,14 +22,16 @@ export default defineNuxtConfig({
       //
       // エリアの「桜」は地区の「桜地区」とは範囲が違う（並木・大角豆・倉掛・千現は南部、
       // 吾妻・竹園はつくば駅周辺に入る）。名前が似ているので混同しないこと。
+      // icon / tone は見た目のための情報。エリアを文字だけで並べると拾い読みしづらいので、
+      // 目印になるアイコンと色味を持たせている。tone は隣が同じ色で続かないよう配分している。
       globalAreas: [
-        { name: '北部（筑波・大穂・豊里）', alphabet: 'hokubu', description: '筑波山麓から大穂・豊里まで。市の北側' },
-        { name: '桜', alphabet: 'sakura', description: '桜・松塚・上ノ室など、中心部の北東側' },
-        { name: 'つくば駅周辺', alphabet: 'tsukuba-station', description: '吾妻・竹園・春日・松代など、TXつくば駅の周辺' },
-        { name: '研究学園', alphabet: 'kenkyugakuen', description: '研究学園・学園の森・苅間など、TX研究学園駅の周辺' },
-        { name: '万博記念公園', alphabet: 'banpaku', description: '島名・真瀬など、TX万博記念公園駅の周辺' },
-        { name: 'みどりの・谷田部', alphabet: 'midorino', description: 'みどりの・谷田部・上横場など、TXみどりの駅から谷田部の市街地' },
-        { name: '南部（並木・茎崎）', alphabet: 'nanbu', description: '並木・大角豆から茎崎まで。市の南側' },
+        { name: '北部（筑波・大穂・豊里）', alphabet: 'hokubu', description: '筑波山麓から大穂・豊里まで。市の北側', icon: 'i-lucide-mountain', tone: 'pink' },
+        { name: '桜', alphabet: 'sakura', description: '桜・松塚・上ノ室など、中心部の北東側', icon: 'i-lucide-flower-2', tone: 'yellow' },
+        { name: 'つくば駅周辺', alphabet: 'tsukuba-station', description: '吾妻・竹園・春日・松代など、TXつくば駅の周辺', icon: 'i-lucide-train-front', tone: 'pink' },
+        { name: '研究学園', alphabet: 'kenkyugakuen', description: '研究学園・学園の森・苅間など、TX研究学園駅の周辺', icon: 'i-lucide-graduation-cap', tone: 'yellow' },
+        { name: '万博記念公園', alphabet: 'banpaku', description: '島名・真瀬など、TX万博記念公園駅の周辺', icon: 'i-lucide-ferris-wheel', tone: 'pink' },
+        { name: 'みどりの・谷田部', alphabet: 'midorino', description: 'みどりの・谷田部・上横場など、TXみどりの駅から谷田部の市街地', icon: 'i-lucide-sprout', tone: 'yellow' },
+        { name: '南部（並木・茎崎）', alphabet: 'nanbu', description: '並木・大角豆から茎崎まで。市の南側', icon: 'i-lucide-trees', tone: 'pink' },
       ],
     },
   },
