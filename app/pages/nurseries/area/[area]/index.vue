@@ -77,7 +77,7 @@ useHead({
         :variant="other.alphabet === areaAlphabet ? 'subtle' : 'outline'"
         :icon="other.icon"
         size="sm"
-        class="rounded-full font-bold"
+        class="min-h-10 rounded-full font-bold"
         :aria-current="other.alphabet === areaAlphabet ? 'page' : undefined"
       >
         {{ other.name }}

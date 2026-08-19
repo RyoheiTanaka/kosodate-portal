@@ -67,43 +67,56 @@ useHead({
               </p>
               <p class="mt-1 text-sm text-amber-800 dark:text-amber-200">
                 閉園または統廃合により、つくば市の最新の認可保育所等一覧に掲載されていません。
-                掲載内容は{{ nursery.source_date || '過去' }}時点の情報です。
+                掲載内容は{{ formatSourceDate(nursery.source_date) || '過去' }}時点の情報です。
               </p>
             </div>
+            <!--
+              地図はスマホでは高さを抑える (#129)。
+              812px の画面で 480px 固定だと画面の59%を占め、開いた直後は地図しか見えず、
+              園名・住所・定員といった判断に要る情報が最初の画面に入らなかった。
+
+              読み込みは遅延させる。地図は最初の画面に収まらない位置に来ることも多く、
+              開いた瞬間に外部の埋め込みを取りに行く必要はない。
+            -->
             <iframe
-              class="w-full h-[30rem]"
+              class="w-full h-56 sm:h-80 lg:h-[30rem]"
               frameborder="0"
               style="border:0"
+              loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               :src="`https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${nursery.name},${nursery.address}&center=${nursery.latitude},${nursery.longitude}`"
               allowfullscreen
+              :title="`${nursery.name}の地図`"
             />
           </template>
 
           <div class="w-full">
-            <div class="flex flex-col">
+            <!--
+              項目表はスマホでは1カラム（ラベルの下に値）に落とす (#129)。
+              375px で2カラム固定にするとラベル列が156px（42%）を占め、
+              値の側に余裕が無かった。
+
+              sm 以上はラベル列の幅を固定する。1fr の等分だと、
+              値が短い行でもラベルが画面の半分近くを取ってしまう。
+            -->
+            <dl class="flex flex-col">
               <div
                 v-for="row in detailRows"
                 :key="row.label"
-                class="grid grid-cols-2 rounded-sm border-b border-stroke"
+                class="grid grid-cols-1 sm:grid-cols-[minmax(10rem,16rem)_1fr] rounded-sm border-b border-default"
               >
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    {{ row.label }}
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p
-                    class="text-sm font-medium xsm:text-base"
-                    :class="row.muted ? 'text-gray-500' : 'text-black dark:text-gray-200'"
-                  >
+                <dt class="px-2.5 pt-2.5 pb-0 text-sm font-medium text-muted sm:p-2.5 sm:text-base xl:p-5">
+                  {{ row.label }}
+                </dt>
+                <dd class="px-2.5 pt-0.5 pb-2.5 text-sm font-medium sm:p-2.5 sm:text-base xl:p-5">
+                  <span :class="row.muted ? 'text-muted' : 'text-default'">
                     {{ row.value }}
-                  </p>
-                </div>
+                  </span>
+                </dd>
               </div>
-            </div>
-            <p class="mt-6 text-sm text-gray-500 dark:text-gray-400">
-              掲載内容はつくば市が公開している情報をもとにしています（{{ nursery.source_date || '公開時点' }}時点）。
+            </dl>
+            <p class="mt-6 text-sm text-muted">
+              掲載内容はつくば市が公開している情報をもとにしています（{{ formatSourceDate(nursery.source_date) || '公開時点' }}時点）。
               定員・開所時間・送迎バス・一時預かりなどは変更される場合があります。
               <strong class="font-bold">最新の情報は各施設へ直接お問い合わせください。</strong>
             </p>
