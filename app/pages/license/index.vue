@@ -29,8 +29,18 @@ useHead({
             ライセンス・クレジット表記
           </h2>
         </template>
+        <!--
+          つくば市オープンデータ利用規約が指定する「改変して利用する場合」の出典表記。
+          語順と区切りは規約の指定に合わせている。詳細は CreativeCommons.vue のコメント
+          および issue #113 を参照。
+        -->
         <div class="mt-4">
-          <p>このサイトは、以下のオープンデータを利用・改変して作成されています。</p>
+          <h3 class="text-xl font-bold">
+            出典
+          </h3>
+          <p class="mt-2">
+            このサイトは以下の著作物を改変して利用しています。
+          </p>
           <ul class="pl-0 mt-4 ml-4 list-disc">
             <li class="mb-2">
               <ULink
@@ -39,23 +49,39 @@ useHead({
                 class="underline"
                 active-class="text-primary"
                 inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              >「認可保育所等一覧」</ULink>（つくば市）
+              >認可保育所等一覧</ULink>、つくば市、<ULink
+                to="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >クリエイティブ・コモンズ・ライセンス表示4.0国際</ULink>
             </li>
           </ul>
-        </div>
-        <div class="mt-4">
-          <p>
-            本データは
+          <p class="mt-2 text-sm">
+            利用条件は
             <ULink
-              to="https://creativecommons.org/licenses/by/4.0/"
+              to="https://www.city.tsukuba.lg.jp/opendata/1000081/1000084.html"
               target="_blank"
               class="underline"
               active-class="text-primary"
               inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-            >
-              クリエイティブ・コモンズ・ライセンス表示4.0国際
-            </ULink>
-            に基づき提供されています。
+            >つくば市オープンデータ利用規約</ULink>
+            によります。
+          </p>
+        </div>
+        <div class="mt-8">
+          <h3 class="text-xl font-bold">
+            免責事項
+          </h3>
+          <p class="mt-2">
+            掲載しているデータは、つくば市が公開しているものを転載・改変したものです。
+            つくば市はデータの完全性・正確性・網羅性・安全性を保証しておらず、
+            データの利用によって生じた損害について責任を負いません。
+          </p>
+          <p class="mt-2">
+            当サイトも掲載内容の正確性を保証するものではありません。
+            申し込みや入所の判断にあたっては、必ずつくば市の公式情報および各施設に直接ご確認ください。
           </p>
         </div>
       </UCard>
