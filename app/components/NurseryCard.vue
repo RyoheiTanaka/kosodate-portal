@@ -27,11 +27,11 @@ const saturdayHours = computed(() => formatHours(props.nursery.open_saturday, pr
 /**
  * 年齢セルと曜日ドットで共用する塗り分け。
  *
- * primary をベタ塗りにするとダークモードでビビッドピンクの面が広く出て目に痛く、
- * かつ #ff69b4 に白文字はコントラスト比が 2:1 程度しかない。
+ * primary の基準色をベタ塗りにすると、色の面が広く出て目に痛いうえ、
+ * そこに白文字を乗せるとコントラストが足りない。
  * そのため面はトーンを落とし、文字を同系の濃い（ダークモードでは淡い）色にしている。
  */
-const FILLED_CLASS = 'bg-kosodate-pink-100 text-kosodate-pink-900 dark:bg-kosodate-pink-950 dark:text-kosodate-pink-200 font-medium'
+const FILLED_CLASS = 'bg-kosodate-main-100 text-kosodate-main-900 dark:bg-kosodate-main-950 dark:text-kosodate-main-200 font-medium'
 const EMPTY_CLASS = 'bg-elevated text-dimmed'
 </script>
 
