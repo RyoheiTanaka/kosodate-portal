@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// app/types/ は Nuxt の自動 import の対象外（値と違い型は解決されない）ので明示的に import する
+import type { NurseryRouteParams } from '~/types/route'
+
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const route = useRoute()

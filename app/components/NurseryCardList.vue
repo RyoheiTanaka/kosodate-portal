@@ -3,7 +3,8 @@ import type { AsyncDataRequestStatus } from '#app'
 import type { INursery } from '~~/server/types/nursery'
 
 const props = defineProps<{
-  nurseries: INursery[] | null
+  /** useFetch の data をそのまま渡せるよう undefined も受ける（取得前は undefined になる） */
+  nurseries: INursery[] | null | undefined
   /** useFetch の status。読み込み中と 0 件を見分けるために受け取る */
   status: AsyncDataRequestStatus
   /** 絞り込み前の件数。渡されたときだけ「N件 / 全M件」の形で出す */
