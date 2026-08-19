@@ -11,7 +11,22 @@ const globalDistricts = config.public.globalDistricts as Array<District>
 const globalDistrict = globalDistricts.find(globalDistrict => globalDistrict.alphabet == district) || { alphabet: '', name: '' }
 const districtName = globalDistrict.name
 
-const { data: districtnurseries, status } = useDistrictNurseries(district)
+/*
+ * 以前は useDistrictNurseries（/api/nurseries/[district]）で地区分だけ取っていたが、
+ * 全件取得に切り替えた (#134)。
+ *
+ * 絞り込みをクライアント側でやる以上、全件が手元に無いとキーワードや他の条件と
+ * 合成できない。key は一覧ページと同じ 'nurseries' なので、一覧やエリア別ページから
+ * 遷移してきた場合はリクエストが1つ減る。
+ *
+ * 地区はパスで決まっているので fixed に渡す。セレクトは出さず、クエリにも書かない。
+ */
+const filters = useNurseryFilters({ district })
+
+/** 「N件 / 全M件」の母数。このページでは地区内の件数が全件にあたる */
+const districtTotal = computed(() =>
+  filters.nurseries.value?.filter(nursery => nursery.district_alphabet === district).length,
+)
 
 const links = [
   {
@@ -71,9 +86,15 @@ useHead({
       </UButton>
     </nav>
 
+    <NurseryFilterPanel
+      :filters="filters"
+      id-prefix="district"
+    />
+
     <NurseryCardList
-      :nurseries="districtnurseries"
-      :status="status"
+      :nurseries="filters.sorted.value"
+      :status="filters.status.value"
+      :total="districtTotal"
     />
     <UContainer class="text-right">
       <ULink

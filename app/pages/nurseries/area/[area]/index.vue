@@ -15,20 +15,18 @@ if (!area) {
 }
 
 /*
- * 地区別ページと違い、専用のAPIは足していない。
+ * 専用のAPIは足していない。全件を1回取ってクライアントで絞る。
+ * key は一覧ページと同じ 'nurseries' なので、一覧から遷移してきた場合は追加の
+ * リクエストが発生しない。
  *
- * 全119件を1回取ってクライアントで絞るほうが、キーワード検索や他の条件と
- * 組み合わせたときに一覧ページと同じ経路に乗せられる。#106 で一覧の絞り込みを
- * クライアント側 + URLクエリに一本化する予定なので、いまサーバー側に
- * エリア専用のエンドポイントを足すと、そこで作り直しになる。
- *
- * key は一覧ページの useNurseries() と同じになるため、
- * 一覧から遷移してきた場合は追加のリクエストが発生しない。
+ * エリアはパスで決まっているので fixed に渡す。セレクトは出さず、クエリにも書かない (#134)。
+ * これにより /nurseries/area/banpaku?area=midorino のような矛盾したURLを作れない。
  */
-const { data: nurseries, status } = useNurseries()
+const filters = useNurseryFilters({ area: areaAlphabet })
 
-const areaNurseries = computed(() =>
-  nurseries.value?.filter(nursery => nursery.area_alphabet === areaAlphabet) ?? [],
+/** 「N件 / 全M件」の母数。このページではエリア内の件数が全件にあたる */
+const areaTotal = computed(() =>
+  filters.nurseries.value?.filter(nursery => nursery.area_alphabet === areaAlphabet).length,
 )
 
 const links = [
@@ -86,9 +84,17 @@ useHead({
       </UButton>
     </nav>
 
+    <div class="mt-4">
+      <NurseryFilterPanel
+        :filters="filters"
+        id-prefix="area"
+      />
+    </div>
+
     <NurseryCardList
-      :nurseries="areaNurseries"
-      :status="status"
+      :nurseries="filters.sorted.value"
+      :status="filters.status.value"
+      :total="areaTotal"
     />
     <UContainer class="text-right">
       <ULink
