@@ -92,7 +92,7 @@ useHead({
             to="/contact"
             class="underline"
             active-class="text-primary"
-            inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            inactive-class="text-muted hover:text-default"
           >お問い合わせ</ULink>までお願いいたします。
         </p>
       </UCard>

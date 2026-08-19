@@ -47,18 +47,37 @@ const validateForm = (): Record<string, string | undefined> => {
         placeholder
         placeholder-class="blur-xl"
       />
-      <div class="container absolute inset-0 flex flex-col items-start justify-center bg-gradient-to-l from-gray-200 md:bg-none">
+      <!--
+        写真の上のスクリム (#118)。
+
+        以前は from-gray-200 の白い靄で、ライト前提の色だった。dark では文字色が
+        テーマの既定（ほぼ白）を継ぐため、明るい靄と白文字で差が縮まって読めなくなる。
+        md:bg-none で中〜大画面では靄自体が消え、可読性が写真の明るさ任せにもなっていた。
+
+        白ではなく暗いスクリムにして、全画面幅で効かせる。文字は写真の上に載る前提で
+        白に固定し、テーマ色を継がせない（ライトでもダークでも見え方を同じにする）。
+        文字が左寄せなので、左を濃く右を薄くして写真を潰しすぎないようにしている。
+
+        スマホでは右側も濃くする。文字の折り返し幅が画面幅に近く、説明文が写真の
+        明るい部分（空）まで届くため、md と同じ配分だとそこで 2.6:1 まで落ちた。
+      -->
+      <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/65 to-black/50 md:from-black/75 md:via-black/55 md:to-black/25" />
+      <div class="container absolute inset-0 flex flex-col items-start justify-center text-white">
         <h2 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
           子育てポータル
         </h2>
         <h3 class="text-lg font-bold md:mb-4 lg:text-3xl">
           子育て情報掲載サイト
         </h3>
-        <div class="max-w-sm mb-8 text-md font-light lg:max-w-md text-balance">
+        <div class="max-w-sm mb-8 text-md lg:max-w-md text-balance">
           <p>つくば市が公開しているデータをまとめて掲載しています。</p>
         </div>
+        <!--
+          ボタンはスクリムの上でさらに面を作る必要があるので、白地に濃い文字にしている。
+          暗いボタンだとスクリムに沈んで、押せる場所だと分からない。
+        -->
         <NuxtLink
-          class="px-6 py-3 font-bold text-white bg-gray-800 rounded-xl hover:bg-gray-800"
+          class="rounded-xl bg-white px-6 py-3 font-bold text-gray-900 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           to="/license"
         >掲載情報詳細はこちら</NuxtLink>
       </div>
