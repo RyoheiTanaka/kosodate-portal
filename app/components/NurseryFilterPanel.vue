@@ -23,9 +23,35 @@ const props = defineProps<{
  * vue/no-mutating-props に引っかかる。実体は composable が所有する reactive で、
  * 親が差し替えることもないため、ここで取り出してしまってよい。
  */
-const { state, visible, options, hasActiveFilters, hiddenUnknownShuttleBusCount, reset } = props.filters
+const { state, visible, options, nurseries, hasActiveFilters, hiddenUnknownShuttleBusCount, reset } = props.filters
 
 const sortId = computed(() => `${props.idPrefix ?? 'nursery'}-sort`)
+const oazaId = computed(() => `${props.idPrefix ?? 'nursery'}-oaza`)
+
+/*
+ * 距離順ソートの基準点 (#87)。
+ *
+ * 「近い順」を選んだときだけ位置情報を求める。ページを開いただけで許可を聞くと、
+ * 何のために聞かれているのか分からないまま拒否されやすい。
+ */
+const { basePoint, geolocationStatus, buildOazaOptions, requestGeolocation, setOaza, clear } = useNurseryBasePoint()
+
+const isDistanceSort = computed(() => state.sort === 'distance')
+
+const oazaOptions = computed(() => buildOazaOptions(nurseries.value))
+
+const selectedOaza = computed({
+  get: () => (basePoint.value?.source === 'oaza' ? basePoint.value.label : ''),
+  set: (value: string) => {
+    const option = oazaOptions.value.find(o => o.value === value)
+    if (option) setOaza(option)
+  },
+})
+
+watch(isDistanceSort, (selected) => {
+  // 既に基準点があるなら聞き直さない
+  if (selected && !basePoint.value && geolocationStatus.value === 'idle') requestGeolocation()
+})
 </script>
 
 <template>
@@ -129,6 +155,95 @@ const sortId = computed(() => `${props.idPrefix ?? 'nursery'}-sort`)
         >
           条件をクリア
         </UButton>
+      </div>
+
+      <!--
+        距離順ソートの基準点のUI (#87)。
+        位置情報を拒否されても行き止まりにしないよう、大字を選ぶ道を必ず残す。
+
+        「近い順」を選んだときだけでなく、基準点がある限り出す。
+        基準点があればカードに距離が出るので、並び替えを名前順に戻した後も
+        「直線距離です」の但し書きが必要になるため。
+      -->
+      <div
+        v-if="isDistanceSort || basePoint"
+        class="rounded-md bg-elevated/50 p-3 flex flex-col gap-2"
+      >
+        <p
+          v-if="basePoint"
+          class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm"
+          role="status"
+        >
+          <UIcon
+            name="i-lucide-locate-fixed"
+            class="size-4 shrink-0 text-primary"
+            aria-hidden="true"
+          />
+          <span>
+            <span class="font-bold">{{ basePoint.label }}</span>
+            <template v-if="isDistanceSort"> からの直線距離で並べています</template>
+            <template v-else> からの直線距離を表示しています</template>
+          </span>
+          <UButton
+            color="neutral"
+            variant="link"
+            size="xs"
+            class="p-0"
+            @click="clear()"
+          >
+            基準を変える
+          </UButton>
+        </p>
+
+        <template v-else>
+          <p
+            class="text-sm text-muted"
+            role="status"
+          >
+            <template v-if="geolocationStatus === 'loading'">
+              位置情報を取得しています…
+            </template>
+            <template v-else-if="geolocationStatus === 'denied'">
+              位置情報が許可されなかったため、大字を選んでください。
+            </template>
+            <template v-else-if="geolocationStatus === 'unsupported'">
+              このブラウザでは位置情報を使えないため、大字を選んでください。
+            </template>
+            <template v-else-if="geolocationStatus === 'error'">
+              位置情報を取得できませんでした。大字を選んでください。
+            </template>
+            <template v-else>
+              現在地を使うか、大字を選んでください。
+            </template>
+          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <UButton
+              :loading="geolocationStatus === 'loading'"
+              icon="i-lucide-locate-fixed"
+              size="sm"
+              @click="requestGeolocation()"
+            >
+              現在地を使う
+            </UButton>
+            <div class="flex items-center gap-2">
+              <label
+                :for="oazaId"
+                class="text-sm text-muted shrink-0"
+              >大字から選ぶ</label>
+              <USelect
+                :id="oazaId"
+                v-model="selectedOaza"
+                :items="oazaOptions"
+                placeholder="選択してください"
+                class="w-40"
+              />
+            </div>
+          </div>
+        </template>
+
+        <p class="text-xs text-dimmed">
+          直線距離です。道のりや所要時間とは異なります。位置情報はこのブラウザの中だけで使い、送信も保存もしません。
+        </p>
       </div>
 
       <!--
