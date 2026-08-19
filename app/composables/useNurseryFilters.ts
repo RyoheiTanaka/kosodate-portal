@@ -66,8 +66,11 @@ export const useNurseryFilters = (fixed: NurseryFilterFixed = {}) => {
     { label: '小規模保育事業所', value: '小規模保育事業所' },
   ]
 
+  const { basePoint } = useNurseryBasePoint()
+
   const sortOptions = [
     { label: '名前順', value: 'name' },
+    { label: '近い順', value: 'distance' },
     { label: '定員が多い順', value: 'capacity-desc' },
     { label: '定員が少ない順', value: 'capacity-asc' },
   ]
@@ -82,11 +85,25 @@ export const useNurseryFilters = (fixed: NurseryFilterFixed = {}) => {
   const byKana = (a: INursery, b: INursery) => (a.name_kana || a.name).localeCompare(b.name_kana || b.name, 'ja')
 
   /** 同値のときは名前順に倒す。並びが実行のたびに変わらないようにするため */
-  const comparators = computed<Record<string, (a: INursery, b: INursery) => number>>(() => ({
-    'name': byKana,
-    'capacity-desc': (a, b) => (b.capacity ?? 0) - (a.capacity ?? 0) || byKana(a, b),
-    'capacity-asc': (a, b) => (a.capacity ?? 0) - (b.capacity ?? 0) || byKana(a, b),
-  }))
+  const comparators = computed<Record<string, (a: INursery, b: INursery) => number>>(() => {
+    const from = basePoint.value
+
+    return {
+      'name': byKana,
+      'capacity-desc': (a, b) => (b.capacity ?? 0) - (a.capacity ?? 0) || byKana(a, b),
+      'capacity-asc': (a, b) => (a.capacity ?? 0) - (b.capacity ?? 0) || byKana(a, b),
+      /*
+       * 基準点が無いあいだは名前順のまま。並び替えで「近い順」を選んだ直後は
+       * まだ位置情報の許可を聞いている最中で、基準点が入るのはその後になる。
+       * ここで 0 を返して順序を不定にすると、許可した瞬間に並びが飛ぶ。
+       */
+      'distance': (a, b) => {
+        if (!from) return byKana(a, b)
+
+        return distanceInKm(from, a) - distanceInKm(from, b) || byKana(a, b)
+      },
+    }
+  })
 
   /** 選択肢に無い値が URL に入っていたら既定に倒す。USelect に未知の値を渡すと表示が空欄になる */
   const readQuery = (key: string, fallback: string, allowed?: string[]) => {

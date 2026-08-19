@@ -14,6 +14,20 @@ const accentClass = computed(() =>
   props.nursery.classification === '公立' ? 'border-t-primary' : 'border-t-secondary',
 )
 
+/*
+ * 距離は基準点があるときだけ出す (#87)。
+ *
+ * 基準点は props ではなく共有の状態から取る。props で配ると
+ * NurseryCardList を経由して全カードに配ることになる。
+ */
+const { basePoint } = useNurseryBasePoint()
+
+const distance = computed(() => {
+  if (!basePoint.value) return null
+
+  return formatDistance(distanceInKm(basePoint.value, props.nursery))
+})
+
 const ages = computed(() => parseChildcareAges(props.nursery.childcare_age))
 const days = computed(() => parseAvailableDays(props.nursery.available_day))
 
@@ -96,6 +110,18 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
         「情報なし（施設へお問い合わせください）」に任せる。
       -->
       <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+        <!-- 距離は基準点を選んでいるときだけ出る。直線距離である旨はツールバー側で断っている -->
+        <span
+          v-if="distance"
+          class="flex items-center gap-1 font-bold text-primary"
+        >
+          <UIcon
+            name="i-lucide-locate-fixed"
+            class="size-4 shrink-0"
+            aria-hidden="true"
+          />
+          {{ distance }}
+        </span>
         <span
           v-if="nursery.capacity"
           class="flex items-center gap-1 text-muted"
