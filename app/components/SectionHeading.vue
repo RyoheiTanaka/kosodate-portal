@@ -20,11 +20,11 @@ withDefaults(defineProps<{
 <template>
   <div class="mb-3 flex items-center gap-2">
     <!--
-      ピンクは彩度が高いので、面ではなくアイコンの小さい丸だけに使う。
-      文字色は 700 まで暗くしてコントラストを確保する（500 の #ff69b4 は白地に薄い）
+      色は面ではなくアイコンの小さい丸だけに使う。
+      文字色は 700 まで暗くしてコントラストを確保する（500 は白地では薄い）
     -->
     <span
-      class="flex size-8 shrink-0 items-center justify-center rounded-full bg-kosodate-pink-50 text-kosodate-pink-700 dark:bg-kosodate-pink-950 dark:text-kosodate-pink-200"
+      class="flex size-8 shrink-0 items-center justify-center rounded-full bg-kosodate-main-50 text-kosodate-main-700 dark:bg-kosodate-main-950 dark:text-kosodate-main-200"
       aria-hidden="true"
     >
       <UIcon
@@ -40,7 +40,7 @@ withDefaults(defineProps<{
     </component>
     <!-- 見出しの右を余らせずに埋める飾り。意味は持たない -->
     <span
-      class="h-1 flex-1 rounded-full bg-kosodate-pink-100 dark:bg-kosodate-pink-900/60"
+      class="h-1 flex-1 rounded-full bg-kosodate-main-100 dark:bg-kosodate-main-900/60"
       aria-hidden="true"
     />
   </div>

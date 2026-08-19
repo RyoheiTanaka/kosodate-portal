@@ -18,16 +18,15 @@ const props = defineProps<{
  *
  * カードの地は白のまま、色は枠線とアイコンの丸だけに乗せている。
  * 7枚が並ぶ場所なので、面を塗ると画面の大半が色で埋まって目が疲れる。
- * ピンクは彩度が高いぶん、黄色より1段薄い側を使っている。
  */
 const TONE_CLASS = {
   pink: {
-    card: 'border-kosodate-pink-100 hover:border-kosodate-pink-300 dark:border-kosodate-pink-900/70 dark:hover:border-kosodate-pink-700',
-    icon: 'bg-kosodate-pink-50 text-kosodate-pink-700 dark:bg-kosodate-pink-950 dark:text-kosodate-pink-200',
+    card: 'border-kosodate-main-100 hover:border-kosodate-main-300 dark:border-kosodate-main-900/70 dark:hover:border-kosodate-main-700',
+    icon: 'bg-kosodate-main-50 text-kosodate-main-700 dark:bg-kosodate-main-950 dark:text-kosodate-main-200',
   },
   yellow: {
-    card: 'border-kosodate-yellow-200 hover:border-kosodate-yellow-400 dark:border-kosodate-yellow-900/70 dark:hover:border-kosodate-yellow-700',
-    icon: 'bg-kosodate-yellow-100 text-kosodate-yellow-900 dark:bg-kosodate-yellow-950 dark:text-kosodate-yellow-100',
+    card: 'border-kosodate-sub-200 hover:border-kosodate-sub-400 dark:border-kosodate-sub-900/70 dark:hover:border-kosodate-sub-700',
+    icon: 'bg-kosodate-sub-100 text-kosodate-sub-900 dark:bg-kosodate-sub-950 dark:text-kosodate-sub-100',
   },
 } as const
 

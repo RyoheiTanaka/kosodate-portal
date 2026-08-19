@@ -73,14 +73,14 @@ const validateForm = (): Record<string, string | undefined> => {
     -->
     <section class="container py-8">
       <!--
-        地の色はピンクではなく黄色系のクリームにしている。
-        ピンク（#ff69b4）は彩度が高く、面で敷くと目が疲れるため、
+        地には cream（暖色のニュートラル）を敷き、main / sub は
         アイコン・枠線・見出しの文字といった小さい面積の差し色に回している。
-        見出しをピンクのベタ塗り + 白文字にするのも避ける（コントラスト比が 2:1 程度しかない）。
+        彩度のある色を広い面に敷くと、それだけで目が疲れるため。
+        見出しを main のベタ塗り + 白文字にするのも避ける（コントラストが足りない）。
       -->
-      <div class="rounded-3xl border-2 border-kosodate-yellow-200 bg-kosodate-yellow-50/60 p-4 sm:p-6 dark:border-kosodate-yellow-900/60 dark:bg-kosodate-yellow-950/20">
+      <div class="rounded-3xl border-2 border-kosodate-cream-200 bg-kosodate-cream-100 p-4 sm:p-6 dark:border-kosodate-cream-800 dark:bg-kosodate-cream-950/60">
         <div class="mb-5 text-center">
-          <h2 class="inline-flex items-center gap-2 rounded-full border-2 border-kosodate-pink-200 bg-default px-5 py-2 text-xl font-bold text-kosodate-pink-700 shadow-sm sm:text-2xl dark:border-kosodate-pink-800 dark:text-kosodate-pink-200">
+          <h2 class="inline-flex items-center gap-2 rounded-full border-2 border-kosodate-main-200 bg-default px-5 py-2 text-xl font-bold text-kosodate-main-700 shadow-sm sm:text-2xl dark:border-kosodate-main-800 dark:text-kosodate-main-200">
             <UIcon
               name="i-lucide-baby"
               class="size-6 shrink-0"
@@ -178,7 +178,7 @@ const validateForm = (): Record<string, string | undefined> => {
               >
                 <ULink
                   :to="`/nurseries/${district.alphabet}`"
-                  class="inline-flex items-center gap-1.5 rounded-full border-2 border-kosodate-yellow-300 bg-kosodate-yellow-100 px-4 py-2 text-sm font-bold text-kosodate-yellow-900 transition-all duration-200 hover:-translate-y-0.5 hover:border-kosodate-yellow-500 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:border-kosodate-yellow-900 dark:bg-kosodate-yellow-950/60 dark:text-kosodate-yellow-100 dark:hover:border-kosodate-yellow-700"
+                  class="inline-flex items-center gap-1.5 rounded-full border-2 border-kosodate-sub-300 bg-kosodate-sub-100 px-4 py-2 text-sm font-bold text-kosodate-sub-900 transition-all duration-200 hover:-translate-y-0.5 hover:border-kosodate-sub-500 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:border-kosodate-sub-900 dark:bg-kosodate-sub-950/60 dark:text-kosodate-sub-100 dark:hover:border-kosodate-sub-700"
                 >
                   <UIcon
                     name="i-lucide-map-pin"

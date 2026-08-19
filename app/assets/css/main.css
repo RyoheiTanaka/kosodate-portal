@@ -3,35 +3,72 @@
 
 /*
  * Tailwind v4 では tailwind.config.ts ではなく CSS 側でテーマを定義する。
- * 旧 tailwind.config.ts の theme.extend.colors をそのまま移設したもの。
- * Nuxt UI v4 は 950 シェードまで要求するため、900 より暗い値を追加している。
+ * Nuxt UI v4 は 950 シェードまで要求するため、900 より暗い値まで用意している。
+ *
+ * ## 名前について
+ *
+ * トークン名は色相ではなく役割で付けている（main / sub / cream）。
+ * 以前は kosodate-pink / kosodate-yellow だったが、色を変えるたびに名前と実体が
+ * ずれてリネームが必要になるため。役割名にしておけば、配色を変えるときに
+ * 触るのはこのファイルの値だけで済む。
+ *
+ * ## 使い分け
+ *
+ * - main  : ブランドの主色。主要な導線、見出しのアクセント、フォーカス
+ * - sub   : 2色目。main と区別したいとき（エリアの色分けなど）に使う
+ * - cream : 面を塗るための暖色のニュートラル。文字色には使わない
+ *
+ * Nuxt UI の `primary` / `secondary` はこの main / sub を指している（app.config.ts）。
+ * ただし `bg-primary` のような単体クラスしか生成されず、`bg-primary-100` のような
+ * 番号付きは効かない。濃淡を指定したいときはこのトークン名を直接使うこと。
+ *
+ * ## 濃度の目安
+ *
+ * 白地に小さい文字を置くなら 700 以上（4.5:1 を確保できる）。
+ * 500 は面や枠線用で、白文字を乗せるとコントラストが足りない。
  */
 @theme static {
-  /* ビビッドピンク（メインカラー） */
-  --color-kosodate-pink-50: #ffe4ec; /* パステルピンク */
-  --color-kosodate-pink-100: #ffccdc;
-  --color-kosodate-pink-200: #ff99b8;
-  --color-kosodate-pink-300: #ff6693;
-  --color-kosodate-pink-400: #ff336f;
-  --color-kosodate-pink-500: #ff69b4; /* メインカラー */
-  --color-kosodate-pink-600: #e0559d;
-  --color-kosodate-pink-700: #c04787;
-  --color-kosodate-pink-800: #a03a71;
-  --color-kosodate-pink-900: #802d5b;
-  --color-kosodate-pink-950: #4d1b37;
+  /*
+   * main: くすみローズ。
+   * 以前の #ff69b4 は彩度が高く、面で敷くと目が疲れるうえ、
+   * 白文字を乗せるとコントラスト比が 2:1 程度しかなかったため彩度を落とした。
+   */
+  --color-kosodate-main-50: #fdf2f3;
+  --color-kosodate-main-100: #fae2e4;
+  --color-kosodate-main-200: #f4c8cd;
+  --color-kosodate-main-300: #eca9b1;
+  --color-kosodate-main-400: #e5949e;
+  --color-kosodate-main-500: #dd808c; /* 基準色 */
+  --color-kosodate-main-600: #c4646f;
+  --color-kosodate-main-700: #a9525d; /* 白地の文字はここから */
+  --color-kosodate-main-800: #8a434c;
+  --color-kosodate-main-900: #6b353c;
+  --color-kosodate-main-950: #3a1c21;
 
-  /* 明るい黄色（アクセント） */
-  --color-kosodate-yellow-50: #fff7d4;
-  --color-kosodate-yellow-100: #ffeeaa;
-  --color-kosodate-yellow-200: #ffe480;
-  --color-kosodate-yellow-300: #ffda59;
-  --color-kosodate-yellow-400: #ffd033;
-  --color-kosodate-yellow-500: #ffde59; /* メインの黄色 */
-  --color-kosodate-yellow-600: #e6c051;
-  --color-kosodate-yellow-700: #c0a246;
-  --color-kosodate-yellow-800: #9a843c;
-  --color-kosodate-yellow-900: #746630;
-  --color-kosodate-yellow-950: #453d1d;
+  /* sub: セージグリーン。main と並べても喧嘩しないよう彩度を揃えている */
+  --color-kosodate-sub-50: #f1f5ee;
+  --color-kosodate-sub-100: #e3ebde;
+  --color-kosodate-sub-200: #cfdec8;
+  --color-kosodate-sub-300: #b8cdaf;
+  --color-kosodate-sub-400: #a8c3a0;
+  --color-kosodate-sub-500: #93b389; /* 基準色 */
+  --color-kosodate-sub-600: #79986f;
+  --color-kosodate-sub-700: #5f7b57; /* 白地の文字はここから */
+  --color-kosodate-sub-800: #4c6246;
+  --color-kosodate-sub-900: #3d4e39;
+  --color-kosodate-sub-950: #202a1e;
+
+  /*
+   * cream: 面のための暖色ニュートラル。
+   * neutral（zinc）は寒色なので、そのまま広い面に敷くと main / sub から浮く。
+   * 文字色には使わない（明るい側しか用意していない）。
+   */
+  --color-kosodate-cream-50: #fdfaf5;
+  --color-kosodate-cream-100: #fdf8f0;
+  --color-kosodate-cream-200: #f3ece0;
+  --color-kosodate-cream-800: #3a342b;
+  --color-kosodate-cream-900: #2a251d;
+  --color-kosodate-cream-950: #1c1913;
 }
 
 /*
