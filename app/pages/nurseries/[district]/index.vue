@@ -44,6 +44,33 @@ useHead({
     <h2 class="text-3xl font-bold text-center mb-4">
       {{ districtName }}
     </h2>
+
+    <!--
+      地区別ページには他の地区へ移る手段が無く、トップか一覧まで戻る必要があった。
+      エリア別ページには同じ形の導線が既にあるので、それに揃えている。
+
+      主導線はエリアなので (#86)、ここにエリアの導線は置かない。
+      地区で見に来た人が地区の中で移動できれば足りる。
+    -->
+    <nav
+      class="container flex flex-wrap justify-center gap-2 mb-4"
+      aria-label="ほかの地区"
+    >
+      <UButton
+        v-for="other in globalDistricts"
+        :key="other.alphabet"
+        :to="`/nurseries/${other.alphabet}`"
+        :color="other.alphabet === district ? 'primary' : 'neutral'"
+        :variant="other.alphabet === district ? 'subtle' : 'outline'"
+        icon="i-lucide-map-pin"
+        size="sm"
+        class="rounded-full font-bold"
+        :aria-current="other.alphabet === district ? 'page' : undefined"
+      >
+        {{ other.name }}
+      </UButton>
+    </nav>
+
     <NurseryCardList
       :nurseries="districtnurseries"
       :status="status"
