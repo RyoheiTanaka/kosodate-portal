@@ -34,10 +34,16 @@ const validateForm = (): Record<string, string | undefined> => {
 <template>
   <main>
     <div class="relative mx-auto">
+      <!--
+        高さはスマホを基準に決めている (#148)。
+        420px は 812px の画面の52%を占め、キーワード検索の入力欄が
+        782px（ほぼ画面外）に押し出されていた。何のサイトかを写真で伝えつつ、
+        「探す」導線を最初の画面に入れるための高さにしている。
+      -->
       <NuxtImg
         width="1400"
         height="800"
-        class="object-cover w-full h-[420px] lg:h-[560px] xl:h-[640px]"
+        class="object-cover w-full h-[300px] sm:h-[360px] md:h-[420px] lg:h-[480px] xl:h-[540px]"
         src="/images/main-visual.jpg"
         alt="Hero image"
         loading="eager"
