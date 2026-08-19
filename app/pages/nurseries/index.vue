@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { INursery } from '~~/server/types/nursery'
+
 const route = useRoute()
 const router = useRouter()
 
@@ -68,6 +70,37 @@ const typeOptions = [
   },
 ]
 /*
+ * 並び替え (#110)。
+ *
+ * 既定は名前順。以前は API が返した順（MongoDB の挿入順）で、nursery_id 順ですらなく、
+ * 利用者から見て説明のつかない並びだった。既定を決めておかないと
+ * 「同じ条件で開いたのに並びが違う」が起こりうる。
+ *
+ * 名前順のキーは name_kana。name の文字コード順は日本語だと直感に合わない
+ * （漢字が読みではなくコード順に並ぶ）。119件すべてに値があり、
+ * 純粋なカタカナであることを確認済み。
+ *
+ * #87 の距離順はここに選択肢を1つ足す形になる。距離の比較には現在地という
+ * 外の状態が要るため、比較関数は静的な表ではなく computed で組み立てている。
+ */
+const SORT_DEFAULT = 'name'
+
+const sortOptions = [
+  { label: '名前順', value: 'name' },
+  { label: '定員が多い順', value: 'capacity-desc' },
+  { label: '定員が少ない順', value: 'capacity-asc' },
+]
+
+const byKana = (a: INursery, b: INursery) => (a.name_kana || a.name).localeCompare(b.name_kana || b.name, 'ja')
+
+/** 同値のときは名前順に倒す。並びが実行のたびに変わらないようにするため */
+const comparators = computed<Record<string, (a: INursery, b: INursery) => number>>(() => ({
+  'name': byKana,
+  'capacity-desc': (a, b) => (b.capacity ?? 0) - (a.capacity ?? 0) || byKana(a, b),
+  'capacity-asc': (a, b) => (a.capacity ?? 0) - (b.capacity ?? 0) || byKana(a, b),
+}))
+
+/*
  * 絞り込みの状態は URL クエリを正とする (#106)。
  *
  * 以前は URL の `?keyword=`（サーバー検索）と入力欄（name への Array.filter）が
@@ -100,6 +133,8 @@ const classificationFilter = ref(readQuery('classification', ALL, classification
 const typeFilter = ref(readQuery('type', ALL, typeValues))
 const shuttleBusFilter = ref(readFlag('bus'))
 const temporaryCareFilter = ref(readFlag('temporary'))
+const sortValues = sortOptions.map(o => o.value)
+const sortOrder = ref(readQuery('sort', SORT_DEFAULT, sortValues))
 
 /** 既定値の条件は URL に出さない。共有されたURLが読める長さに収まるようにする */
 const toQuery = () => {
@@ -111,6 +146,7 @@ const toQuery = () => {
   if (typeFilter.value !== ALL) query.type = typeFilter.value
   if (shuttleBusFilter.value) query.bus = '1'
   if (temporaryCareFilter.value) query.temporary = '1'
+  if (sortOrder.value !== SORT_DEFAULT) query.sort = sortOrder.value
   return query
 }
 
@@ -121,7 +157,7 @@ const toQuery = () => {
 const serialize = (query: Record<string, string | undefined>) =>
   Object.entries(query).filter(([, v]) => v).sort().map(([k, v]) => `${k}=${v}`).join('&')
 
-watch([keywordFilter, areaFilter, districtFilter, classificationFilter, typeFilter, shuttleBusFilter, temporaryCareFilter], () => {
+watch([keywordFilter, areaFilter, districtFilter, classificationFilter, typeFilter, shuttleBusFilter, temporaryCareFilter, sortOrder], () => {
   const query = toQuery()
   if (serialize(query) === serialize(route.query as Record<string, string>)) return
   // push ではなく replace。1文字打つたびに履歴が積まれると「戻る」が使い物にならなくなる
@@ -136,6 +172,7 @@ watch(() => route.query, () => {
   typeFilter.value = readQuery('type', ALL, typeValues)
   shuttleBusFilter.value = readFlag('bus')
   temporaryCareFilter.value = readFlag('temporary')
+  sortOrder.value = readQuery('sort', SORT_DEFAULT, sortValues)
 })
 
 /*
@@ -181,6 +218,13 @@ const filteredNurseries = computed(() => {
     return matchClassification && matchKeyword && matchType && matchArea
       && matchDistrict && matchShuttleBus && matchTemporaryCare
   })
+})
+
+/** sort は元の配列を書き換えるので、useFetch が持っているデータを壊さないよう複製してから並べる */
+const sortedNurseries = computed(() => {
+  const compare = comparators.value[sortOrder.value] ?? comparators.value[SORT_DEFAULT]!
+
+  return [...filteredNurseries.value].sort(compare)
 })
 
 /*
@@ -290,7 +334,7 @@ useHead({
     -->
     <section class="container">
       <h3 class="sr-only">
-        絞り込み
+        絞り込みと並び替え
       </h3>
       <!--
         条件が7つに増えたので (#108)、1行に並べるのをやめて役割ごとに段を分けている。
@@ -363,12 +407,27 @@ useHead({
             v-model="temporaryCareFilter"
             label="一時預かりあり"
           />
+          <!--
+            並び替えは絞り込みではないので「条件をクリア」の対象に含めない。
+            件数が変わるものではなく、消したい条件でもないため。
+          -->
+          <div class="flex items-center gap-2 ms-auto">
+            <label
+              for="nursery-sort"
+              class="text-sm text-muted shrink-0"
+            >並び替え</label>
+            <USelect
+              id="nursery-sort"
+              v-model="sortOrder"
+              :items="sortOptions"
+              class="w-44"
+            />
+          </div>
           <UButton
             v-if="hasActiveFilters"
             color="neutral"
             variant="ghost"
             icon="i-heroicons-x-mark"
-            class="ms-auto"
             @click="resetFilters"
           >
             条件をクリア
@@ -399,7 +458,7 @@ useHead({
     </section>
     <section>
       <NurseryCardList
-        :nurseries="filteredNurseries"
+        :nurseries="sortedNurseries"
         :status="status"
         :total="nurseries?.length"
       />
