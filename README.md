@@ -97,6 +97,29 @@ MongoDB の接続情報、メール送信の設定を入れてください。
 > ローカルの `.env` の `MONGODB_DB` には**必ず `kosodate_dev`** を設定してください。
 > 取り込みスクリプトは開発用DB以外への書き込みに `--prod` を要求します。
 
+### MCP サーバー（任意）
+
+[`.mcp.json`](./.mcp.json) に Vercel と MongoDB の MCP サーバーを定義しています。
+AI コーディングエージェント（Claude Code など）から使うためのもので、
+アプリの動作には関係ありません。使わない場合は設定不要です。
+
+MongoDB のほうは接続文字列を `MONGODB_URI_STANDARD` 環境変数から読みます。
+`.env` ではなく**ユーザー環境変数**に置いてください（MCP サーバーは
+プロジェクトの `.env` を読まないため）。
+
+1. Atlas の **Connect > Drivers** で、`mongodb+srv://` ではない
+   **標準接続文字列**（`mongodb://` で始まり、ホストが3つ並ぶもの）を取得する。
+   Windows では Node 同梱の DNS リゾルバが SRV レコードを引けず接続に失敗するため、
+   非SRV のほうを使う
+2. 末尾のデータベース名を `/kosodate_dev` にする（本番DBは指定しない）
+3. ユーザー環境変数に設定し、ターミナルを開き直す
+
+   ```bash
+   setx MONGODB_URI_STANDARD "mongodb://<取得した接続文字列>/kosodate_dev"
+   ```
+
+サーバーは `--readOnly` で起動するので、MCP 経由の書き込みはできません。
+
 ### npm スクリプト
 
 | コマンド | 用途 |
