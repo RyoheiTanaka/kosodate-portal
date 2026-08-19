@@ -69,6 +69,21 @@ const parseCsv = (text) => {
   return rows.filter(r => r.some(v => v !== '')).map(r => Object.fromEntries(header.map((h, i) => [h.trim(), (r[i] ?? '').trim()])))
 }
 
+// 住所から大字を切り出す。「茨城県つくば市島名2711番地1」→「島名」
+// 地区マップ・エリアマップの両方で使うキー
+const toOaza = s => String(s).replace(/^茨城県?/, '').replace(/^つくば市/, '')
+  .replace(/[0-9０-９].*$/, '').replace(/(丁目|番地|字).*$/, '').trim()
+
+const AREA_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-area.json'), 'utf8'))
+
+// エリアはCSVに列が無く、住所の大字から判定する（地区マップと同じ方式）。
+// 地区がCSV由来なのに対しエリアは導出値なので、判定できない大字が出たら
+// 取り込みを止める。空のまま入れるとその園がエリア絞り込みから消えるため (#86)。
+const toArea = (address) => {
+  const hit = AREA_MAP[toOaza(address)]
+  return { area: hit?.name ?? '', area_alphabet: hit?.alphabet ?? '' }
+}
+
 const toDoc = row => ({
   nursery_id: Number(row.nursery_id),
   classification: row.classification,
@@ -79,6 +94,7 @@ const toDoc = row => ({
   address_note: row.address_note,
   district: row.district,
   district_alphabet: row.district_alphabet,
+  ...toArea(row.address),
   longitude: Number(row.longitude),
   latitude: Number(row.latitude),
   tel: row.tel,
@@ -126,6 +142,9 @@ const validate = (rows) => {
     if (!Number.isFinite(Number(r.longitude)) || !Number.isFinite(Number(r.latitude))) {
       errors.push(`座標が不正: ${id} ${r.name}`)
     }
+    if (!toArea(r.address).area_alphabet) {
+      errors.push(`エリアを判定できない大字「${toOaza(r.address)}」: ${id} ${r.name}（${r.address}）`)
+    }
   }
   return errors
 }
@@ -143,18 +162,32 @@ const main = async () => {
   if (errors.length) {
     console.error(`\n入力エラー ${errors.length}件:`)
     errors.forEach(e => console.error('  -', e))
+    console.error('\n新しい大字が出た場合は scripts/data/oaza-district.json と')
+    console.error('scripts/data/oaza-area.json の両方に追記してください')
     process.exitCode = 1
     return
   }
 
-  // 大字マップに無い住所を警告する（地区の判定漏れを検知するため）
+  // 大字マップに無い住所を警告する（地区の判定漏れを検知するため）。
+  // 地区はCSVの列から入るので、ここは突き合わせによる検知にとどめる。
+  // エリアはこのマップからの導出値なので、判定できない場合は validate 側で止めている。
   const oaza = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-district.json'), 'utf8'))
-  const toOaza = s => String(s).replace(/^茨城県?/, '').replace(/^つくば市/, '')
-    .replace(/[0-9０-９].*$/, '').replace(/(丁目|番地|字).*$/, '').trim()
   const unknown = [...new Set(rows.map(r => toOaza(r.address)).filter(o => !oaza[o]))]
   if (unknown.length) {
     console.warn(`\n⚠ 大字マップに無い住所: ${unknown.join(', ')}`)
     console.warn('  scripts/data/oaza-district.json への追記を検討してください')
+  }
+
+  // エリアごとの件数を出す。偏りの解消が目的の区分なので、
+  // 取り込みのたびに分布が崩れていないか確認できるようにしている (#86)
+  const areaCount = {}
+  for (const r of rows) {
+    const { area } = toArea(r.address)
+    areaCount[area] = (areaCount[area] ?? 0) + 1
+  }
+  console.log('\n=== エリア別の件数 ===')
+  for (const [area, n] of Object.entries(areaCount).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${String(n).padStart(3)} ${area}`)
   }
 
   await mongoose.connect(uri, { dbName, serverSelectionTimeoutMS: 20000 })

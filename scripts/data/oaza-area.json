@@ -1,0 +1,290 @@
+{
+  "さくらの森": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "みどりの": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "みどりの中央": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "稲岡": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "遠東": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "下河原崎": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "下萱丸": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "下岩崎": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "下平塚": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "花室": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "花島新田": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "花畑": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "学園の森": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "学園南": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "苅間": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "観音台": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "鬼ケ窪": {
+    "name": "万博記念公園",
+    "alphabet": "banpaku"
+  },
+  "吉沼": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "金田": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "研究学園": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "吾妻": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "高見原": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "高崎": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "今鹿島": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "妻木": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "作谷": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "桜": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "柴崎": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "手代木": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "春日": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "小田": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "小野崎": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "松代": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "松塚": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "沼崎": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "沼田": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "上ノ室": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "上横場": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "上萱丸": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "上郷": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "上野": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "真瀬": {
+    "name": "万博記念公園",
+    "alphabet": "banpaku"
+  },
+  "水守": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "水堀": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "西岡": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "西栗山": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "西大井": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "西大橋": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "西平塚": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "赤塚": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "千現": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "倉掛": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "大角豆": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "大曽根": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "谷田部": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "竹園": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "天宝喜": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "土田": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "島": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "島名": {
+    "name": "万博記念公園",
+    "alphabet": "banpaku"
+  },
+  "東岡": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "東光台": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "東新井": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "東平塚": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "二の宮": {
+    "name": "つくば駅周辺",
+    "alphabet": "tsukuba-station"
+  },
+  "並木": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "北条": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "面野井": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "要": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "要元中根": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "流星台": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "蓮沼": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  }
+}
