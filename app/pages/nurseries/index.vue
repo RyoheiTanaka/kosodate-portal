@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
-const keyword = ref<string>(route.query.keyword as string || '')
+const router = useRouter()
 
 /**
  * 「すべて」を表す番兵。
@@ -8,11 +8,6 @@ const keyword = ref<string>(route.query.keyword as string || '')
  * v3 のように value: '' の選択肢を置けない。
  */
 const ALL = 'all'
-
-const classificationFilter = ref(ALL)
-const keywordFilter = ref('')
-const typeFilter = ref(ALL)
-const areaFilter = ref(ALL)
 
 const config = useRuntimeConfig()
 const globalAreas = config.public.globalAreas as Array<Area>
@@ -57,14 +52,97 @@ const typeOptions = [
     value: '小規模保育事業所',
   },
 ]
-const { data: nurseries, status } = useNurseries(keyword.value)
+/*
+ * 絞り込みの状態は URL クエリを正とする (#106)。
+ *
+ * 以前は URL の `?keyword=`（サーバー検索）と入力欄（name への Array.filter）が
+ * 別々の機構に繋がっていて同期しておらず、トップから検索して遷移すると
+ * 入力欄が空のまま結果だけ絞られている状態になっていた。
+ *
+ * 選択肢に無い値が URL に入っていた場合は「すべて」に倒す。
+ * USelect に未知の値を渡すと、選択中の表示が空欄になって何が起きているか分からなくなるため。
+ */
+const readQuery = (key: string, fallback: string, allowed?: string[]) => {
+  const raw = route.query[key]
+  const value = typeof raw === 'string' ? raw.trim() : ''
+  if (!value) return fallback
+  if (allowed && !allowed.includes(value)) return fallback
+  return value
+}
+
+const areaValues = areaOptions.map(o => o.value)
+const classificationValues = classificationOptions.map(o => o.value)
+const typeValues = typeOptions.map(o => o.value)
+
+const keywordFilter = ref(readQuery('keyword', ''))
+const areaFilter = ref(readQuery('area', ALL, areaValues))
+const classificationFilter = ref(readQuery('classification', ALL, classificationValues))
+const typeFilter = ref(readQuery('type', ALL, typeValues))
+
+/** 既定値の条件は URL に出さない。共有されたURLが読める長さに収まるようにする */
+const toQuery = () => {
+  const query: Record<string, string> = {}
+  if (keywordFilter.value) query.keyword = keywordFilter.value
+  if (areaFilter.value !== ALL) query.area = areaFilter.value
+  if (classificationFilter.value !== ALL) query.classification = classificationFilter.value
+  if (typeFilter.value !== ALL) query.type = typeFilter.value
+  return query
+}
+
+/*
+ * 条件 -> URL と URL -> 条件 の双方向で同期する。
+ * 同じ内容なら書き戻さない。2つの watch が互いを呼び合って往復するのを止めるため。
+ */
+const serialize = (query: Record<string, string | undefined>) =>
+  Object.entries(query).filter(([, v]) => v).sort().map(([k, v]) => `${k}=${v}`).join('&')
+
+watch([keywordFilter, areaFilter, classificationFilter, typeFilter], () => {
+  const query = toQuery()
+  if (serialize(query) === serialize(route.query as Record<string, string>)) return
+  // push ではなく replace。1文字打つたびに履歴が積まれると「戻る」が使い物にならなくなる
+  router.replace({ query })
+})
+
+watch(() => route.query, () => {
+  keywordFilter.value = readQuery('keyword', '')
+  areaFilter.value = readQuery('area', ALL, areaValues)
+  classificationFilter.value = readQuery('classification', ALL, classificationValues)
+  typeFilter.value = readQuery('type', ALL, typeValues)
+})
+
+/*
+ * 読み込み時に URL を実際の状態へ揃える。
+ *
+ * 上の watch は「値が変わったとき」しか動かないので、選択肢に無い値
+ * （例: ?area=ZZZ）で来た場合は、条件は「すべて」に倒れているのに URL には
+ * ZZZ が残ったままになる。表示と URL が食い違うと、共有された側が混乱する。
+ *
+ * クライアントでのみ実行する。SSR 中にリダイレクトすると、
+ * 単なる表記揺れの正規化のために余計な往復が増えるため。
+ */
+onMounted(() => {
+  const query = toQuery()
+  if (serialize(query) === serialize(route.query as Record<string, string>)) return
+  router.replace({ query })
+})
+
+const { data: nurseries, status } = useNurseries()
+
+/*
+ * キーワードの対象は、以前サーバー検索が見ていた4フィールドに揃えている。
+ * 以前は入力欄だけ name しか見ておらず、トップページで住所を入れると当たるのに
+ * 同じ語を一覧の入力欄に打つと 0 件になる、という食い違いがあった。
+ */
+const KEYWORD_FIELDS = ['name', 'name_kana', 'address', 'childcare_age'] as const
 
 const filteredNurseries = computed(() => {
   if (!nurseries.value) return []
 
+  const keyword = keywordFilter.value.trim().toLowerCase()
+
   return nurseries.value.filter((nursery) => {
     const matchClassification = classificationFilter.value === ALL || nursery.classification === classificationFilter.value
-    const matchKeyword = !keywordFilter.value || nursery.name.includes(keywordFilter.value)
+    const matchKeyword = !keyword || KEYWORD_FIELDS.some(field => (nursery[field] ?? '').toLowerCase().includes(keyword))
     const matchType = typeFilter.value === ALL || nursery.type === typeFilter.value
     const matchArea = areaFilter.value === ALL || nursery.area_alphabet === areaFilter.value
 
@@ -151,15 +229,19 @@ useHead({
         絞り込み
       </h3>
       <div class="rounded-lg border border-default p-4 flex flex-col gap-4 md:flex-row md:items-end">
+        <!--
+          トップページの「キーワード検索」と同じものなので、呼び方を揃えている (#106)。
+          以前はここだけ「名前」で、対象も name のみだった。
+        -->
         <UFormField
-          label="名前"
+          label="キーワード"
           class="md:flex-1"
         >
           <UInput
             v-model="keywordFilter"
             variant="outline"
             icon="i-heroicons-magnifying-glass"
-            placeholder="名前を入力してください"
+            placeholder="名前・ふりがな・住所"
             class="w-full"
           />
         </UFormField>

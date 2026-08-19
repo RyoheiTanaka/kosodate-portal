@@ -9,7 +9,7 @@
 const config = useRuntimeConfig()
 const globalAreas = config.public.globalAreas as Array<Area>
 
-const { data: nurseries, status } = useNurseries('')
+const { data: nurseries, status } = useNurseries()
 
 const countByArea = computed(() => {
   const counts: Record<string, number> = {}
