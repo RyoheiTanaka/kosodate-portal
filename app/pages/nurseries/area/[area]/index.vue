@@ -22,10 +22,10 @@ if (!area) {
  * クライアント側 + URLクエリに一本化する予定なので、いまサーバー側に
  * エリア専用のエンドポイントを足すと、そこで作り直しになる。
  *
- * key は一覧ページの useNurseries('') と同じになるため、
+ * key は一覧ページの useNurseries() と同じになるため、
  * 一覧から遷移してきた場合は追加のリクエストが発生しない。
  */
-const { data: nurseries, status } = useNurseries('')
+const { data: nurseries, status } = useNurseries()
 
 const areaNurseries = computed(() =>
   nurseries.value?.filter(nursery => nursery.area_alphabet === areaAlphabet) ?? [],
