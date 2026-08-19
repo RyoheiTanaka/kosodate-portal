@@ -73,13 +73,64 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
       </div>
     </template>
 
-    <p class="flex items-start gap-2 text-sm">
-      <UIcon
-        name="i-heroicons-map-pin"
-        class="size-4 shrink-0 mt-0.5 text-primary"
-      />
-      <span>{{ nursery.address }}{{ nursery.address_note }}</span>
-    </p>
+    <div class="space-y-1.5">
+      <p class="flex items-start gap-2 text-sm">
+        <UIcon
+          name="i-heroicons-map-pin"
+          class="size-4 shrink-0 mt-0.5 text-primary"
+        />
+        <span>{{ nursery.address }}{{ nursery.address_note }}</span>
+      </p>
+
+      <!--
+        定員・送迎バス・一時預かりは園を選ぶ判断に効くが、詳細ページを開かないと
+        分からなかった (#108)。候補を絞る段階で見えるようにする。
+
+        高さを増やさないよう1行にまとめている。バッジを縦に積むとカード1枚が伸び、
+        1カラムのスマホでは一覧全体が一気に長くなる（#129）。
+
+        送迎バスと一時預かりは true のときだけ出す。false まで出すとバッジが増えて
+        カードが騒がしくなるうえ、大半が false なので情報量にならない。
+        送迎バスの null は「無」ではなく「不明」なので、ここでは何も出さない。
+        断定できない情報を一覧に出すより、詳細ページの
+        「情報なし（施設へお問い合わせください）」に任せる。
+      -->
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+        <span
+          v-if="nursery.capacity"
+          class="flex items-center gap-1 text-muted"
+        >
+          <UIcon
+            name="i-lucide-users"
+            class="size-4 shrink-0"
+            aria-hidden="true"
+          />
+          定員 <span class="tabular-nums text-default">{{ nursery.capacity }}</span> 人
+        </span>
+        <span
+          v-if="nursery.shuttle_bus === true"
+          class="flex items-center gap-1 text-toned"
+        >
+          <UIcon
+            name="i-lucide-bus"
+            class="size-4 shrink-0"
+            aria-hidden="true"
+          />
+          送迎バス
+        </span>
+        <span
+          v-if="nursery.is_temporary_care"
+          class="flex items-center gap-1 text-toned"
+        >
+          <UIcon
+            name="i-lucide-clock"
+            class="size-4 shrink-0"
+            aria-hidden="true"
+          />
+          一時預かり
+        </span>
+      </p>
+    </div>
 
     <!--
       受入年齢と開所曜日は、写真の代わりにカードへ視覚的な変化をつけると同時に
