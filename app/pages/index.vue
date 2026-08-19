@@ -8,6 +8,9 @@ const form = reactive<SearchForm>({
   keyword: '',
 })
 
+const config = useRuntimeConfig()
+const globalAreas = config.public.globalAreas as Array<Area>
+
 // 検索ボタンを押した際の処理
 const search = (e: Event): void => {
   e.preventDefault()
@@ -88,6 +91,35 @@ const validateForm = (): Record<string, string | undefined> => {
             検索
           </UButton>
         </UForm>
+      </section>
+      <!--
+        エリアは一覧の主導線 (#86) なので、地区の一覧より前に置く。
+        件数は出していない。ここに出すには全119件の取得が要るが、
+        トップページは今のところデータを取っておらず、導線1つのために
+        初期表示へ待ち時間を足すことになるため。件数は遷移先で出している。
+      -->
+      <section class="mt-4">
+        <h3 class="text-2xl font-bold text-center mb-1">
+          エリアから探す
+        </h3>
+        <p class="text-center text-sm text-muted mb-4">
+          TXの駅と生活圏を軸にした7エリアに分けています。
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ULink
+            v-for="area in globalAreas"
+            :key="area.alphabet"
+            :to="`/nurseries/area/${area.alphabet}`"
+            class="rounded-lg border border-default p-4 transition-colors hover:bg-elevated/50 focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <p class="font-semibold">
+              {{ area.name }}
+            </p>
+            <p class="text-sm text-muted mt-1">
+              {{ area.description }}
+            </p>
+          </ULink>
+        </div>
       </section>
       <section class="mt-4">
         <h3 class="text-2xl font-bold text-center mb-4">
