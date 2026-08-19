@@ -12,6 +12,16 @@ const ALL = 'all'
 const classificationFilter = ref(ALL)
 const keywordFilter = ref('')
 const typeFilter = ref(ALL)
+const areaFilter = ref(ALL)
+
+const config = useRuntimeConfig()
+const globalAreas = config.public.globalAreas as Array<Area>
+
+// エリアは一覧の主導線 (#86)。区分・種別より前に置く
+const areaOptions = [
+  { label: 'すべてのエリア', value: ALL },
+  ...globalAreas.map(area => ({ label: area.name, value: area.alphabet })),
+]
 
 // USelect の既定の labelKey は label なので、v3 の name から付け替えている
 const classificationOptions = [
@@ -56,8 +66,9 @@ const filteredNurseries = computed(() => {
     const matchClassification = classificationFilter.value === ALL || nursery.classification === classificationFilter.value
     const matchKeyword = !keywordFilter.value || nursery.name.includes(keywordFilter.value)
     const matchType = typeFilter.value === ALL || nursery.type === typeFilter.value
+    const matchArea = areaFilter.value === ALL || nursery.area_alphabet === areaFilter.value
 
-    return matchClassification && matchKeyword && matchType
+    return matchClassification && matchKeyword && matchType && matchArea
   })
 })
 
@@ -65,13 +76,15 @@ const filteredNurseries = computed(() => {
 const hasActiveFilters = computed(() =>
   keywordFilter.value !== ''
   || classificationFilter.value !== ALL
-  || typeFilter.value !== ALL,
+  || typeFilter.value !== ALL
+  || areaFilter.value !== ALL,
 )
 
 const resetFilters = () => {
   keywordFilter.value = ''
   classificationFilter.value = ALL
   typeFilter.value = ALL
+  areaFilter.value = ALL
 }
 
 const links = [
@@ -102,6 +115,34 @@ useHead({
       認可保育所一覧
     </h2>
     <!--
+      エリアは一覧の主導線 (#86)。
+      下のフィルターがこの画面を絞るのに対し、こちらはエリア別ページへの入口で、
+      URLを共有できる・検索エンジンに拾われるという別の役割を持つ。
+    -->
+    <section class="container mb-4">
+      <h3 class="text-sm font-medium text-muted mb-2">
+        <ULink
+          to="/nurseries/area"
+          class="underline underline-offset-2 hover:text-default"
+        >エリアから探す</ULink>
+      </h3>
+      <nav
+        class="flex flex-wrap gap-2"
+        aria-label="エリア"
+      >
+        <UButton
+          v-for="area in globalAreas"
+          :key="area.alphabet"
+          :to="`/nurseries/area/${area.alphabet}`"
+          color="neutral"
+          variant="outline"
+          size="sm"
+        >
+          {{ area.name }}
+        </UButton>
+      </nav>
+    </section>
+    <!--
       フィルターは一覧を絞るための道具なので、主役であるカードより目立たせない。
       見出しは支援技術のために残しつつ、視覚的には控えめなツールバーとして扱う。
     -->
@@ -120,6 +161,13 @@ useHead({
             icon="i-heroicons-magnifying-glass"
             placeholder="名前を入力してください"
             class="w-full"
+          />
+        </UFormField>
+        <UFormField label="エリア">
+          <USelect
+            v-model="areaFilter"
+            :items="areaOptions"
+            class="w-full md:w-56"
           />
         </UFormField>
         <UFormField label="区分">

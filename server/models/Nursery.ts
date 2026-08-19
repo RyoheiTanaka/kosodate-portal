@@ -18,6 +18,11 @@ const NurserySchema = new Schema<INurseryDocument>({
   address_note: { type: String, default: '' },
   district: { type: String, required: true },
   district_alphabet: { type: String, required: true },
+  // エリアは取り込み時に住所の大字から判定して入れる (#86)。
+  // 一覧の絞り込みに使うので index を張る。取り込み前の既存ドキュメントには
+  // 存在しないため required にはしない。
+  area: { type: String, default: '' },
+  area_alphabet: { type: String, default: '', index: true },
   longitude: { type: Number, required: true },
   latitude: { type: Number, required: true },
   capacity: { type: Number, default: null },
