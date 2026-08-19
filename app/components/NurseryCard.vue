@@ -55,13 +55,17 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
     見出しのリンクに after で透明な面を敷いて広げているため、
     カード内に別のリンクを置くと重なって押せなくなる点に注意。
   -->
+  <!--
+    余白は既定より詰めている (#129)。1カラムのスマホではカード1枚の高さが
+    そのまま一覧全体の長さになるため、枚数ぶん効いてくる。
+  -->
   <UCard
     class="w-full border-t-4 relative transition-colors hover:bg-elevated/50 focus-within:ring-2 focus-within:ring-primary"
     :class="accentClass"
-    :ui="{ body: 'space-y-4' }"
+    :ui="{ header: 'p-4 sm:p-5', body: 'space-y-3 p-4 sm:p-5' }"
   >
     <template #header>
-      <div class="space-y-2">
+      <div class="space-y-1.5">
         <h4 class="text-lg font-semibold text-center">
           <ULink
             :to="detailPath"
@@ -164,9 +168,15 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
       どちらもラベル付きのマス目で、塗り = 対応あり という同じ語彙に揃えている。
     -->
     <div>
-      <p class="text-xs text-muted mb-1">
-        受入年齢（歳）
-      </p>
+      <!-- 見出しと原文は同じ行に置く。原文は図で表せない表記（産休明けなど）のために残している -->
+      <div class="flex items-baseline justify-between gap-2 mb-1 text-xs text-muted">
+        <p class="shrink-0">
+          受入年齢（歳）
+        </p>
+        <p class="truncate">
+          {{ nursery.childcare_age }}
+        </p>
+      </div>
       <div
         v-if="ages"
         class="flex gap-1"
@@ -174,13 +184,10 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
         <span
           v-for="age in AGE_SCALE"
           :key="age"
-          class="flex-1 h-7 rounded flex items-center justify-center text-xs tabular-nums"
+          class="flex-1 h-6 rounded flex items-center justify-center text-xs tabular-nums"
           :class="ages.includes(age) ? FILLED_CLASS : EMPTY_CLASS"
         >{{ age }}</span>
       </div>
-      <p class="text-xs text-muted mt-1">
-        {{ nursery.childcare_age }}
-      </p>
     </div>
 
     <div>
@@ -195,7 +202,7 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
         <span
           v-for="weekday in WEEKDAYS"
           :key="weekday"
-          class="size-7 shrink-0 rounded-full flex items-center justify-center text-xs"
+          class="size-6 shrink-0 rounded-full flex items-center justify-center text-xs"
           :class="days.includes(weekday) ? FILLED_CLASS : EMPTY_CLASS"
         >{{ weekday }}</span>
       </div>
@@ -205,9 +212,10 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
       >
         {{ nursery.available_day }}
       </p>
+      <!-- 平日と土曜は横に並べる。縦に積むと1行ぶんカードが伸びる (#129) -->
       <dl
         v-if="weekdayHours || saturdayHours"
-        class="mt-2 text-sm space-y-0.5"
+        class="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-sm"
       >
         <div
           v-if="weekdayHours"

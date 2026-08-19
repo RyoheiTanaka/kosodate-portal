@@ -7,5 +7,14 @@ export default defineAppConfig({
       secondary: 'kosodate-sub',
       neutral: 'zinc',
     },
+    /*
+     * パンくずのリンクは既定だと高さが20pxしかなく、スマホでは狙いにくい (#129)。
+     * 4ページすべてに置いてあるので、呼び出し側ではなくここで一度だけ広げる。
+     */
+    breadcrumb: {
+      slots: {
+        link: 'py-2.5',
+      },
+    },
   },
 })

@@ -79,7 +79,7 @@ useHead({
         :variant="other.alphabet === district ? 'subtle' : 'outline'"
         icon="i-lucide-map-pin"
         size="sm"
-        class="rounded-full font-bold"
+        class="min-h-10 rounded-full font-bold"
         :aria-current="other.alphabet === district ? 'page' : undefined"
       >
         {{ other.name }}

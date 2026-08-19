@@ -44,6 +44,11 @@ useHead({
           class="underline underline-offset-2 hover:text-default"
         >エリアから探す</ULink>
       </h3>
+      <!--
+        エリア別ページの導線と見た目を揃えている（丸型・アイコン付き）。
+        以前は size="sm" の素のボタンで、「桜」のような短いラベルだと 32×28px しかなく
+        指では狙いにくかった (#129)。min-h-10 で押せる面を確保する。
+      -->
       <nav
         class="flex flex-wrap gap-2"
         aria-label="エリア"
@@ -52,9 +57,11 @@ useHead({
           v-for="area in globalAreas"
           :key="area.alphabet"
           :to="`/nurseries/area/${area.alphabet}`"
+          :icon="area.icon"
           color="neutral"
           variant="outline"
           size="sm"
+          class="min-h-10 rounded-full font-bold"
         >
           {{ area.name }}
         </UButton>
