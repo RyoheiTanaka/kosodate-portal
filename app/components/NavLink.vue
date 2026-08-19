@@ -3,32 +3,32 @@
     <ULink
       to="/"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >トップ</ULink>
     <ULink
       to="/nurseries"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >認可保育所</ULink>
     <ULink
       to="/contact"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >お問い合わせ</ULink>
     <ULink
       to="/license"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >ライセンス</ULink>
     <ULink
       to="/terms"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >利用規約</ULink>
     <ULink
       to="/privacy"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >プライバシーポリシー</ULink>
   </nav>
 </template>

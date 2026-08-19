@@ -20,13 +20,13 @@
         class="underline"
         target="_blank"
         active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        inactive-class="text-muted hover:text-default"
       >認可保育所等一覧</ULink>、つくば市、<ULink
         to="https://creativecommons.org/licenses/by/4.0/"
         target="_blank"
         class="underline"
         active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        inactive-class="text-muted hover:text-default"
       >クリエイティブ・コモンズ・ライセンス表示4.0国際</ULink>
     </p>
     <p class="text-sm mt-2">
@@ -34,7 +34,7 @@
         to="/license"
         class="underline"
         active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        inactive-class="text-muted hover:text-default"
       >
         詳細はこちら
       </ULink>

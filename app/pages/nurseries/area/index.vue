@@ -69,7 +69,7 @@ useHead({
         to="/nurseries"
         class="underline"
         active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        inactive-class="text-muted hover:text-default"
       >認可保育所一覧へ</ULink>
     </UContainer>
   </main>
