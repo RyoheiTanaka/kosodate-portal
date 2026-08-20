@@ -78,7 +78,7 @@ useHead(() => ({
 </script>
 
 <template>
-  <main class="py-4">
+  <main class="pt-2 pb-4 sm:pt-4">
     <AppBreadcrumb
       :items="links"
     />
@@ -110,17 +110,12 @@ useHead(() => ({
     </nav>
 
     <div class="mt-4">
-      <NurseryFilterPanel
+      <NurseryBrowser
         :filters="filters"
         id-prefix="area"
+        :total="areaTotal"
       />
     </div>
-
-    <NurseryCardList
-      :nurseries="filters.sorted.value"
-      :status="filters.status.value"
-      :total="areaTotal"
-    />
     <!--
       要約はカードの下に置く (#145 / #148)。
       スマホのファーストビューに1枚目のカードを入れるために絞り込みを畳んだ経緯があり、

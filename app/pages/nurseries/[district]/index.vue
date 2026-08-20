@@ -73,11 +73,11 @@ useHead(() => ({
 </script>
 
 <template>
-  <main class="py-4">
+  <main class="pt-2 pb-4 sm:pt-4">
     <AppBreadcrumb
       :items="links"
     />
-    <h1 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-2 sm:mb-4">
       {{ districtName }}
     </h1>
 
@@ -107,14 +107,9 @@ useHead(() => ({
       </UButton>
     </nav>
 
-    <NurseryFilterPanel
+    <NurseryBrowser
       :filters="filters"
       id-prefix="district"
-    />
-
-    <NurseryCardList
-      :nurseries="filters.sorted.value"
-      :status="filters.status.value"
       :total="districtTotal"
     />
     <!--

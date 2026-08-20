@@ -34,8 +34,12 @@ useHead(() => ({
 </script>
 
 <template>
+  <!--
+    スマホでは下の余白を詰める (#166)。
+    パンくず・h1 の積み上げでカードが画面下に押し出されていた。
+  -->
   <UBreadcrumb
-    class="container pb-4"
+    class="container pb-2 sm:pb-4"
     :items="items"
   />
 </template>

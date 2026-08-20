@@ -8,15 +8,20 @@ import type { NurseryFilters } from '~/composables/useNurseryFilters'
  * どの条件を出すか（`visible`）も composable の判断に従う。
  *
  * 条件が8つあるので1行に並べず、役割ごとに段を分けている。
- * キーワード / 場所と属性のセレクト / 設備のトグルと並び替え の3段。
+ * 並び替え / キーワード / 場所と属性のセレクト / 設備のトグル の4段。
+ *
+ * 幅と位置は親（NurseryBrowser）が決める。lg 以上では左カラムに置かれるので、
+ * ここでは container を持たず、与えられた幅の中で縦に積むだけにしている (#166)。
  *
  * ## スマホでは畳む (#145)
  *
  * 8つ全部を常に出すと 458px（375×812 の画面の56%）を占め、
  * ファーストビューにカードが1枚も入らなかった。
- * 常に出すのは「まず打つ」キーワードと「まず並べ替える」並び替えの2つだけにして、
- * 残りは「詳しく絞り込む」の中に畳む。
+ * 常に出すのは「まず並べ替える」並び替えだけにして、残りは「詳しく絞り込む」の中に畳む。
  * sm 以上は横に余裕があり畳む理由が無いので、従来どおり開いた状態にする。
+ *
+ * キーワードも当初は常設していたが、畳む側へ移した (#166)。
+ * 入口はトップページにあり、一覧で常に出すほど「まず打つ」ものではなかった。
  */
 const props = defineProps<{
   filters: NurseryFilters
@@ -41,9 +46,10 @@ const advancedId = computed(() => `${props.idPrefix ?? 'nursery'}-advanced`)
  * 畳んだ中で効いている条件の数 (#145)。
  *
  * 畳んでいると、件数が少ない理由が見えない。開かなくても分かるようにバッジで出す。
- * キーワードと並び替えは畳まないので数えない。
+ * 並び替えは畳まないので数えない。
  */
 const activeAdvancedCount = computed(() => [
+  state.keyword.trim() !== '',
   visible.area && state.area !== ALL,
   visible.district && state.district !== ALL,
   state.classification !== ALL,
@@ -92,22 +98,11 @@ watch(isDistanceSort, (selected) => {
     フィルターは一覧を絞るための道具なので、主役であるカードより目立たせない。
     見出しは支援技術のために残しつつ、視覚的には控えめなツールバーとして扱う。
   -->
-  <section class="container">
+  <section>
     <h2 class="sr-only">
       絞り込みと並び替え
     </h2>
     <div class="rounded-lg border border-default p-4 flex flex-col gap-4">
-      <!-- トップページの「キーワード検索」と同じものなので、呼び方を揃えている (#106) -->
-      <UFormField label="キーワード">
-        <UInput
-          v-model="state.keyword"
-          variant="outline"
-          icon="i-heroicons-magnifying-glass"
-          placeholder="名前・ふりがな・住所"
-          class="w-full"
-        />
-      </UFormField>
-
       <!--
         並び替えは畳まない (#145)。「まず並べ替える」もので、開く操作を挟むと遠くなる。
 
@@ -196,6 +191,23 @@ watch(isDistanceSort, (selected) => {
         class="flex-col gap-4 sm:flex"
         :class="isAdvancedOpen ? 'flex' : 'hidden'"
       >
+        <!--
+          トップページの「キーワード検索」と同じものなので、呼び方を揃えている (#106)。
+
+          スマホでは畳む中に入れる (#166)。常時出すと74px 使うが、
+          キーワードの入口はトップページにあり、一覧を開いた人がまず打つとは限らない。
+          「まず並べ替える」並び替えと違って、常設する理由が薄い。
+        -->
+        <UFormField label="キーワード">
+          <UInput
+            v-model="state.keyword"
+            variant="outline"
+            icon="i-heroicons-magnifying-glass"
+            placeholder="名前・ふりがな・住所"
+            class="w-full"
+          />
+        </UFormField>
+
         <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
           <!-- エリア別・地区別ページでは、その軸はパスで決まっているのでセレクトを出さない -->
           <UFormField

@@ -49,11 +49,11 @@ useHead(() => ({
 </script>
 
 <template>
-  <main class="py-4">
+  <main class="pt-2 pb-4 sm:pt-4">
     <AppBreadcrumb
       :items="links"
     />
-    <h1 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-2 sm:mb-4">
       認可保育所一覧
     </h1>
     <!--
@@ -72,9 +72,16 @@ useHead(() => ({
         エリア別ページの導線と見た目を揃えている（丸型・アイコン付き）。
         以前は size="sm" の素のボタンで、「桜」のような短いラベルだと 32×28px しかなく
         指では狙いにくかった (#129)。min-h-10 で押せる面を確保する。
+
+        スマホでは折り返さず横スクロール1行にする (#166)。
+        チップ7個が2行で164px を占め、カードがファーストビューに入らない原因の一つだった。
+        1行なら約80px 減る。画面端まで流して「まだ右に続く」ことが見えるように
+        -mx-4 px-4 でコンテナの余白ぶんだけはみ出させている。
+        py-1 -my-1 はフォーカスリングが overflow で切れないための逃がし。
+        sm 以上は横幅が足りるので、従来どおり折り返す。
       -->
       <nav
-        class="flex flex-wrap gap-2"
+        class="flex gap-2 overflow-x-auto -mx-4 px-4 py-1 -my-1 sm:flex-wrap sm:overflow-x-visible sm:mx-0 sm:px-0"
         aria-label="エリア"
       >
         <UButton
@@ -85,22 +92,17 @@ useHead(() => ({
           color="neutral"
           variant="outline"
           size="sm"
-          class="min-h-10 rounded-full font-bold"
+          class="min-h-10 shrink-0 rounded-full font-bold"
         >
           {{ area.name }}
         </UButton>
       </nav>
     </section>
 
-    <NurseryFilterPanel :filters="filters" />
-
-    <section>
-      <NurseryCardList
-        :nurseries="filters.sorted.value"
-        :status="filters.status.value"
-        :total="filters.nurseries.value?.length"
-      />
-    </section>
+    <NurseryBrowser
+      :filters="filters"
+      :total="filters.nurseries.value?.length"
+    />
     <UContainer class="text-right">
       <ULink
         to="/"
