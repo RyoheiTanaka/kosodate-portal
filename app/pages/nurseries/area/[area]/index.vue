@@ -116,6 +116,7 @@ useSeoMeta({
       :title="`${area!.name}エリアの認可保育所`"
       :lead="`${area!.description}。`"
       :nurseries="areaNurseries"
+      related-axis="district"
     />
 
     <UContainer class="text-right">

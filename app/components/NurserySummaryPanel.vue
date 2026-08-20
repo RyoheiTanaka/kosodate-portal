@@ -18,9 +18,41 @@ const props = defineProps<{
   lead: string
   /** 対象の施設 */
   nurseries: INursery[]
+  /**
+   * 相互リンクとして出す軸 (#151)。
+   * エリア別ページなら 'district'、地区別ページなら 'area' を渡す。
+   * エリアと地区は範囲が違うので固定の対応表は持てない。掲載データから
+   * 実際にたどれる組み合わせだけを出す。
+   */
+  relatedAxis?: 'district' | 'area'
 }>()
 
 const summary = computed(() => buildNurserySummary(props.nurseries))
+
+/*
+ * 相互リンク。要約の最後に1行だけ置く。
+ * ボタンにすると他エリアへの導線（上部にある丸ボタン）と同じ強さになってしまうので、
+ * 文中のリンクにとどめる。主導線はエリアで (#86)、これは補助でしかない。
+ */
+const related = computed(() => {
+  if (props.relatedAxis === 'district') {
+    return {
+      // 'district' を渡すのはエリア別ページなので、主語はエリア
+      label: 'このエリアの保育所がある地区',
+      items: summary.value.districts.map(item => ({ name: item.name, to: `/nurseries/${item.alphabet}` })),
+    }
+  }
+
+  if (props.relatedAxis === 'area') {
+    return {
+      // 'area' を渡すのは地区別ページなので、主語は地区
+      label: 'この地区の保育所があるエリア',
+      items: summary.value.areas.map(item => ({ name: item.name, to: `/nurseries/area/${item.alphabet}` })),
+    }
+  }
+
+  return null
+})
 
 /*
  * 送迎バスの null は「不明」であって「無し」ではない。
@@ -55,6 +87,25 @@ const shuttleBusText = computed(() => {
         <li>{{ shuttleBusText }}</li>
         <li>掲載している地域: {{ summary.oaza.join('・') }}</li>
       </ul>
+      <p
+        v-if="related && related.items.length > 0"
+        class="text-sm text-muted mt-3"
+      >
+        {{ related.label }}:
+        <!--
+          区切りの「・」は CSS で入れる。テンプレートに文字として書くと、
+          要素間の改行が空白として残って「地区A ・ 地区B」になる
+          （空白だけのノードは Vue が落とすが、文字を含むノードは残る）。
+        -->
+        <ULink
+          v-for="item in related.items"
+          :key="item.to"
+          :to="item.to"
+          class="underline not-first:before:content-['・'] before:no-underline"
+          active-class="text-primary"
+          inactive-class="text-muted hover:text-default"
+        >{{ item.name }}</ULink>
+      </p>
       <p class="text-xs text-muted mt-3">
         件数はつくば市が公開しているデータ（{{ formatSourceDate(nurseries[0]?.source_date) || '公開時点' }}時点）をもとにしています。
       </p>

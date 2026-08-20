@@ -112,6 +112,7 @@ useSeoMeta({
       :title="`${districtName}の認可保育所`"
       lead="つくば市の公式区分による地区です。"
       :nurseries="districtNurseries"
+      related-axis="area"
     />
 
     <UContainer class="text-right">
