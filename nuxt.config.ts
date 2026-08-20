@@ -1,3 +1,18 @@
+import type { ModuleOptions as CsurfOptions } from 'nuxt-csurf'
+
+/*
+ * routeRules に csurf を書けるようにする型の補い (#151)。
+ *
+ * nuxt-csurf は `declare module 'nitropack'` で NitroRouteConfig を拡張しているが、
+ * Nuxt 4.5 の routeRules の型は `nitropack/types` から解決される。そのため拡張が
+ * 届かず、動作はするのに typecheck だけが落ちる。同じ拡張をこちらで当てておく。
+ */
+declare module 'nitropack/types' {
+  interface NitroRouteConfig {
+    csurf?: Partial<CsurfOptions> | false
+  }
+}
+
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint', '@nuxtjs/robots', '@nuxtjs/sitemap', 'nuxt-seo-utils', 'nuxt-gtag'],
   devtools: { enabled: true },
@@ -43,7 +58,44 @@ export default defineNuxtConfig({
       ],
     },
   },
+  /*
+   * 閲覧系ページを CDN に載せる (#151 追記1の項目2)。
+   *
+   * これまで X-Vercel-Cache は常に MISS だった。nuxt-csurf が全レスポンスに
+   * Set-Cookie を付けており、cookie が付いたレスポンスは CDN が原理的に
+   * キャッシュできないため。クロールのたびに関数が起動して Mongo に全件を投げていた。
+   *
+   * 閲覧系は GET しかない。csurf を切って cookie を出さないようにし、ISR に載せる。
+   * CSRF が要るのは問い合わせの POST だけなので、そちらは既定のまま守られる
+   * （ここに書いていない経路は csurf 有効）。
+   *
+   * expiration はデータの更新頻度に合わせている。取り込みは月1の保守枠 (#115) なので
+   * 1時間の陳腐化は許容できる。取り込み直後に反映を急ぐ場合は再デプロイでキャッシュが切れる。
+   */
+  routeRules: {
+    '/': { csurf: false, isr: { expiration: 3600 } },
+    '/nurseries': { csurf: false, isr: { expiration: 3600 } },
+    '/nurseries/**': { csurf: false, isr: { expiration: 3600 } },
+    '/faq': { csurf: false, isr: { expiration: 3600 } },
+    '/license': { csurf: false, isr: { expiration: 3600 } },
+    '/terms': { csurf: false, isr: { expiration: 3600 } },
+    '/privacy': { csurf: false, isr: { expiration: 3600 } },
+    // 一覧が引く全件API。中身は月1でしか変わらないので同じ扱いにする
+    '/api/nurseries': { csurf: false, isr: { expiration: 3600 } },
+  },
   compatibilityDate: '2026-08-14',
+  csurf: {
+    /*
+     * リクエストの時点でトークンを作って event.context に載せる。
+     * /api/csrf がこれを返し、問い合わせフォームは送信直前にそれを取りに行く。
+     *
+     * 従来はSSR時に埋め込まれる <meta name="csrf-token"> を使っていたが、
+     * 閲覧系ページで csurf を切ると cookie（=秘密）が発行されないため、
+     * 一覧からクライアント遷移で問い合わせページへ来た場合に meta のトークンだけが
+     * あって cookie が無い状態になり、送信が 403 になる。
+     */
+    addCsrfTokenToEventCtx: true,
+  },
   eslint: {
     checker: true,
     config: {

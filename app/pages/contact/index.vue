@@ -12,8 +12,6 @@ interface FormErrors {
   message?: string
 }
 
-const { $csrfFetch } = useNuxtApp()
-
 const links = [
   {
     label: 'トップ',
@@ -65,8 +63,17 @@ const handleSubmit = async () => {
 
   try {
     const recaptchaToken = await grecaptcha.execute(siteKey, { action: 'submit' })
-    const response = await $csrfFetch<{ message: string }>('/api/contacts', {
+
+    /*
+     * 送信の直前にトークンを取りに行く (#151)。
+     * 閲覧系ページは CDN に載せるため csurf を切っており、そこから遷移してきた場合は
+     * cookie が無い。SSR時に埋め込まれる meta のトークンに頼ると 403 になる。
+     */
+    const { token } = await $fetch<{ token: string }>('/api/csrf')
+
+    const response = await $fetch<{ message: string }>('/api/contacts', {
       method: 'POST',
+      headers: { 'csrf-token': token },
       body: {
         ...form,
         recaptchaToken,
