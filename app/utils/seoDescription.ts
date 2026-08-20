@@ -11,12 +11,12 @@ import type { INursery } from '~~/server/types/nursery'
  */
 
 /**
- * 住所から大字だけを取り出す。
+ * 住所から大字だけを取り出す。エリアの要約（app/utils/areaSummary.ts）でも使う。
  *
  * @example extractOaza('つくば市上横場354番地10') // '上横場'
  * @returns 取り出せない場合は空文字
  */
-const extractOaza = (address: string | null | undefined): string =>
+export const extractOaza = (address: string | null | undefined): string =>
   (address ?? '')
     .replace(/^つくば市/, '')
     .replace(/[0-9０-９].*$/, '')

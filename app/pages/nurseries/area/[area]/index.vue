@@ -24,10 +24,33 @@ if (!area) {
  */
 const filters = useNurseryFilters({ area: areaAlphabet })
 
-/** 「N件 / 全M件」の母数。このページではエリア内の件数が全件にあたる */
-const areaTotal = computed(() =>
-  filters.nurseries.value?.filter(nursery => nursery.area_alphabet === areaAlphabet).length,
+/** このエリアの施設。件数の母数と要約の両方で使う */
+const areaNurseries = computed(() =>
+  filters.nurseries.value?.filter(nursery => nursery.area_alphabet === areaAlphabet) ?? [],
 )
+
+/** 「N件 / 全M件」の母数。このページではエリア内の件数が全件にあたる */
+const areaTotal = computed(() => filters.nurseries.value ? areaNurseries.value.length : undefined)
+
+/*
+ * エリアの要約 (#151)。7エリアのページが見出しと施設リスト以外ほぼ同じで、
+ * 検索エンジンからは同じ内容のページが7つあるように見えていた。
+ * 掲載データから数えた事実だけを置く。地域の紹介文を書き起こすと、
+ * 駅からの徒歩分数のような手元に無い情報を書くことになる。
+ */
+const summary = computed(() => buildAreaSummary(areaNurseries.value))
+
+/*
+ * 送迎バスの null は「不明」であって「無し」ではない。
+ * 公立は市が情報を公開していないので、不明の件数も添える (#151)。
+ */
+const shuttleBusText = computed(() => {
+  const { shuttleBus, shuttleBusUnknown } = summary.value
+
+  return shuttleBusUnknown > 0
+    ? `送迎バスがある園: ${shuttleBus}園（ほかに有無が不明な園が${shuttleBusUnknown}園あります）`
+    : `送迎バスがある園: ${shuttleBus}園`
+})
 
 const links = [
   {
@@ -103,6 +126,41 @@ useSeoMeta({
       :status="filters.status.value"
       :total="areaTotal"
     />
+    <!--
+      要約はカードの下に置く (#145 / #148)。
+      スマホのファーストビューに1枚目のカードを入れるために絞り込みを畳んだ経緯があり、
+      ここに文章を積むとその努力を打ち消してしまう。
+      検索エンジンはページ全体を読むので、下部でも内容としては同じに扱われる。
+    -->
+    <UContainer class="mt-4">
+      <section
+        v-if="summary.total > 0"
+        class="rounded-lg border border-default p-4"
+      >
+        <h2 class="font-bold mb-2">
+          {{ area!.name }}エリアの認可保育所
+        </h2>
+        <p class="text-sm text-muted mb-3">
+          {{ area!.description }}。掲載している認可保育所は{{ summary.total }}園です。
+        </p>
+        <ul class="text-sm space-y-1 list-disc ml-5">
+          <li>区分: {{ formatAreaCounts(summary.classifications) }}</li>
+          <li>種別: {{ formatAreaCounts(summary.types) }}</li>
+          <li>0歳児クラスがある園: {{ summary.fromZero }}園</li>
+          <li>一時預かりを行っている園: {{ summary.temporaryCare }}園</li>
+          <!--
+            送迎バスの null は「不明」であって「無し」ではない。
+            公立は市が情報を公開していないので、件数を分けて出す (#151)
+          -->
+          <li>{{ shuttleBusText }}</li>
+          <li>掲載している地域: {{ summary.oaza.join('・') }}</li>
+        </ul>
+        <p class="text-xs text-muted mt-3">
+          件数はつくば市が公開しているデータ（{{ formatSourceDate(areaNurseries[0]?.source_date) || '公開時点' }}時点）をもとにしています。
+        </p>
+      </section>
+    </UContainer>
+
     <UContainer class="text-right">
       <ULink
         to="/nurseries"
