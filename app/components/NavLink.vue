@@ -11,6 +11,11 @@
       inactive-class="text-muted hover:text-default"
     >認可保育所</ULink>
     <ULink
+      to="/faq"
+      active-class="text-primary"
+      inactive-class="text-muted hover:text-default"
+    >よくある質問</ULink>
+    <ULink
       to="/contact"
       active-class="text-primary"
       inactive-class="text-muted hover:text-default"
