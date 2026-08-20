@@ -31,6 +31,37 @@ export interface NurserySummary {
   shuttleBusUnknown: number
   /** 施設がある大字。多い順 */
   oaza: string[]
+  /**
+   * この施設群がまたがっている地区。多い順 (#151)。
+   * エリア別ページから地区へ渡るための相互リンクに使う。
+   */
+  districts: Array<{ name: string, alphabet: string }>
+  /** この施設群がまたがっているエリア。多い順。地区別ページからエリアへ渡るのに使う */
+  areas: Array<{ name: string, alphabet: string }>
+}
+
+/**
+ * 名前とURL用の識別子の組を、件数の多い順に重複なく並べる。
+ *
+ * エリアと地区は範囲が違うので、どのエリアがどの地区にまたがるかは固定の対応表を
+ * 持てない。掲載データから実際にたどれる組み合わせだけを出す (#151)。
+ */
+const uniqueBy = (pairs: Array<{ name: string, alphabet: string }>): Array<{ name: string, alphabet: string }> => {
+  const counts = new Map<string, { pair: { name: string, alphabet: string }, count: number }>()
+
+  for (const pair of pairs) {
+    if (!pair.name || !pair.alphabet) continue
+
+    const found = counts.get(pair.alphabet)
+
+    if (found) {
+      found.count += 1
+    } else {
+      counts.set(pair.alphabet, { pair, count: 1 })
+    }
+  }
+
+  return [...counts.values()].sort((a, b) => b.count - a.count).map(entry => entry.pair)
 }
 
 /** 値ごとの件数を数え、多い順に並べる */
@@ -57,6 +88,8 @@ export const buildNurserySummary = (nurseries: INursery[]): NurserySummary => ({
   // null は「不明」であって「無し」ではない (#151)。件数を分けて出し、丸めない
   shuttleBusUnknown: nurseries.filter(nursery => nursery.shuttle_bus === null || nursery.shuttle_bus === undefined).length,
   oaza: countBy(nurseries.map(nursery => extractOaza(nursery.address))).map(entry => entry.label),
+  districts: uniqueBy(nurseries.map(nursery => ({ name: nursery.district, alphabet: nursery.district_alphabet }))),
+  areas: uniqueBy(nurseries.map(nursery => ({ name: nursery.area, alphabet: nursery.area_alphabet }))),
 })
 
 /**
