@@ -172,6 +172,26 @@ useHead(() => ({
               allowfullscreen
               :title="`${nursery.name}の地図`"
             />
+            <!--
+              一覧の距離は直線距離で、大字を基準にした場合は大字の中心からの目安でしかない (#139)。
+              道のりや所要時間を正確に知りたい人はここから Google マップへ送る。
+              経路URLは api=1 の公式形式で、APIキーも課金も要らない。
+            -->
+            <p class="mt-2 text-sm">
+              <ULink
+                :to="`https://www.google.com/maps/dir/?api=1&destination=${nursery.latitude},${nursery.longitude}`"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1 text-primary underline"
+              >
+                <UIcon
+                  name="i-lucide-route"
+                  class="size-4 shrink-0"
+                  aria-hidden="true"
+                />
+                Googleマップで経路を調べる
+              </ULink>
+            </p>
           </template>
 
           <div class="w-full">

@@ -342,19 +342,37 @@ watch(isDistanceSort, (selected) => {
                 :for="oazaId"
                 class="text-sm text-muted shrink-0"
               >大字から選ぶ</label>
-              <USelect
+              <!--
+                市内の全大字が並ぶため241件ある (#139)。素のプルダウンでは目的の大字まで
+                延々とスクロールすることになるので、絞り込みのできる SelectMenu を使う。
+              -->
+              <USelectMenu
                 :id="oazaId"
                 v-model="selectedOaza"
                 :items="oazaOptions"
+                value-key="value"
                 placeholder="選択してください"
+                :search-input="{ placeholder: '大字名で絞り込む' }"
                 class="w-40"
               />
             </div>
           </div>
         </template>
 
+        <!--
+          大字を基準にしたときは、その大字の代表点（位置参照情報の1点）からの距離になる。
+          大字の中のどこに住んでいるかで実際の距離は変わるので、範囲の目安でしかないことを
+          はっきり書く (#139)。番地レベルの精度は Geocoding API が要るため持たない。
+          正確に見たい人は詳細ページの地図から Google マップへ行ってもらう。
+        -->
         <p class="text-xs text-dimmed">
-          直線距離です。道のりや所要時間とは異なります。位置情報はこのブラウザの中だけで使い、送信も保存もしません。
+          <template v-if="basePoint?.source === 'oaza'">
+            大字のおおよその中心からの直線距離です。同じ大字の中でも実際の距離は変わるため、目安として見てください。正確な道のりは詳細ページの地図から確認できます。
+          </template>
+          <template v-else>
+            直線距離です。道のりや所要時間とは異なります。
+          </template>
+          位置情報はこのブラウザの中だけで使い、送信も保存もしません。
         </p>
       </div>
 

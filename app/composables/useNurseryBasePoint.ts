@@ -1,5 +1,6 @@
 import type { INursery } from '~~/server/types/nursery'
 import type { Coordinates } from '~/utils/geo'
+import oazaLatLng from '~/data/oaza-latlng.json'
 
 /**
  * 距離順ソートの基準点 (#87)。
@@ -9,7 +10,10 @@ import type { Coordinates } from '~/utils/geo'
  * - A: Geolocation API（ブラウザの位置情報）
  * - B: 大字を選ぶ（Aが使えないときのフォールバック）
  *
- * 住所の自由入力（Geocoding API）は課金と GCP の設定が絡むため、別issueに切ってある。
+ * 住所の自由入力（Geocoding API）は課金とキー管理が要り、入力された住所を外部へ
+ * 送ることにもなるため採用しない (#139)。大字の代表点を静的に持てば、実行時の
+ * 外部API呼び出しゼロで市内の全大字を基準にできる。番地レベルの精度は出せないので、
+ * 「おおよその距離」であることを画面で断り、正確な道のりは Google マップへ送る。
  *
  * ## プライバシー
  *
@@ -52,20 +56,29 @@ export const useNurseryBasePoint = () => {
   const geolocationStatus = useState<GeolocationStatus>('nursery-geolocation-status', () => 'idle')
 
   /**
-   * 大字の代表座標。取得済みの保育所から重心を出す。
+   * 大字の選択肢。つくば市の全大字を、代表点の座標つきで並べる (#139)。
    *
-   * 専用のデータファイルを持たない。大字マップ（scripts/data/oaza-district.json）を
-   * 持ってきても、そちらには座標が無いので結局ここで計算することになる。
-   * 保育所が1件も無い大字は選択肢に出ない。その場合は隣の大字を選んでもらう。
+   * 基本は国土交通省の位置参照情報（大字・町丁目レベル）の代表点で、
+   * scripts/build-oaza-latlng.mjs が app/data/oaza-latlng.json に落としている。
+   *
+   * 以前は「その大字にある保育所の重心」だけを代表点にしていたため、保育所が0件の
+   * 大字は選択肢に出せなかった（71件）。自宅の大字が無ければ隣を選ぶしかなく、
+   * そこが #139 の発端。静的な代表点を持つことで市内のどの大字でも基準にできる。
+   *
+   * ただし区画整理後の新しい町名（さくらの森・要元中根・流星台）は位置参照情報に
+   * まだ無い。そこだけは従来どおり保育所の重心で補う。静的データがある大字では
+   * 重心を使わない。重心は園の分布に引きずられるため、代表点のほうが素直。
    */
   const buildOazaOptions = (nurseries: INursery[] | null | undefined) => {
-    if (!nurseries?.length) return []
+    const options = new Map<string, Coordinates>(
+      Object.entries(oazaLatLng).map(([oaza, point]) => [oaza, point]),
+    )
 
     const groups = new Map<string, { latitude: number, longitude: number, count: number }>()
 
-    for (const nursery of nurseries) {
+    for (const nursery of nurseries ?? []) {
       const oaza = toOaza(nursery.address)
-      if (!oaza) continue
+      if (!oaza || options.has(oaza)) continue
 
       const current = groups.get(oaza) ?? { latitude: 0, longitude: 0, count: 0 }
       current.latitude += nursery.latitude
@@ -74,12 +87,16 @@ export const useNurseryBasePoint = () => {
       groups.set(oaza, current)
     }
 
-    return [...groups.entries()]
-      .map(([oaza, sum]) => ({
+    for (const [oaza, sum] of groups) {
+      options.set(oaza, { latitude: sum.latitude / sum.count, longitude: sum.longitude / sum.count })
+    }
+
+    return [...options.entries()]
+      .map(([oaza, point]) => ({
         label: oaza,
         value: oaza,
-        latitude: sum.latitude / sum.count,
-        longitude: sum.longitude / sum.count,
+        latitude: point.latitude,
+        longitude: point.longitude,
       }))
       .sort((a, b) => a.label.localeCompare(b.label, 'ja'))
   }
