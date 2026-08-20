@@ -89,7 +89,8 @@ CI も同様で、スモークテスト（`scripts/ci-smoke.sh`）は DB を使�
 | 本番へのデータ取り込み | 専用ユーザー `kosodate-import`（`readWrite@kosodate`） |
 | Atlas の Network Access | 全開放。Vercel に固定IPが無いため許容し、権限分離で守る |
 | Google Maps APIキー | **Maps Embed API のみ**に制限。リファラー制限あり |
-| クライアントに露出する値 | `VITE_GOOGLE_MAPS_API_KEY` と `VITE_GOOGLE_RECAPTCHA_SITE_KEY` の2つだけ。`runtimeConfig.public` に機密値は無い |
+| クライアントに露出する値 | `VITE_GOOGLE_MAPS_API_KEY`・`VITE_GOOGLE_RECAPTCHA_SITE_KEY`・`NUXT_PUBLIC_GTAG_ID` の3つ。いずれも公開前提の値で、`runtimeConfig.public` に機密値は無い |
+| GA4 の測定ID | `NUXT_PUBLIC_GTAG_ID` (#158)。`VITE_*` と違いビルド時に焼き込まれないので、Vercel の環境変数を変えるだけで差し替わる。未設定の環境では計測しない |
 
 ## 触るときに壊してはいけない前提
 
