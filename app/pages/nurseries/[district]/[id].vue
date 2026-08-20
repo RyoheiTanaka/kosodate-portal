@@ -13,7 +13,44 @@ const config = useRuntimeConfig()
 const globalDistricts = config.public.globalDistricts as Array<District>
 const globalDistrict = globalDistricts.find(globalDistrict => globalDistrict.alphabet == district) || { alphabet: '', name: '' }
 
-const { data: nursery } = useNursery(district, id)
+/*
+ * 実在しない地区スラッグは404 (#151)。
+ * データがどう変わっても正しくなることはないURLなので、リダイレクトの余地は無い。
+ * エリア別ページ（app/pages/nurseries/area/[area]/index.vue）と扱いを揃えている。
+ */
+if (!globalDistricts.some(candidate => candidate.alphabet === district)) {
+  throw createError({ statusCode: 404, statusMessage: 'District Not Found', message: '地区が見つかりません', fatal: true })
+}
+
+/*
+ * リダイレクトの判定に施設のデータが要るので、ここは await する。
+ * await しないと nursery.value は null のままで、判定が常に素通りする。
+ */
+const { data: nursery, error } = await useNursery(district, id)
+
+/*
+ * 施設が存在しない（API が404）、または nursery_id が数値でない（API が400）。
+ * 以前はどちらも200で、見出しも本文も無いページが返っていた。
+ */
+if (error.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Nursery Not Found', message: '施設が見つかりません', fatal: true })
+}
+
+/*
+ * URL の主キーは nursery_id で、district は表示用のスラッグにすぎない。
+ * 詳細APIが district を見ていないため /nurseries/oho/25 でも谷田部の施設が開けるので、
+ * 施設本来の地区URLへ恒久リダイレクトして1本に寄せる (#151)。
+ *
+ * 404 ではなく301にしているのは、district_alphabet が住所の大字から導出した値で、
+ * データ側の見直しで変わりうるため。404 にすると旧URLが即座に死ぬが、
+ * 301なら外部リンクや検索エンジンの評価を新URLへ引き継げる。
+ */
+if (nursery.value && nursery.value.district_alphabet !== district) {
+  await navigateTo(
+    `/nurseries/${nursery.value.district_alphabet}/${nursery.value.nursery_id}`,
+    { redirectCode: 301 },
+  )
+}
 
 const detailRows = computed(() => nursery.value ? buildNurseryDetailRows(nursery.value) : [])
 
