@@ -87,25 +87,36 @@ const shuttleBusText = computed(() => {
         <li>{{ shuttleBusText }}</li>
         <li>掲載している地域: {{ summary.oaza.join('・') }}</li>
       </ul>
-      <p
+      <!--
+        相互リンク。以前は「・」区切りの文中リンクにしていたが、
+        区切り文字がリンクの下線を継いで一続きの下線に見え、どこからどこまでが
+        1つのリンクなのか分からなかった。スマホでは隣同士が近すぎて誤タップもしやすい。
+
+        区切り文字をやめ、間隔とタップ領域で分ける。高さは #129 と同じ 40px を確保する。
+      -->
+      <div
         v-if="related && related.items.length > 0"
-        class="text-sm text-muted mt-3"
+        class="mt-3 text-sm text-muted"
       >
-        {{ related.label }}:
-        <!--
-          区切りの「・」は CSS で入れる。テンプレートに文字として書くと、
-          要素間の改行が空白として残って「地区A ・ 地区B」になる
-          （空白だけのノードは Vue が落とすが、文字を含むノードは残る）。
-        -->
-        <ULink
-          v-for="item in related.items"
-          :key="item.to"
-          :to="item.to"
-          class="underline not-first:before:content-['・'] before:no-underline"
-          active-class="text-primary"
-          inactive-class="text-muted hover:text-default"
-        >{{ item.name }}</ULink>
-      </p>
+        {{ related.label }}
+        <ul class="flex flex-wrap gap-x-4 gap-y-1 -ml-2">
+          <li
+            v-for="item in related.items"
+            :key="item.to"
+          >
+            <!--
+              下線は内側の span に引く。リンク側に引くと左右の余白まで下線が伸びて、
+              文字より広い下線になる。余白はタップ領域のためのものなので見せない。
+            -->
+            <ULink
+              :to="item.to"
+              class="inline-flex items-center min-h-10 px-2"
+              active-class="text-primary"
+              inactive-class="text-muted hover:text-default"
+            ><span class="underline underline-offset-4">{{ item.name }}</span></ULink>
+          </li>
+        </ul>
+      </div>
       <p class="text-xs text-muted mt-3">
         件数はつくば市が公開しているデータ（{{ formatSourceDate(nurseries[0]?.source_date) || '公開時点' }}時点）をもとにしています。
       </p>
