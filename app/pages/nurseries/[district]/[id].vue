@@ -17,9 +17,11 @@ const { data: nursery } = useNursery(district, id)
 
 const detailRows = computed(() => nursery.value ? buildNurseryDetailRows(nursery.value) : [])
 
-useHead({
+// オブジェクトで渡すと fetch 解決前の undefined がその場の値として固定され、
+// 全詳細ページの title が `子育てポータル` のままになる (#151)。関数で渡して追従させる。
+useHead(() => ({
   title: nursery.value?.name,
-})
+}))
 </script>
 
 <template>
