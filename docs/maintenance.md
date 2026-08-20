@@ -92,6 +92,30 @@ CI も同様で、スモークテスト（`scripts/ci-smoke.sh`）は DB を使�
 | クライアントに露出する値 | `VITE_GOOGLE_MAPS_API_KEY`・`VITE_GOOGLE_RECAPTCHA_SITE_KEY`・`NUXT_PUBLIC_GTAG_ID` の3つ。いずれも公開前提の値で、`runtimeConfig.public` に機密値は無い |
 | GA4 の測定ID | `NUXT_PUBLIC_GTAG_ID` (#158)。`VITE_*` と違いビルド時に焼き込まれないので、Vercel の環境変数を変えるだけで差し替わる。未設定の環境では計測しない |
 
+## 郵便番号データの更新（#151）
+
+住所の郵便番号は市のデータに含まれていないため、日本郵便の郵便番号データから
+大字をもとに引いて `postal_code` に入れている。対応表は
+`scripts/data/oaza-postal.json`（つくば市の239件）。
+
+更新するとき:
+
+1. [日本郵便の郵便番号データ](https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html)から
+   茨城県版（`08IBARAK`）をダウンロードする。Shift_JIS・ヘッダー無しのCSV
+2. `node scripts/build-oaza-postal.mjs <CSVのパス>` を実行する
+3. `npm run import:nurseries -- --dry-run` で差分を確認してから取り込む
+
+判断が必要なところ:
+
+- **番地で郵便番号が分かれる大字は自動では入らない**（つくば市では旭・池の台・大穂・
+  立原・西の沢・花畑・松の里・南原の8つ）。該当する施設が出たら、住所の番地を見て
+  `build-oaza-postal.mjs` の `MANUAL` に書く。**推測で埋めない**
+- 現在 `MANUAL` にあるのは「要元中根」（大字は「要」。小字まで含む表記のためデータに無い）と
+  「花畑」（掲載中の2施設はいずれも 1-7-1 ではないので「その他」の番号）の2件。
+  どちらも施設の公式サイトの記載と一致することを確認済み
+- 引けなかった大字は取り込み時に警告が出るが、**取り込みは止まらない**。郵便番号は
+  表示と構造化データの補足情報で、空でも一覧・絞り込みは成立するため
+
 ## 触るときに壊してはいけない前提
 
 - **Maps APIキーに Geocoding API を足さない。**

@@ -83,6 +83,8 @@ const buildAddress = (nursery: INursery) => {
 
   return {
     '@type': 'PostalAddress',
+    // 大字から一意に決められなかった施設は空。その場合は項目ごと出さない
+    ...(nursery.postal_code ? { postalCode: nursery.postal_code } : {}),
     'streetAddress': street,
     'addressLocality': 'つくば市',
     'addressRegion': '茨城県',

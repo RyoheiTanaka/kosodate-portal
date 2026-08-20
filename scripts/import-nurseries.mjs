@@ -77,6 +77,14 @@ const toOaza = s => String(s).replace(/^茨城県?/, '').replace(/^つくば市/
   .replace(/[0-9０-９].*$/, '').replace(/(丁目|番地|字).*$/, '').trim()
 
 const AREA_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-area.json'), 'utf8'))
+const POSTAL_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-postal.json'), 'utf8'))
+
+// 郵便番号もCSVに列が無く、住所の大字から引く (#151)。日本郵便の郵便番号データ由来で、
+// 表は scripts/build-oaza-postal.mjs が作る。
+//
+// エリアと違って、引けなくても取り込みは止めない。郵便番号は表示と構造化データの
+// 補足情報にすぎず、空でも一覧・絞り込みは成立するため。推測で埋めるほうが害が大きい。
+const toPostalCode = address => POSTAL_MAP[toOaza(address)] ?? ''
 
 // エリアはCSVに列が無く、住所の大字から判定する（地区マップと同じ方式）。
 // 地区がCSV由来なのに対しエリアは導出値なので、判定できない大字が出たら
@@ -94,6 +102,7 @@ const toDoc = row => ({
   name_kana: row.name_kana,
   address: row.address,
   address_note: row.address_note,
+  postal_code: toPostalCode(row.address),
   district: row.district,
   district_alphabet: row.district_alphabet,
   ...toArea(row.address),
@@ -178,6 +187,16 @@ const main = async () => {
   if (unknown.length) {
     console.warn(`\n⚠ 大字マップに無い住所: ${unknown.join(', ')}`)
     console.warn('  scripts/data/oaza-district.json への追記を検討してください')
+  }
+
+  // 郵便番号を引けなかった住所を警告する (#151)。
+  // 止めはしないが、放置すると構造化データから postalCode が静かに欠けるので気づけるようにする。
+  const noPostal = [...new Set(rows.filter(r => !toPostalCode(r.address)).map(r => toOaza(r.address)))]
+  if (noPostal.length) {
+    console.warn(`
+⚠ 郵便番号を引けなかった大字: ${noPostal.join(', ')}`)
+    console.warn('  日本郵便のデータを更新して scripts/build-oaza-postal.mjs を流し直すか、')
+    console.warn('  番地で郵便番号が分かれる大字であれば同スクリプトの MANUAL に追記してください')
   }
 
   // エリアごとの件数を出す。偏りの解消が目的の区分なので、
