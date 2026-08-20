@@ -114,9 +114,23 @@ useSeoMeta({
       </UButton>
     </nav>
 
+    <div class="mt-4">
+      <NurseryFilterPanel
+        :filters="filters"
+        id-prefix="area"
+      />
+    </div>
+
+    <NurseryCardList
+      :nurseries="filters.sorted.value"
+      :status="filters.status.value"
+      :total="areaTotal"
+    />
     <!--
-      要約は絞り込みより前に置く。このエリアがどういう構成なのかを先に示してから
-      道具（絞り込み）を出す順にしている。
+      要約はカードの下に置く (#145 / #148)。
+      スマホのファーストビューに1枚目のカードを入れるために絞り込みを畳んだ経緯があり、
+      ここに文章を積むとその努力を打ち消してしまう。
+      検索エンジンはページ全体を読むので、下部でも内容としては同じに扱われる。
     -->
     <UContainer class="mt-4">
       <section
@@ -147,18 +161,6 @@ useSeoMeta({
       </section>
     </UContainer>
 
-    <div class="mt-4">
-      <NurseryFilterPanel
-        :filters="filters"
-        id-prefix="area"
-      />
-    </div>
-
-    <NurseryCardList
-      :nurseries="filters.sorted.value"
-      :status="filters.status.value"
-      :total="areaTotal"
-    />
     <UContainer class="text-right">
       <ULink
         to="/nurseries"
