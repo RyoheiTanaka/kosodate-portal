@@ -128,6 +128,26 @@ watch(isDistanceSort, (selected) => {
           />
         </div>
 
+        <!--
+          距離順の入口 (#149)。
+
+          並び替えのセレクトを開かないと「近い順」があると分からず、
+          開かなければ無いのと同じだった。「近い順」は送迎できるか・通えるかに直結する軸なので、
+          セレクトの外に常設して見えるようにする。セレクトからも従来どおり選べる。
+
+          押すと並び替えが距離順になり、上の watch が位置情報を求める。
+          基準点が決まった後は下の基準点のUIが役目を引き継ぐので、このボタンは引っ込める。
+        -->
+        <UButton
+          v-if="!basePoint && !isDistanceSort"
+          color="neutral"
+          variant="subtle"
+          icon="i-lucide-locate-fixed"
+          @click="state.sort = 'distance'"
+        >
+          近くの園を探す
+        </UButton>
+
         <!-- 畳むのはスマホだけ。sm 以上ではボタンごと消し、中身を常に開いた状態にする -->
         <UButton
           class="sm:hidden"
