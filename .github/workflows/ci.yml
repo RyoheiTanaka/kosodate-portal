@@ -15,7 +15,14 @@ jobs:
     # Dependabot の PR は lockfile が壊れた状態で来るため（issue #91）、
     # 先に修復してから同じ検証を回す dependabot-lockfile.yml が担当する。
     # ここでも走らせると必ず npm ci で落ちて、二重に赤くなって判断を誤らせる。
-    if: github.actor != 'dependabot[bot]'
+    #
+    # actor だけでは足りない（issue #123）。修復ワークフローが PR ブランチへ push すると
+    # actor が github-actions[bot] になった run が新たに立ち、それが承認待ち
+    # （action_required）で止まる。承認待ちの run は check-runs API に載らないため、
+    # PR 上は「CI が動いていない」ようにしか見えない。ブランチ名でも弾く。
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      !startsWith(github.head_ref, 'dependabot/')
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -34,6 +41,11 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      # ビルド（Vite）は型を見ずにトランスパイルするため、型エラーは素通りする（issue #121）。
+      # ここで vue-tsc を通す。tsc と違い .vue のテンプレート内も見る。
+      - name: 型チェック
+        run: npm run typecheck
 
       - name: ビルド
         run: npm run build

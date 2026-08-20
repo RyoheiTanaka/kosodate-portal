@@ -129,9 +129,20 @@ CSVは住所1列＋方書1列。DBは `prefecture` / `city` / `address1` / `addr
 
 **環境変数**
 
-`.env` の `MONGODB_URI` を読む。
+`MONGODB_URI`（DB名を含まない接続文字列）と `MONGODB_DB`（接続先のDB名）を、
+環境変数 → `.env` の順で読む（`scripts/lib/db.mjs`）。
+
+DB名を接続文字列から切り離しているのは、dev/prod の切り替えを秘密情報を含まない
+1変数の変更で済ませるため。`mongodump` / `mongorestore` も DB名を含まない URI を
+要求するため、同じ `MONGODB_URI` をそのまま渡せる。
+
+実行時に接続先DB名を表示し、開発用DB（`_dev` で終わる名前）以外に**書き込む**場合は
+`--prod` を要求する。読むだけの操作（`--dry-run`、バックアップ作成）は対象外。
+
 この開発環境では Atlas の SRV レコードがローカルDNSで解決できないため、
 スクリプト内で `dns.setServers(['8.8.8.8'])` を指定する。
+
+> 対応Issue: [#89 開発用DBを分離し、DB名を kosodate に変更する](https://github.com/RyoheiTanaka/kosodate-portal/issues/89)
 
 ### 1-3. 地区マップ
 
@@ -160,6 +171,15 @@ CSVは住所1列＋方書1列。DBは `prefecture` / `city` / `address1` / `addr
 | `components/CreativeCommons.vue` / `pages/license/index.vue` | 出典に「令和8年4月時点」を追記 |
 
 ### 1-5. 反映手順
+
+ローカルの `.env` は開発用DB（`kosodate_dev`）を指しているため、**そのまま実行すると開発用DBが対象**。
+本番（`kosodate`）に反映するときだけ、DB名と本番用の接続文字列を実行時に渡して `--prod` を付ける。
+
+```bash
+MONGODB_URI="mongodb+srv://<本番ユーザー>:<password>@<cluster>/?retryWrites=true&w=majority" \
+MONGODB_DB=kosodate \
+  npm run import:nurseries -- --prod
+```
 
 1. **バックアップを取得**
 
@@ -197,6 +217,8 @@ mongorestore --uri="$MONGODB_URI" --drop --nsInclude="nurseries.nurseries" backu
 npm run backup:nurseries -- --restore=backups/nurseries-20260813-085818.json
 ```
 
+> 復元先も `--prod` の対象。開発用DB以外に `--restore` すると、フラグ無しでは中断する。
+
 > MongoDB Database Tools は MSI でインストールしても PATH に追加されない。
 > 実体は `C:\Program Files\MongoDB\Tools\100\bin`。
 >
@@ -233,11 +255,38 @@ CSVの `check` 列に印がある行。
 地区は市の公式区分としてデータ属性のまま残し、**UIの主導線となるエリア軸を別に追加**する。
 地区を再編しないのは、URL（`/nurseries/[district]/[id]`）を壊さないため、および市の資料と照合可能な状態を保つため。
 
-- `area` フィールドを追加（つくば駅周辺 / 研究学園 / みどりの / 万博記念公園 / 北部 / 南部 など）
-- ルートは `/nurseries/area/[area]` を新設し、既存の `/nurseries/[district]` は温存
-- 区分の定義は大字マップと同様にJSONで持つ
+**主導線はエリアに置く**（#86 で決定）。地区とエリアを対等に並べると煩雑になるため、
+一覧の絞り込み・ナビゲーションはエリア、地区はデータ属性と詳細ページのURLに留める。
 
-エリアの具体的な区切りは実装時に決める。
+### 決めた区分（7エリア）
+
+TXの駅と生活圏を軸に切り直した。北から南の順。
+
+| エリア | alphabet | 件数 |
+| --- | --- | --- |
+| 北部（筑波・大穂・豊里） | `hokubu` | 22 |
+| 桜 | `sakura` | 14 |
+| つくば駅周辺 | `tsukuba-station` | 18 |
+| 研究学園 | `kenkyugakuen` | 15 |
+| 万博記念公園 | `banpaku` | 10 |
+| みどりの・谷田部 | `midorino` | 22 |
+| 南部（並木・茎崎） | `nanbu` | 18 |
+
+谷田部地区の65件が5エリアに分かれ、最大の区分が **65件 → 22件** になった。
+
+エリアの「桜」は地区の「桜地区」と範囲が違う（並木・大角豆・倉掛・千現は南部、
+吾妻・竹園はつくば駅周辺に入る）。名前が似ているので混同しないこと。
+
+### 実装
+
+- `area` / `area_alphabet` フィールドを追加。住所の大字から判定する（大字マップと同じ方式）
+- 定義は `scripts/data/oaza-area.json`（72大字）。エリアの一覧と説明文は `nuxt.config.ts` の `globalAreas`
+- 判定できない大字が出たら取り込みを**中断**する。地区はCSVの列から入るのに対し、
+  エリアはマップからの導出値のため、空のまま入れるとその園がエリア絞り込みから消える
+- ルートは `/nurseries/area/[area]` と `/nurseries/area`（エリア一覧）を新設。既存の `/nurseries/[district]` は温存
+- エリア別ページに専用APIは足していない。全件を1回取ってクライアントで絞る。
+  #106 で一覧の絞り込みをクライアント側 + URLクエリに一本化する予定のため、
+  いまサーバー側にエンドポイントを足すとそこで作り直しになる
 
 ---
 

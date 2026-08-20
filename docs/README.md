@@ -22,4 +22,5 @@
 
 ## 一覧
 
+- [maintenance.md](maintenance.md) — 保守モードの運用手順。月1回のメンテ枠と、長く放置した後の復帰手順
 - [nursery-data-update-plan.md](nursery-data-update-plan.md) — 保育園データの更新手順とデータソース。年次更新のたびに参照する

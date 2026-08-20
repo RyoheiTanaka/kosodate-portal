@@ -1,7 +1,9 @@
 import type { Document, Types } from 'mongoose'
 import { Schema, model } from 'mongoose'
+import type { INursery } from '~~/server/types/nursery'
 
-interface INurseryDocument extends INursery, Document {
+// API 側の `INursery` は `_id: string` なので、DB 側は差し替えて ObjectId で持つ
+interface INurseryDocument extends Omit<INursery, '_id'>, Document {
   _id: Types.ObjectId
 }
 
@@ -14,8 +16,16 @@ const NurserySchema = new Schema<INurseryDocument>({
   name_kana: { type: String, default: '' },
   address: { type: String, required: true },
   address_note: { type: String, default: '' },
+  // 郵便番号は市のデータに無く、日本郵便の郵便番号データから大字で引いて入れる (#151)。
+  // 一意に決められない大字は空のままにする（推測で埋めない）
+  postal_code: { type: String, default: '' },
   district: { type: String, required: true },
   district_alphabet: { type: String, required: true },
+  // エリアは取り込み時に住所の大字から判定して入れる (#86)。
+  // 一覧の絞り込みに使うので index を張る。取り込み前の既存ドキュメントには
+  // 存在しないため required にはしない。
+  area: { type: String, default: '' },
+  area_alphabet: { type: String, default: '', index: true },
   longitude: { type: Number, required: true },
   latitude: { type: Number, required: true },
   capacity: { type: Number, default: null },

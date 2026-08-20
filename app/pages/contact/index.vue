@@ -12,8 +12,6 @@ interface FormErrors {
   message?: string
 }
 
-const { $csrfFetch } = useNuxtApp()
-
 const links = [
   {
     label: 'トップ',
@@ -44,13 +42,13 @@ const validateForm = (state: ContactForm): FormError<string>[] => {
   const validationErrors: FormError<string>[] = []
 
   if (!state.email.trim()) {
-    validationErrors.push({ path: 'email', message: 'メールアドレスは必須です' })
+    validationErrors.push({ name: 'email', message: 'メールアドレスは必須です' })
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    validationErrors.push({ path: 'email', message: '正しいメールアドレスを入力してください' })
+    validationErrors.push({ name: 'email', message: '正しいメールアドレスを入力してください' })
   }
 
   if (!state.message.trim()) {
-    validationErrors.push({ path: 'message', message: 'お問い合わせ内容は必須です' })
+    validationErrors.push({ name: 'message', message: 'お問い合わせ内容は必須です' })
   }
 
   return validationErrors
@@ -65,28 +63,33 @@ const handleSubmit = async () => {
 
   try {
     const recaptchaToken = await grecaptcha.execute(siteKey, { action: 'submit' })
-    const response = await $csrfFetch<{ message: string, status: number }>('/api/contacts', {
+
+    /*
+     * 送信の直前にトークンを取りに行く (#151)。
+     * 閲覧系ページは CDN に載せるため csurf を切っており、そこから遷移してきた場合は
+     * cookie が無い。SSR時に埋め込まれる meta のトークンに頼ると 403 になる。
+     */
+    const { token } = await $fetch<{ token: string }>('/api/csrf')
+
+    const response = await $fetch<{ message: string }>('/api/contacts', {
       method: 'POST',
+      headers: { 'csrf-token': token },
       body: {
         ...form,
         recaptchaToken,
       },
     })
 
-    if (response.status === 200) {
-      successMessage.value = response.message
-      Object.assign(form, { name: '', email: '', message: '' })
-    } else {
-      errorMessage.value = response.message || 'エラーが発生しました'
-    }
+    successMessage.value = response.message
+    Object.assign(form, { name: '', email: '', message: '' })
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('APIエラー:', error.message)
-      errorMessage.value = error.message || '送信に失敗しました'
-    } else {
-      console.error('予期しないエラー:', error)
-      errorMessage.value = '送信に失敗しました'
-    }
+    console.error('お問い合わせ送信エラー:', error)
+
+    // API は createError で投げるので、画面に出す文言は data.message に入る。
+    // 500 は Nitro が message を伏せるため、その場合はこちらの文言を使う
+    const data = (error as { data?: { message?: string } }).data
+
+    errorMessage.value = data?.message || '送信に失敗しました。しばらくしてからお試しください。'
   } finally {
     loading.value = false
   }
@@ -99,20 +102,23 @@ useHead({
   ],
 
 })
+
+useSeoMeta({
+  description: 'つくば市の子育てポータルへのお問い合わせフォームです。掲載内容の誤りのご指摘やご要望を、お名前・メールアドレス・お問い合わせ内容をご記入のうえお送りいただけます。',
+})
 </script>
 
 <template>
   <main class="py-4">
-    <UBreadcrumb
-      class="container pb-4"
+    <AppBreadcrumb
       :items="links"
     />
     <UContainer class="max-w-(--breakpoint-xl) w-full">
       <UCard>
         <template #header>
-          <h2 class="text-3xl font-bold text-center">
+          <h1 class="text-3xl font-bold text-center">
             お問い合わせ
-          </h2>
+          </h1>
         </template>
         <UForm
           :state="form"

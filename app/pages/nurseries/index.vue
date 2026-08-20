@@ -1,78 +1,9 @@
 <script setup lang="ts">
-const route = useRoute()
-const keyword = ref<string>(route.query.keyword as string || '')
+const config = useRuntimeConfig()
+const globalAreas = config.public.globalAreas as Array<Area>
 
-/**
- * 「すべて」を表す番兵。
- * reka-ui の SelectItem は空文字の value を許さない（空文字は選択解除の意味を持つ）ため、
- * v3 のように value: '' の選択肢を置けない。
- */
-const ALL = 'all'
-
-const classificationFilter = ref(ALL)
-const keywordFilter = ref('')
-const typeFilter = ref(ALL)
-
-// USelect の既定の labelKey は label なので、v3 の name から付け替えている
-const classificationOptions = [
-  {
-    label: 'すべての区分',
-    value: ALL,
-  },
-  {
-    label: '公立',
-    value: '公立',
-  },
-  {
-    label: '民間',
-    value: '民間',
-  },
-]
-
-const typeOptions = [
-  {
-    label: 'すべての種別',
-    value: ALL,
-  },
-  {
-    label: '保育所',
-    value: '保育所',
-  },
-  {
-    label: '認定こども園',
-    value: '認定こども園',
-  },
-  {
-    label: '小規模保育事業所',
-    value: '小規模保育事業所',
-  },
-]
-const { data: nurseries, status } = useNurseries(keyword.value)
-
-const filteredNurseries = computed(() => {
-  if (!nurseries.value) return []
-
-  return nurseries.value.filter((nursery) => {
-    const matchClassification = classificationFilter.value === ALL || nursery.classification === classificationFilter.value
-    const matchKeyword = !keywordFilter.value || nursery.name.includes(keywordFilter.value)
-    const matchType = typeFilter.value === ALL || nursery.type === typeFilter.value
-
-    return matchClassification && matchKeyword && matchType
-  })
-})
-
-/** 1つでも絞り込みが効いていればリセットを出す */
-const hasActiveFilters = computed(() =>
-  keywordFilter.value !== ''
-  || classificationFilter.value !== ALL
-  || typeFilter.value !== ALL,
-)
-
-const resetFilters = () => {
-  keywordFilter.value = ''
-  classificationFilter.value = ALL
-  typeFilter.value = ALL
-}
+// 絞り込みと並び替えは3ページで共用している (#134)
+const filters = useNurseryFilters()
 
 const links = [
   {
@@ -90,76 +21,71 @@ const links = [
 useHead({
   title: '認可保育所一覧',
 })
+
+/*
+ * 絞り込みと並び替えはクエリに出るが、内容は同じ一覧なので canonical は
+ * クエリを落とした /nurseries に統一する (#151)。
+ * nuxt-seo-utils が既定で出す canonical もクエリを含まないが、意図を明示するために
+ * ここで固定している。
+ */
+useSeoMeta({
+  description: 'つくば市の認可保育所119園を一覧で探せます。エリア・受入年齢・一時預かり・送迎バスなどで絞り込み、現在地からの距離順にも並び替えられます。市のオープンデータをもとにしています。',
+})
+
+const site = useSiteConfig()
+
+/*
+ * ページ自体の更新日 (#151)。掲載データは月1のオープンデータ取り込みでしか
+ * 変わらないので、検索エンジンが再クロールの要否を判断できるように出しておく。
+ */
+useHead(() => ({
+  script: [jsonLdScript(buildWebPageSchema({
+    url: `${site.url}/nurseries`,
+    name: '認可保育所一覧',
+    siteUrl: site.url,
+    dateModified: latestDataUpdate(filters.nurseries.value ?? []),
+  }))],
+}))
 </script>
 
 <template>
-  <main class="py-4">
-    <UBreadcrumb
-      class="container pb-4"
+  <main class="pt-2 pb-4 sm:pt-4">
+    <AppBreadcrumb
       :items="links"
     />
-    <h2 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-2 sm:mb-4">
       認可保育所一覧
-    </h2>
+    </h1>
     <!--
-      フィルターは一覧を絞るための道具なので、主役であるカードより目立たせない。
-      見出しは支援技術のために残しつつ、視覚的には控えめなツールバーとして扱う。
+      エリアは一覧の主導線 (#86)。
+      下のフィルターがこの画面を絞るのに対し、こちらはエリア別ページへの入口で、
+      URLを共有できる・検索エンジンに拾われるという別の役割を持つ。
     -->
-    <section class="container">
-      <h3 class="sr-only">
-        絞り込み
-      </h3>
-      <div class="rounded-lg border border-default p-4 flex flex-col gap-4 md:flex-row md:items-end">
-        <UFormField
-          label="名前"
-          class="md:flex-1"
-        >
-          <UInput
-            v-model="keywordFilter"
-            variant="outline"
-            icon="i-heroicons-magnifying-glass"
-            placeholder="名前を入力してください"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="区分">
-          <USelect
-            v-model="classificationFilter"
-            :items="classificationOptions"
-            class="w-full md:w-44"
-          />
-        </UFormField>
-        <UFormField label="種別">
-          <USelect
-            v-model="typeFilter"
-            :items="typeOptions"
-            class="w-full md:w-52"
-          />
-        </UFormField>
-        <UButton
-          v-if="hasActiveFilters"
-          color="neutral"
-          variant="ghost"
-          icon="i-heroicons-x-mark"
-          @click="resetFilters"
-        >
-          条件をクリア
-        </UButton>
-      </div>
-    </section>
-    <section>
-      <NurseryCardList
-        :nurseries="filteredNurseries"
-        :status="status"
-        :total="nurseries?.length"
+    <section class="container mb-4">
+      <h2 class="text-sm font-medium text-muted mb-2">
+        <ULink
+          to="/nurseries/area"
+          class="underline underline-offset-2 hover:text-default"
+        >エリアから探す</ULink>
+      </h2>
+      <!-- 現在地は無い。ここは一覧そのもので、どのエリアにも属していない -->
+      <NurseryChipNav
+        :items="globalAreas"
+        base-path="/nurseries/area"
+        label="エリア"
       />
     </section>
+
+    <NurseryBrowser
+      :filters="filters"
+      :total="filters.nurseries.value?.length"
+    />
     <UContainer class="text-right">
       <ULink
         to="/"
         class="underline"
         active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        inactive-class="text-muted hover:text-default"
       >トップページへ</ULink>
     </UContainer>
   </main>

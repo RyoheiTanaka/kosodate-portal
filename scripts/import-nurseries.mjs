@@ -11,8 +11,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import dns from 'node:dns'
 import mongoose from 'mongoose'
+import { assertWritable, resolveUri } from './lib/db.mjs'
 
-// この開発環境では Atlas の SRV レコードがローカルDNSで解決できないため、明示的に指定する
+// この開発機では Node 内蔵の DNS クライアント（c-ares）がアダプタの設定を読めず
+// 127.0.0.1 を掴むため、mongodb+srv:// の SRV 解決が ECONNREFUSED で落ちる。
+// 明示的に公開DNSを指定して回避する。詳細は server/utils/mongo.ts のコメント。
 dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 const ROOT = path.resolve(import.meta.dirname, '..')
@@ -26,14 +29,6 @@ const getOpt = (name, fallback) => {
 const DRY_RUN = hasFlag('dry-run')
 const CSV_PATH = path.resolve(ROOT, getOpt('file', 'scripts/data/nurseries-2026.csv'))
 const SOURCE_DATE = getOpt('source-date', '2026-04-01')
-
-const readEnv = () => {
-  if (process.env.MONGODB_URI) return process.env.MONGODB_URI
-  const envPath = path.join(ROOT, '.env')
-  if (!fs.existsSync(envPath)) return null
-  const line = fs.readFileSync(envPath, 'utf8').split(/\r?\n/).find(l => l.startsWith('MONGODB_URI='))
-  return line ? line.slice('MONGODB_URI='.length).replace(/^["']|["']$/g, '').trim() : null
-}
 
 // Excel から書き出したCSVは先頭にBOMが付くため取り除く
 const stripBom = text => (text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text)
@@ -76,6 +71,29 @@ const parseCsv = (text) => {
   return rows.filter(r => r.some(v => v !== '')).map(r => Object.fromEntries(header.map((h, i) => [h.trim(), (r[i] ?? '').trim()])))
 }
 
+// 住所から大字を切り出す。「茨城県つくば市島名2711番地1」→「島名」
+// 地区マップ・エリアマップの両方で使うキー
+const toOaza = s => String(s).replace(/^茨城県?/, '').replace(/^つくば市/, '')
+  .replace(/[0-9０-９].*$/, '').replace(/(丁目|番地|字).*$/, '').trim()
+
+const AREA_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-area.json'), 'utf8'))
+const POSTAL_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-postal.json'), 'utf8'))
+
+// 郵便番号もCSVに列が無く、住所の大字から引く (#151)。日本郵便の郵便番号データ由来で、
+// 表は scripts/build-oaza-postal.mjs が作る。
+//
+// エリアと違って、引けなくても取り込みは止めない。郵便番号は表示と構造化データの
+// 補足情報にすぎず、空でも一覧・絞り込みは成立するため。推測で埋めるほうが害が大きい。
+const toPostalCode = address => POSTAL_MAP[toOaza(address)] ?? ''
+
+// エリアはCSVに列が無く、住所の大字から判定する（地区マップと同じ方式）。
+// 地区がCSV由来なのに対しエリアは導出値なので、判定できない大字が出たら
+// 取り込みを止める。空のまま入れるとその園がエリア絞り込みから消えるため (#86)。
+const toArea = (address) => {
+  const hit = AREA_MAP[toOaza(address)]
+  return { area: hit?.name ?? '', area_alphabet: hit?.alphabet ?? '' }
+}
+
 const toDoc = row => ({
   nursery_id: Number(row.nursery_id),
   classification: row.classification,
@@ -84,8 +102,10 @@ const toDoc = row => ({
   name_kana: row.name_kana,
   address: row.address,
   address_note: row.address_note,
+  postal_code: toPostalCode(row.address),
   district: row.district,
   district_alphabet: row.district_alphabet,
+  ...toArea(row.address),
   longitude: Number(row.longitude),
   latitude: Number(row.latitude),
   tel: row.tel,
@@ -133,13 +153,17 @@ const validate = (rows) => {
     if (!Number.isFinite(Number(r.longitude)) || !Number.isFinite(Number(r.latitude))) {
       errors.push(`座標が不正: ${id} ${r.name}`)
     }
+    if (!toArea(r.address).area_alphabet) {
+      errors.push(`エリアを判定できない大字「${toOaza(r.address)}」: ${id} ${r.name}（${r.address}）`)
+    }
   }
   return errors
 }
 
 const main = async () => {
-  const uri = readEnv()
-  if (!uri) throw new Error('MONGODB_URI が見つかりません（.env を確認してください）')
+  const { uri, dbName } = resolveUri()
+  // dry-run は読むだけなので、本番を指していても止めない
+  if (!DRY_RUN) assertWritable(dbName, args)
   if (!fs.existsSync(CSV_PATH)) throw new Error(`CSVが見つかりません: ${CSV_PATH}`)
 
   const rows = parseCsv(stripBom(fs.readFileSync(CSV_PATH, 'utf8')))
@@ -149,21 +173,45 @@ const main = async () => {
   if (errors.length) {
     console.error(`\n入力エラー ${errors.length}件:`)
     errors.forEach(e => console.error('  -', e))
+    console.error('\n新しい大字が出た場合は scripts/data/oaza-district.json と')
+    console.error('scripts/data/oaza-area.json の両方に追記してください')
     process.exitCode = 1
     return
   }
 
-  // 大字マップに無い住所を警告する（地区の判定漏れを検知するため）
+  // 大字マップに無い住所を警告する（地区の判定漏れを検知するため）。
+  // 地区はCSVの列から入るので、ここは突き合わせによる検知にとどめる。
+  // エリアはこのマップからの導出値なので、判定できない場合は validate 側で止めている。
   const oaza = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-district.json'), 'utf8'))
-  const toOaza = s => String(s).replace(/^茨城県?/, '').replace(/^つくば市/, '')
-    .replace(/[0-9０-９].*$/, '').replace(/(丁目|番地|字).*$/, '').trim()
   const unknown = [...new Set(rows.map(r => toOaza(r.address)).filter(o => !oaza[o]))]
   if (unknown.length) {
     console.warn(`\n⚠ 大字マップに無い住所: ${unknown.join(', ')}`)
     console.warn('  scripts/data/oaza-district.json への追記を検討してください')
   }
 
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 20000 })
+  // 郵便番号を引けなかった住所を警告する (#151)。
+  // 止めはしないが、放置すると構造化データから postalCode が静かに欠けるので気づけるようにする。
+  const noPostal = [...new Set(rows.filter(r => !toPostalCode(r.address)).map(r => toOaza(r.address)))]
+  if (noPostal.length) {
+    console.warn(`
+⚠ 郵便番号を引けなかった大字: ${noPostal.join(', ')}`)
+    console.warn('  日本郵便のデータを更新して scripts/build-oaza-postal.mjs を流し直すか、')
+    console.warn('  番地で郵便番号が分かれる大字であれば同スクリプトの MANUAL に追記してください')
+  }
+
+  // エリアごとの件数を出す。偏りの解消が目的の区分なので、
+  // 取り込みのたびに分布が崩れていないか確認できるようにしている (#86)
+  const areaCount = {}
+  for (const r of rows) {
+    const { area } = toArea(r.address)
+    areaCount[area] = (areaCount[area] ?? 0) + 1
+  }
+  console.log('\n=== エリア別の件数 ===')
+  for (const [area, n] of Object.entries(areaCount).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${String(n).padStart(3)} ${area}`)
+  }
+
+  await mongoose.connect(uri, { dbName, serverSelectionTimeoutMS: 20000 })
   // Nuxt のモデル定義は TypeScript のため、素の Node からはコレクションを直接操作する
   const col = mongoose.connection.db.collection('nurseries')
 

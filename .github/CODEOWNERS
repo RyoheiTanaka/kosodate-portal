@@ -1,0 +1,6 @@
+# .mcp.json はリポジトリを開いた人のマシンでコマンドを実行させうるため、
+# 変更には必ずレビューを要求する。
+/.mcp.json @RyoheiTanaka
+
+# CODEOWNERS 自体の書き換えも同様に守る。
+/.github/CODEOWNERS @RyoheiTanaka

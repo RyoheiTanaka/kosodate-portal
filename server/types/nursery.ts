@@ -1,7 +1,9 @@
-import type { Types } from 'mongoose'
-
+/**
+ * API が返す保育所の形。DB 側のドキュメント型は `server/models/Nursery.ts` の
+ * `INurseryDocument`。`_id` は JSON 化した時点で文字列になるのでこちらは string で持つ。
+ */
 export interface INursery {
-  _id: string | Types.ObjectId
+  _id: string
   classification: string
   type: string
   name: string
@@ -10,8 +12,14 @@ export interface INursery {
   address: string
   /** 方書（ビル名・街区など） */
   address_note: string
+  /** 郵便番号（`305-0071` 形式）。大字から一意に決められない場合は空 (#151) */
+  postal_code: string
+  /** 市の公式区分（6地区）。データ属性と既存URLのために維持している */
   district: string
   district_alphabet: string
+  /** 一覧の主導線となるエリア (#86)。住所の大字から scripts/data/oaza-area.json で判定する */
+  area: string
+  area_alphabet: string
   longitude: number
   latitude: number
   capacity: number

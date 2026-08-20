@@ -14,23 +14,36 @@ const links = [
 useHead({
   title: 'ライセンス',
 })
+
+useSeoMeta({
+  description: '子育てポータルは、つくば市のオープンデータ「認可保育所等一覧」をクリエイティブ・コモンズ表示4.0国際のもとで改変して利用しています。出典と免責事項を掲載しています。',
+})
 </script>
 
 <template>
   <main class="py-4">
-    <UBreadcrumb
-      class="container pb-4"
+    <AppBreadcrumb
       :items="links"
     />
     <UContainer class="max-w-(--breakpoint-xl) w-full">
       <UCard>
         <template #header>
-          <h2 class="text-3xl font-bold text-center">
+          <h1 class="text-3xl font-bold text-center">
             ライセンス・クレジット表記
-          </h2>
+          </h1>
         </template>
+        <!--
+          つくば市オープンデータ利用規約が指定する「改変して利用する場合」の出典表記。
+          語順と区切りは規約の指定に合わせている。詳細は CreativeCommons.vue のコメント
+          および issue #113 を参照。
+        -->
         <div class="mt-4">
-          <p>このサイトは、以下のオープンデータを利用・改変して作成されています。</p>
+          <h2 class="text-xl font-bold">
+            出典
+          </h2>
+          <p class="mt-2">
+            このサイトは以下の著作物を改変して利用しています。
+          </p>
           <ul class="pl-0 mt-4 ml-4 list-disc">
             <li class="mb-2">
               <ULink
@@ -38,24 +51,52 @@ useHead({
                 target="_blank"
                 class="underline"
                 active-class="text-primary"
-                inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-              >「認可保育所等一覧」</ULink>（つくば市）
+                inactive-class="text-muted hover:text-default"
+              >認可保育所等一覧</ULink>、つくば市、<ULink
+                to="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              >クリエイティブ・コモンズ・ライセンス表示4.0国際</ULink>
+            </li>
+            <li class="mb-2">
+              <ULink
+                to="https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html"
+                target="_blank"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              >郵便番号データ</ULink>、日本郵便株式会社
             </li>
           </ul>
-        </div>
-        <div class="mt-4">
-          <p>
-            本データは
+          <p class="mt-2 text-sm">
+            住所に表示している郵便番号は、日本郵便が公開している郵便番号データから大字をもとに引いています。
+          </p>
+          <p class="mt-2 text-sm">
+            認可保育所等一覧の利用条件は
             <ULink
-              to="https://creativecommons.org/licenses/by/4.0/"
+              to="https://www.city.tsukuba.lg.jp/opendata/1000081/1000084.html"
               target="_blank"
               class="underline"
               active-class="text-primary"
-              inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-            >
-              クリエイティブ・コモンズ・ライセンス表示4.0国際
-            </ULink>
-            に基づき提供されています。
+              inactive-class="text-muted hover:text-default"
+            >つくば市オープンデータ利用規約</ULink>
+            によります。
+          </p>
+        </div>
+        <div class="mt-8">
+          <h2 class="text-xl font-bold">
+            免責事項
+          </h2>
+          <p class="mt-2">
+            掲載しているデータは、つくば市が公開しているものを転載・改変したものです。
+            つくば市はデータの完全性・正確性・網羅性・安全性を保証しておらず、
+            データの利用によって生じた損害について責任を負いません。
+          </p>
+          <p class="mt-2">
+            当サイトも掲載内容の正確性を保証するものではありません。
+            申し込みや入所の判断にあたっては、必ずつくば市の公式情報および各施設に直接ご確認ください。
           </p>
         </div>
       </UCard>

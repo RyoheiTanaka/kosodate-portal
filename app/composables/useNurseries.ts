@@ -1,8 +1,19 @@
 import type { INursery } from '~~/server/types/nursery'
 
-export const useNurseries = (keyword: string) => {
+/**
+ * 認可保育所の全件を取る。
+ *
+ * 絞り込みはサーバーではなくクライアント側で行う (#106)。
+ * 全119件が既にクライアントに載っており、サーバー検索でしかできないことが無いため。
+ * 往復が無いぶん速く、「打った瞬間に件数が変わる」形にできる。
+ *
+ * キーは固定なので、一覧・エリア一覧・エリア別ページの間を移動しても再取得は起きない。
+ *
+ * 件数が桁で増えた場合（#112 で他のオープンデータを足すなど）は、
+ * サーバー検索へ寄せ直す必要が出る。目安は数千件。
+ */
+export const useNurseries = () => {
   return useFetch<INursery[]>('/api/nurseries', {
-    key: `nurseries-${keyword}`,
-    query: keyword ? { keyword } : undefined,
+    key: 'nurseries',
   })
 }

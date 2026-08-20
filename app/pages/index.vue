@@ -8,6 +8,10 @@ const form = reactive<SearchForm>({
   keyword: '',
 })
 
+const config = useRuntimeConfig()
+const globalAreas = config.public.globalAreas as Array<Area>
+const globalDistricts = config.public.globalDistricts as Array<District>
+
 // 検索ボタンを押した際の処理
 const search = (e: Event): void => {
   e.preventDefault()
@@ -16,6 +20,40 @@ const search = (e: Event): void => {
   if (!form.keyword.trim()) return
   router.push({ path: '/nurseries', query: { keyword: form.keyword } })
 }
+
+useSeoMeta({
+  description: 'つくば市の認可保育所119園を、エリア・受入年齢・一時預かり・送迎バスから探せる子育て情報サイトです。市のオープンデータをもとに、所在地・開所時間・定員をまとめています。',
+})
+
+const site = useSiteConfig()
+
+/*
+ * サイト自体の構造化データ (#151)。運営主体の Organization と WebSite を
+ * トップにだけ置く。施設側の ChildCare は詳細ページで別に出しており、
+ * 運営主体と施設は別物なので混ぜない。
+ *
+ * SearchAction（サイト内検索をGoogleに知らせる指定）は書いていない。
+ * 出しても検索結果に反映されるのは一部の大規模サイトに限られ、
+ * このサイトの規模では実態のない宣言になるため。
+ */
+useHead(() => ({
+  script: [
+    jsonLdScript({
+      '@type': 'WebSite',
+      '@id': `${site.url}#website`,
+      'url': site.url,
+      'name': '子育てポータル',
+      'inLanguage': 'ja-JP',
+      'publisher': { '@id': `${site.url}#organization` },
+    }),
+    jsonLdScript({
+      '@type': 'Organization',
+      '@id': `${site.url}#organization`,
+      'url': site.url,
+      'name': '子育てポータル',
+    }),
+  ],
+}))
 
 const validateForm = (): Record<string, string | undefined> => {
   const validationErrors: Record<string, string | undefined> = {}
@@ -30,10 +68,16 @@ const validateForm = (): Record<string, string | undefined> => {
 <template>
   <main>
     <div class="relative mx-auto">
+      <!--
+        高さはスマホを基準に決めている (#148)。
+        420px は 812px の画面の52%を占め、キーワード検索の入力欄が
+        782px（ほぼ画面外）に押し出されていた。何のサイトかを写真で伝えつつ、
+        「探す」導線を最初の画面に入れるための高さにしている。
+      -->
       <NuxtImg
         width="1400"
         height="800"
-        class="object-cover w-full h-[420px] lg:h-[560px] xl:h-[640px]"
+        class="object-cover w-full h-[300px] sm:h-[360px] md:h-[420px] lg:h-[480px] xl:h-[540px]"
         src="/images/main-visual.jpg"
         alt="Hero image"
         loading="eager"
@@ -43,167 +87,184 @@ const validateForm = (): Record<string, string | undefined> => {
         placeholder
         placeholder-class="blur-xl"
       />
-      <div class="container absolute inset-0 flex flex-col items-start justify-center bg-gradient-to-l from-gray-200 md:bg-none">
-        <h2 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
+      <!--
+        写真の上のスクリム (#118)。
+
+        以前は from-gray-200 の白い靄で、ライト前提の色だった。dark では文字色が
+        テーマの既定（ほぼ白）を継ぐため、明るい靄と白文字で差が縮まって読めなくなる。
+        md:bg-none で中〜大画面では靄自体が消え、可読性が写真の明るさ任せにもなっていた。
+
+        白ではなく暗いスクリムにして、全画面幅で効かせる。文字は写真の上に載る前提で
+        白に固定し、テーマ色を継がせない（ライトでもダークでも見え方を同じにする）。
+        文字が左寄せなので、左を濃く右を薄くして写真を潰しすぎないようにしている。
+
+        スマホでは右側も濃くする。文字の折り返し幅が画面幅に近く、説明文が写真の
+        明るい部分（空）まで届くため、md と同じ配分だとそこで 2.6:1 まで落ちた。
+      -->
+      <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/65 to-black/50 md:from-black/75 md:via-black/55 md:to-black/25" />
+      <div class="container absolute inset-0 flex flex-col items-start justify-center text-white">
+        <h1 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
           子育てポータル
-        </h2>
-        <h3 class="text-lg font-bold md:mb-4 lg:text-3xl">
+        </h1>
+        <!-- サイト名に添えるキャッチで、節の見出しではないので p にしている (#151) -->
+        <p class="text-lg font-bold md:mb-4 lg:text-3xl">
           子育て情報掲載サイト
-        </h3>
-        <div class="max-w-sm mb-8 text-md font-light lg:max-w-md text-balance">
+        </p>
+        <div class="max-w-sm mb-8 text-md lg:max-w-md text-balance">
           <p>つくば市が公開しているデータをまとめて掲載しています。</p>
         </div>
+        <!--
+          ボタンはスクリムの上でさらに面を作る必要があるので、白地に濃い文字にしている。
+          暗いボタンだとスクリムに沈んで、押せる場所だと分からない。
+        -->
         <NuxtLink
-          class="px-6 py-3 font-bold text-white bg-gray-800 rounded-xl hover:bg-gray-800"
+          class="rounded-xl bg-white px-6 py-3 font-bold text-gray-900 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           to="/license"
         >掲載情報詳細はこちら</NuxtLink>
       </div>
     </div>
-    <div class="py-6 container">
-      <h3 class="text-2xl font-bold text-center mb-4">
-        認可保育所
-      </h3>
-      <section class="mt-4">
-        <h3 class="text-2xl font-bold text-center mb-4">
-          キーワード検索
-        </h3>
-        <UForm
-          :state="form"
-          :validation="validateForm"
-          class="flex justify-center"
-          @submit="search"
-        >
-          <UInput
-            v-model="form.keyword"
-            name="keyword"
-            label="検索キーワード"
-            placeholder="検索キーワードを入力"
-            class="w-full max-w-md"
-          />
-          <UButton
-            :disabled="!form.keyword.trim()"
-            class="ml-4"
-            type="submit"
-          >
-            検索
-          </UButton>
-        </UForm>
-      </section>
-      <section class="mt-4">
-        <h3 class="text-2xl font-bold text-center mb-4">
-          地域別一覧
-        </h3>
-        <div class="container md:grid md:grid-cols-3 md:gap-4">
-          <div class="mt-4 text-center">
-            <ULink
-              to="/nurseries/oho"
-              class="inline-block"
+    <!--
+      「認可保育所」の下に検索・エリア・地区の3つがぶら下がる構造だが、
+      以前は見出しがすべて同じ h3 で、余白だけで区切っていたため、
+      3つが認可保育所の中の話だと読み取れなかった。
+
+      パステルの面で囲って親子関係を見た目に出し、見出しも h2 > h3 に直している。
+      中の3つは白いカードに分けて、どこからどこまでが1つの探し方なのかを明確にする。
+    -->
+    <section class="container py-8">
+      <!--
+        地には cream（暖色のニュートラル）を敷き、main / sub は
+        アイコン・枠線・見出しの文字といった小さい面積の差し色に回している。
+        彩度のある色を広い面に敷くと、それだけで目が疲れるため。
+        見出しを main のベタ塗り + 白文字にするのも避ける（コントラストが足りない）。
+      -->
+      <div class="rounded-3xl border-2 border-kosodate-cream-200 bg-kosodate-cream-100 p-4 sm:p-6 dark:border-kosodate-cream-800 dark:bg-kosodate-cream-950/60">
+        <div class="mb-5 text-center">
+          <h2 class="inline-flex items-center gap-2 rounded-full border-2 border-kosodate-main-200 bg-default px-5 py-2 text-xl font-bold text-kosodate-main-700 shadow-sm sm:text-2xl dark:border-kosodate-main-800 dark:text-kosodate-main-200">
+            <UIcon
+              name="i-lucide-baby"
+              class="size-6 shrink-0"
+              aria-hidden="true"
+            />
+            認可保育所
+          </h2>
+          <p class="mt-3 text-sm text-muted">
+            つくば市の認可保育所・認定こども園・小規模保育事業所を、3つの方法で探せます。
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="rounded-2xl bg-default p-4 shadow-sm sm:p-5">
+            <SectionHeading
+              title="キーワード検索"
+              icon="i-lucide-search"
+            />
+            <!--
+              受入年齢もAPIの検索対象には入っているが、案内には書かない。
+              格納値が「６か月～５歳」「産休明け～５歳」という文字列で、
+              検索は部分一致なので「3歳」と入れても0件になる。
+              書くと機能すると思わせてしまう。年齢で絞る手段はフィルター側に置く (#108)
+            -->
+            <p class="mb-3 text-sm text-muted">
+              保育所の名前・ふりがな・住所から探します。
+            </p>
+            <UForm
+              :state="form"
+              :validation="validateForm"
+              class="flex gap-2"
+              @submit="search"
             >
-              <NuxtImg
-                src="/images/oho.png"
-                alt="大穂地区"
-                class="border rounded-md mx-auto"
-                loading="eager"
-                preload
-                placeholder
-                placeholder-class="blur-xl"
+              <UInput
+                v-model="form.keyword"
+                name="keyword"
+                label="検索キーワード"
+                placeholder="例: みどりの、島名、つくば"
+                size="lg"
+                icon="i-lucide-search"
+                :ui="{ base: 'rounded-full' }"
+                class="w-full"
               />
-            </ULink>
+              <UButton
+                :disabled="!form.keyword.trim()"
+                type="submit"
+                size="lg"
+                class="shrink-0 rounded-full px-6 font-bold"
+              >
+                検索
+              </UButton>
+            </UForm>
           </div>
-          <div class="mt-4 text-center">
-            <ULink
-              to="/nurseries/toyosato"
-              class="inline-block"
-            >
-              <NuxtImg
-                src="/images/toyosato.png"
-                alt="豊里地区"
-                class="border rounded-md mx-auto"
-                loading="eager"
-                preload
-                placeholder
-                placeholder-class="blur-xl"
+
+          <!--
+            エリアは一覧の主導線 (#86) なので、地区より前に置く。
+            件数は出していない。ここに出すには全119件の取得が要るが、
+            トップページは今のところデータを取っておらず、導線1つのために
+            初期表示へ待ち時間を足すことになるため。件数は遷移先で出している。
+          -->
+          <div class="rounded-2xl bg-default p-4 shadow-sm sm:p-5">
+            <SectionHeading
+              title="エリアから探す"
+              icon="i-lucide-map"
+            />
+            <p class="mb-3 text-sm text-muted">
+              TXの駅と生活圏を軸にした7つのエリアから探します。
+            </p>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <AreaCard
+                v-for="area in globalAreas"
+                :key="area.alphabet"
+                :area="area"
               />
-            </ULink>
+            </div>
           </div>
-          <div class="mt-4 text-center">
-            <ULink
-              to="/nurseries/yatabe"
-              class="inline-block"
-            >
-              <NuxtImg
-                src="/images/yatabe.png"
-                alt="谷田部地区"
-                class="border rounded-md mx-auto"
-                loading="eager"
-                preload
-                placeholder
-                placeholder-class="blur-xl"
-              />
-            </ULink>
-          </div>
-          <div class="mt-4 text-center">
-            <ULink
-              to="/nurseries/sakura"
-              class="inline-block"
-            >
-              <NuxtImg
-                src="/images/sakura.png"
-                alt="桜地区"
-                class="border rounded-md mx-auto"
-                loading="eager"
-                preload
-                placeholder
-                placeholder-class="blur-xl"
-              />
-            </ULink>
-          </div>
-          <div class="mt-4 text-center">
-            <ULink
-              to="/nurseries/tsukuba"
-              class="inline-block"
-            >
-              <NuxtImg
-                src="/images/tsukuba.png"
-                alt="筑波地区"
-                class="border rounded-md mx-auto"
-                loading="eager"
-                preload
-                placeholder
-                placeholder-class="blur-xl"
-              />
-            </ULink>
-          </div>
-          <div class="mt-4 text-center">
-            <ULink
-              to="/nurseries/kukisaki"
-              class="inline-block"
-            >
-              <NuxtImg
-                src="/images/kukisaki.png"
-                alt="茎崎地区"
-                class="border rounded-md mx-auto"
-                loading="eager"
-                preload
-                placeholder
-                placeholder-class="blur-xl"
-              />
-            </ULink>
+
+          <!--
+            以前はここに地区名を描いた 500x500 の画像を6枚並べていた。
+            中身は地区名の文字だけで地図ではなく、スマホでは正方形が6つ縦に積まれて
+            画面数枚分の高さになっていたため、バッジに置き換えた。情報は失われていない。
+          -->
+          <div class="rounded-2xl bg-default p-4 shadow-sm sm:p-5">
+            <SectionHeading
+              title="地区から探す"
+              icon="i-lucide-map-pin"
+            />
+            <p class="mb-3 text-sm text-muted">
+              つくば市の公式区分（旧町村の6地区）から探します。
+            </p>
+            <ul class="flex flex-wrap gap-2">
+              <li
+                v-for="district in globalDistricts"
+                :key="district.alphabet"
+              >
+                <ULink
+                  :to="`/nurseries/${district.alphabet}`"
+                  class="inline-flex items-center gap-1.5 rounded-full border-2 border-kosodate-sub-300 bg-kosodate-sub-100 px-4 py-2 text-sm font-bold text-kosodate-sub-900 transition-all duration-200 hover:-translate-y-0.5 hover:border-kosodate-sub-500 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0 dark:border-kosodate-sub-900 dark:bg-kosodate-sub-950/60 dark:text-kosodate-sub-100 dark:hover:border-kosodate-sub-700"
+                >
+                  <UIcon
+                    name="i-lucide-map-pin"
+                    class="size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  {{ district.name }}
+                </ULink>
+              </li>
+            </ul>
           </div>
         </div>
-      </section>
-      <div>
-        <div class="container text-right py-6">
-          <div>
-            <ULink
-              class="underline "
-              to="/nurseries"
-              active-class="text-primary"
-              inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-            >認可保育所一覧へ</ULink>
-          </div>
+
+        <div class="mt-5 text-center">
+          <UButton
+            to="/nurseries"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            trailing-icon="i-lucide-arrow-right"
+            class="rounded-full bg-default font-bold"
+          >
+            すべての認可保育所を見る
+          </UButton>
         </div>
       </div>
-    </div>
+    </section>
   </main>
 </template>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// app/types/ は Nuxt の自動 import の対象外（値と違い型は解決されない）ので明示的に import する
+import type { NurseryRouteParams } from '~/types/route'
+
 const route = useRoute()
 const params = route.params as Partial<NurseryRouteParams>
 const district = params.district ?? ''
@@ -8,7 +11,25 @@ const globalDistricts = config.public.globalDistricts as Array<District>
 const globalDistrict = globalDistricts.find(globalDistrict => globalDistrict.alphabet == district) || { alphabet: '', name: '' }
 const districtName = globalDistrict.name
 
-const { data: districtnurseries, status } = useDistrictNurseries(district)
+/*
+ * 以前は useDistrictNurseries（/api/nurseries/[district]）で地区分だけ取っていたが、
+ * 全件取得に切り替えた (#134)。
+ *
+ * 絞り込みをクライアント側でやる以上、全件が手元に無いとキーワードや他の条件と
+ * 合成できない。key は一覧ページと同じ 'nurseries' なので、一覧やエリア別ページから
+ * 遷移してきた場合はリクエストが1つ減る。
+ *
+ * 地区はパスで決まっているので fixed に渡す。セレクトは出さず、クエリにも書かない。
+ */
+const filters = useNurseryFilters({ district })
+
+/** この地区の施設。件数の母数と要約の両方で使う */
+const districtNurseries = computed(() =>
+  filters.nurseries.value?.filter(nursery => nursery.district_alphabet === district) ?? [],
+)
+
+/** 「N件 / 全M件」の母数。このページでは地区内の件数が全件にあたる */
+const districtTotal = computed(() => filters.nurseries.value ? districtNurseries.value.length : undefined)
 
 const links = [
   {
@@ -30,27 +51,79 @@ const links = [
 useHead({
   title: `認可保育所一覧 ${districtName}`,
 })
+
+useSeoMeta({
+  description: () => `つくば市${districtName}の認可保育所${districtTotal.value ?? ''}園を一覧で紹介します。受入年齢・一時預かり・送迎バスなどで絞り込み、現在地からの距離順にも並び替えられます。`,
+})
+
+const site = useSiteConfig()
+
+/*
+ * ページ自体の更新日 (#151)。掲載データは月1のオープンデータ取り込みでしか
+ * 変わらないので、検索エンジンが再クロールの要否を判断できるように出しておく。
+ */
+useHead(() => ({
+  script: [jsonLdScript(buildWebPageSchema({
+    url: `${site.url}/nurseries/${district}`,
+    name: `認可保育所一覧 ${districtName}`,
+    siteUrl: site.url,
+    dateModified: latestDataUpdate(districtNurseries.value),
+  }))],
+}))
 </script>
 
 <template>
-  <main class="py-4">
-    <UBreadcrumb
-      class="container pb-4"
+  <main class="pt-2 pb-4 sm:pt-4">
+    <AppBreadcrumb
       :items="links"
     />
-    <h2 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-2 sm:mb-4">
       {{ districtName }}
-    </h2>
-    <NurseryCardList
-      :nurseries="districtnurseries"
-      :status="status"
+    </h1>
+
+    <!--
+      地区別ページには他の地区へ移る手段が無く、トップか一覧まで戻る必要があった。
+      エリア別ページには同じ形の導線が既にあるので、それに揃えている。
+
+      主導線はエリアなので (#86)、ここにエリアの導線は置かない。
+      地区で見に来た人が地区の中で移動できれば足りる。
+    -->
+    <!-- 横の余白は外側で持つ。中は端まではみ出して横に流れるため (#166) -->
+    <div class="container mb-4">
+      <NurseryChipNav
+        class="sm:justify-center"
+        :items="globalDistricts"
+        base-path="/nurseries"
+        label="ほかの地区"
+        :current="district"
+        fallback-icon="i-lucide-map-pin"
+      />
+    </div>
+
+    <NurseryBrowser
+      :filters="filters"
+      id-prefix="district"
+      :total="districtTotal"
     />
+    <!--
+      要約はカードの下に置く (#145 / #148)。
+      スマホのファーストビューに1枚目のカードを入れるために絞り込みを畳んだ経緯があり、
+      ここに文章を積むとその努力を打ち消してしまう。
+      検索エンジンはページ全体を読むので、下部でも内容としては同じに扱われる。
+    -->
+    <NurserySummaryPanel
+      :title="`${districtName}の認可保育所`"
+      lead="つくば市の公式区分による地区です。"
+      :nurseries="districtNurseries"
+      related-axis="area"
+    />
+
     <UContainer class="text-right">
       <ULink
         to="/"
         class="underline"
         active-class="text-primary"
-        inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        inactive-class="text-muted hover:text-default"
       >トップページへ</ULink>
     </UContainer>
   </main>

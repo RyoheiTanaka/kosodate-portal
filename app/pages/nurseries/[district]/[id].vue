@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// app/types/ は Nuxt の自動 import の対象外（値と違い型は解決されない）ので明示的に import する
+import type { NurseryRouteParams } from '~/types/route'
+
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const route = useRoute()
@@ -10,18 +13,104 @@ const config = useRuntimeConfig()
 const globalDistricts = config.public.globalDistricts as Array<District>
 const globalDistrict = globalDistricts.find(globalDistrict => globalDistrict.alphabet == district) || { alphabet: '', name: '' }
 
-const { data: nursery } = useNursery(district, id)
+/*
+ * 実在しない地区スラッグは404 (#151)。
+ * データがどう変わっても正しくなることはないURLなので、リダイレクトの余地は無い。
+ * エリア別ページ（app/pages/nurseries/area/[area]/index.vue）と扱いを揃えている。
+ */
+if (!globalDistricts.some(candidate => candidate.alphabet === district)) {
+  throw createError({ statusCode: 404, statusMessage: 'District Not Found', message: '地区が見つかりません', fatal: true })
+}
 
-useHead({
+/*
+ * リダイレクトの判定に施設のデータが要るので、ここは await する。
+ * await しないと nursery.value は null のままで、判定が常に素通りする。
+ */
+const { data: nursery, error } = await useNursery(district, id)
+
+/*
+ * 施設が存在しない（API が404）、または nursery_id が数値でない（API が400）。
+ * 以前はどちらも200で、見出しも本文も無いページが返っていた。
+ */
+if (error.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Nursery Not Found', message: '施設が見つかりません', fatal: true })
+}
+
+/*
+ * URL の主キーは nursery_id で、district は表示用のスラッグにすぎない。
+ * 詳細APIが district を見ていないため /nurseries/oho/25 でも谷田部の施設が開けるので、
+ * 施設本来の地区URLへ恒久リダイレクトして1本に寄せる (#151)。
+ *
+ * 404 ではなく301にしているのは、district_alphabet が住所の大字から導出した値で、
+ * データ側の見直しで変わりうるため。404 にすると旧URLが即座に死ぬが、
+ * 301なら外部リンクや検索エンジンの評価を新URLへ引き継げる。
+ */
+if (nursery.value && nursery.value.district_alphabet !== district) {
+  await navigateTo(
+    `/nurseries/${nursery.value.district_alphabet}/${nursery.value.nursery_id}`,
+    { redirectCode: 301 },
+  )
+}
+
+const detailRows = computed(() => nursery.value ? buildNurseryDetailRows(nursery.value) : [])
+
+// オブジェクトで渡すと fetch 解決前の undefined がその場の値として固定され、
+// 全詳細ページの title が `子育てポータル` のままになる (#151)。関数で渡して追従させる。
+useHead(() => ({
   title: nursery.value?.name,
+}))
+
+const site = useSiteConfig()
+
+/** 正規URL。施設本来の地区で組み立てる。canonical と構造化データで共用する */
+const canonicalUrl = computed(() =>
+  nursery.value
+    ? `${site.url}/nurseries/${nursery.value.district_alphabet}/${nursery.value.nursery_id}`
+    : '',
+)
+
+/*
+ * 詳細APIは nursery_id だけで引いており、URLの district は見ていない。
+ * そのため /nurseries/oho/25 と /nurseries/yatabe/25 が同じ施設を返す。
+ * 施設が実際に属する地区のURLを canonical に指定して、重複を1本に寄せる (#151)。
+ */
+useHead(() => ({
+  link: canonicalUrl.value
+    ? [{ rel: 'canonical', href: canonicalUrl.value }]
+    : [],
+}))
+
+useSeoMeta({
+  description: () => nursery.value ? buildNurseryDescription(nursery.value) : undefined,
 })
+
+/*
+ * 施設の構造化データ (#151)。住所・電話・座標・開所時間はすべて既存のフィールドから出す。
+ * 評価や料金は持っていないので出さない。
+ */
+useHead(() => ({
+  script: nursery.value
+    ? [
+        jsonLdScript(buildNurserySchema(nursery.value, canonicalUrl.value)),
+        /*
+         * ページ自体の更新日 (#151)。データは月1のオープンデータ取り込みでしか
+         * 変わらないので、再クロールの要否を判断できるように出しておく。
+         */
+        jsonLdScript(buildWebPageSchema({
+          url: canonicalUrl.value,
+          name: nursery.value.name,
+          siteUrl: site.url,
+          dateModified: latestDataUpdate([nursery.value]),
+        })),
+      ]
+    : [],
+}))
 </script>
 
 <template>
   <main class="py-4">
     <template v-if="nursery">
-      <UBreadcrumb
-        class="container pb-4"
+      <AppBreadcrumb
         :items="[
           {
             label: 'トップ',
@@ -50,9 +139,9 @@ useHead({
           :ui="{ root: 'ring-0 md:ring shadow-none md:shadow-md' }"
         >
           <template #header>
-            <h2 class="text-3xl font-bold text-center mb-4">
+            <h1 class="text-3xl font-bold text-center mb-4">
               {{ nursery.name }}
-            </h2>
+            </h1>
             <div
               v-if="nursery.is_active === false"
               class="mb-4 rounded-md border border-amber-400 bg-amber-50 p-4 dark:bg-amber-950/40"
@@ -62,233 +151,61 @@ useHead({
               </p>
               <p class="mt-1 text-sm text-amber-800 dark:text-amber-200">
                 閉園または統廃合により、つくば市の最新の認可保育所等一覧に掲載されていません。
-                掲載内容は{{ nursery.source_date || '過去' }}時点の情報です。
+                掲載内容は{{ formatSourceDate(nursery.source_date) || '過去' }}時点の情報です。
               </p>
             </div>
+            <!--
+              地図はスマホでは高さを抑える (#129)。
+              812px の画面で 480px 固定だと画面の59%を占め、開いた直後は地図しか見えず、
+              園名・住所・定員といった判断に要る情報が最初の画面に入らなかった。
+
+              読み込みは遅延させる。地図は最初の画面に収まらない位置に来ることも多く、
+              開いた瞬間に外部の埋め込みを取りに行く必要はない。
+            -->
             <iframe
-              class="w-full h-[30rem]"
+              class="w-full h-56 sm:h-80 lg:h-[30rem]"
               frameborder="0"
               style="border:0"
+              loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               :src="`https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${nursery.name},${nursery.address}&center=${nursery.latitude},${nursery.longitude}`"
               allowfullscreen
+              :title="`${nursery.name}の地図`"
             />
           </template>
 
           <div class="w-full">
-            <div class="flex flex-col">
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    区分
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.classification }}
-                  </p>
-                </div>
+            <!--
+              項目表はスマホでは1カラム（ラベルの下に値）に落とす (#129)。
+              375px で2カラム固定にするとラベル列が156px（42%）を占め、
+              値の側に余裕が無かった。
+
+              sm 以上はラベル列の幅を固定する。1fr の等分だと、
+              値が短い行でもラベルが画面の半分近くを取ってしまう。
+            -->
+            <dl class="flex flex-col">
+              <div
+                v-for="row in detailRows"
+                :key="row.label"
+                class="grid grid-cols-1 sm:grid-cols-[minmax(10rem,16rem)_1fr] rounded-sm border-b border-default"
+              >
+                <dt class="px-2.5 pt-2.5 pb-0 text-sm font-medium text-muted sm:p-2.5 sm:text-base xl:p-5">
+                  {{ row.label }}
+                </dt>
+                <dd class="px-2.5 pt-0.5 pb-2.5 text-sm font-medium sm:p-2.5 sm:text-base xl:p-5">
+                  <span :class="row.muted ? 'text-muted' : 'text-default'">
+                    {{ row.value }}
+                  </span>
+                </dd>
               </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    種別
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.type }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    住所
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.address }}{{ nursery.address_note }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    定員
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.capacity }}人
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    保育年齢
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.childcare_age }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    利用可能曜日
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.available_day }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    利用可能日時特記事項
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.available_day_note }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    開園（平日）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.open_weekday }} ~ {{ nursery.close_weekday }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    開園（土曜日）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.open_saturday }} ~ {{ nursery.close_saturday }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    保育標準時間（施設が定める11時間）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.standard_childcare_hour_11 }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    保育標準時間（施設が定める8時間）
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.standard_childcare_hour_8 }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    電話
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.tel }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    送迎バス
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    <template v-if="nursery.shuttle_bus === null || nursery.shuttle_bus === undefined">
-                      <span class="text-gray-500">情報なし（施設へお問い合わせください）</span>
-                    </template>
-                    <template v-else>
-                      {{ nursery.shuttle_bus ? '有' : '無' }}
-                    </template>
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    一時預かりの有無
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.is_temporary_care ? '有' : '無' }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    団体名
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.corporate_name }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    設立年月日
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.establishment_date }}
-                  </p>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 rounded-sm border-b border-stroke">
-                <div class="p-2.5 xl:p-5">
-                  <h3 class="text-sm font-medium text-gray-500 xsm:text-base">
-                    備考
-                  </h3>
-                </div>
-                <div class="p-2.5 xl:p-5">
-                  <p class="text-sm font-medium text-black xsm:text-base dark:text-gray-200">
-                    {{ nursery.remark }}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <p class="mt-6 text-sm text-gray-500 dark:text-gray-400">
-              掲載内容はつくば市が公開している情報をもとにしています（{{ nursery.source_date || '公開時点' }}時点）。
+            </dl>
+            <p class="mt-6 text-sm text-muted">
+              掲載内容は<ULink
+                to="/license"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              >つくば市が公開しているオープンデータ</ULink>をもとにしています（{{ formatSourceDate(nursery.source_date) || '公開時点' }}時点）。
               定員・開所時間・送迎バス・一時預かりなどは変更される場合があります。
               <strong class="font-bold">最新の情報は各施設へ直接お問い合わせください。</strong>
             </p>
@@ -300,7 +217,7 @@ useHead({
       to="/nurseries"
       class="block text-right underline"
       active-class="text-primary"
-      inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+      inactive-class="text-muted hover:text-default"
     >認可保育所一覧へ</ULink>
   </main>
 </template>
