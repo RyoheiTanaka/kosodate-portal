@@ -90,7 +90,19 @@ useSeoMeta({
  */
 useHead(() => ({
   script: nursery.value
-    ? [jsonLdScript(buildNurserySchema(nursery.value, canonicalUrl.value))]
+    ? [
+        jsonLdScript(buildNurserySchema(nursery.value, canonicalUrl.value)),
+        /*
+         * ページ自体の更新日 (#151)。データは月1のオープンデータ取り込みでしか
+         * 変わらないので、再クロールの要否を判断できるように出しておく。
+         */
+        jsonLdScript(buildWebPageSchema({
+          url: canonicalUrl.value,
+          name: nursery.value.name,
+          siteUrl: site.url,
+          dateModified: latestDataUpdate([nursery.value]),
+        })),
+      ]
     : [],
 }))
 </script>
@@ -188,7 +200,12 @@ useHead(() => ({
               </div>
             </dl>
             <p class="mt-6 text-sm text-muted">
-              掲載内容はつくば市が公開している情報をもとにしています（{{ formatSourceDate(nursery.source_date) || '公開時点' }}時点）。
+              掲載内容は<ULink
+                to="/license"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              >つくば市が公開しているオープンデータ</ULink>をもとにしています（{{ formatSourceDate(nursery.source_date) || '公開時点' }}時点）。
               定員・開所時間・送迎バス・一時預かりなどは変更される場合があります。
               <strong class="font-bold">最新の情報は各施設へ直接お問い合わせください。</strong>
             </p>

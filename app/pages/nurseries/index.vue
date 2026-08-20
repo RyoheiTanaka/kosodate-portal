@@ -31,6 +31,21 @@ useHead({
 useSeoMeta({
   description: 'つくば市の認可保育所119園を一覧で探せます。エリア・受入年齢・一時預かり・送迎バスなどで絞り込み、現在地からの距離順にも並び替えられます。市のオープンデータをもとにしています。',
 })
+
+const site = useSiteConfig()
+
+/*
+ * ページ自体の更新日 (#151)。掲載データは月1のオープンデータ取り込みでしか
+ * 変わらないので、検索エンジンが再クロールの要否を判断できるように出しておく。
+ */
+useHead(() => ({
+  script: [jsonLdScript(buildWebPageSchema({
+    url: `${site.url}/nurseries`,
+    name: '認可保育所一覧',
+    siteUrl: site.url,
+    dateModified: latestDataUpdate(filters.nurseries.value ?? []),
+  }))],
+}))
 </script>
 
 <template>
