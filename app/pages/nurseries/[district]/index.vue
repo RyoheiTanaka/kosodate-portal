@@ -23,10 +23,13 @@ const districtName = globalDistrict.name
  */
 const filters = useNurseryFilters({ district })
 
-/** 「N件 / 全M件」の母数。このページでは地区内の件数が全件にあたる */
-const districtTotal = computed(() =>
-  filters.nurseries.value?.filter(nursery => nursery.district_alphabet === district).length,
+/** この地区の施設。件数の母数と要約の両方で使う */
+const districtNurseries = computed(() =>
+  filters.nurseries.value?.filter(nursery => nursery.district_alphabet === district) ?? [],
 )
+
+/** 「N件 / 全M件」の母数。このページでは地区内の件数が全件にあたる */
+const districtTotal = computed(() => filters.nurseries.value ? districtNurseries.value.length : undefined)
 
 const links = [
   {
@@ -99,6 +102,18 @@ useSeoMeta({
       :status="filters.status.value"
       :total="districtTotal"
     />
+    <!--
+      要約はカードの下に置く (#145 / #148)。
+      スマホのファーストビューに1枚目のカードを入れるために絞り込みを畳んだ経緯があり、
+      ここに文章を積むとその努力を打ち消してしまう。
+      検索エンジンはページ全体を読むので、下部でも内容としては同じに扱われる。
+    -->
+    <NurserySummaryPanel
+      :title="`${districtName}の認可保育所`"
+      lead="つくば市の公式区分による地区です。"
+      :nurseries="districtNurseries"
+    />
+
     <UContainer class="text-right">
       <ULink
         to="/"
