@@ -39,6 +39,10 @@ const links = [
 useHead({
   title: 'エリアから探す',
 })
+
+useSeoMeta({
+  description: 'つくば市の認可保育所を7つのエリアから探せます。TXの駅と生活圏を軸に区分しているので、通勤経路や住んでいる地域から近い園を絞り込めます。',
+})
 </script>
 
 <template>

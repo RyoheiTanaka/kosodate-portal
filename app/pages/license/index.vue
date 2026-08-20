@@ -14,6 +14,10 @@ const links = [
 useHead({
   title: 'ライセンス',
 })
+
+useSeoMeta({
+  description: '子育てポータルは、つくば市のオープンデータ「認可保育所等一覧」をクリエイティブ・コモンズ表示4.0国際のもとで改変して利用しています。出典と免責事項を掲載しています。',
+})
 </script>
 
 <template>

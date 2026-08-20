@@ -21,6 +21,10 @@ const search = (e: Event): void => {
   router.push({ path: '/nurseries', query: { keyword: form.keyword } })
 }
 
+useSeoMeta({
+  description: 'つくば市の認可保育所119園を、エリア・受入年齢・一時預かり・送迎バスから探せる子育て情報サイトです。市のオープンデータをもとに、所在地・開所時間・定員をまとめています。',
+})
+
 const validateForm = (): Record<string, string | undefined> => {
   const validationErrors: Record<string, string | undefined> = {}
   if (!form.keyword.trim()) {

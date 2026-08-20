@@ -48,6 +48,10 @@ const links = [
 useHead({
   title: `認可保育所一覧 ${districtName}`,
 })
+
+useSeoMeta({
+  description: () => `つくば市${districtName}の認可保育所${districtTotal.value ?? ''}園を一覧で紹介します。受入年齢・一時預かり・送迎バスなどで絞り込み、現在地からの距離順にも並び替えられます。`,
+})
 </script>
 
 <template>

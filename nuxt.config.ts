@@ -1,8 +1,16 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint', '@nuxtjs/robots', '@nuxtjs/sitemap', 'nuxt-seo-utils'],
   devtools: { enabled: true },
   // Tailwind v4 は設定ファイルではなく CSS 側で定義する
   css: ['~/assets/css/main.css'],
+  /*
+   * canonical / sitemap / robots が参照する正規のオリジン (#151)。
+   * ここ1箇所を直せば各モジュールの出力が揃う。
+   */
+  site: {
+    url: 'https://kosodate-portal.coolat.net',
+    name: '子育てポータル',
+  },
   runtimeConfig: {
     public: {
       // 市の公式区分。データ属性と既存URL（/nurseries/[district]/[id]）のために維持する。
@@ -54,5 +62,33 @@ export default defineNuxtConfig({
       'xxl': 1536,
       '2xl': 1536,
     },
+  },
+  robots: {
+    // 全許可のまま。Sitemap: の宣言はモジュールが site.url から自動で足す
+    disallow: [],
+  },
+  /*
+   * canonical はクエリを落として正規URLに寄せる (#151)。
+   * 既定では sort / page / search などが canonical に残るが、一覧の中身は
+   * 並び順や絞り込みが変わっても同じ119件なので、すべて /nurseries に集約する。
+   */
+  seo: {
+    canonicalQueryWhitelist: [],
+    /*
+     * URLの末尾セグメントから title を補完する既定の挙動を切る。
+     * 全ページで title を明示しているので不要なうえ、存在しない施設のURL
+     * （/nurseries/yatabe/99999）で `99999 - 子育てポータル` という title が
+     * 生成されてしまう。
+     */
+    fallbackTitle: false,
+  },
+  /*
+   * 詳細・地区別・エリア別は動的ルートなのでモジュール側が自動では拾えない。
+   * DBの全件から /api/__sitemap__/urls で列挙している。
+   */
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+    // 問い合わせ・規約類は検索結果に出す価値が無いので除外する
+    exclude: ['/contact', '/privacy', '/terms', '/license'],
   },
 })
