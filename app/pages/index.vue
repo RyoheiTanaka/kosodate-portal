@@ -25,6 +25,36 @@ useSeoMeta({
   description: 'つくば市の認可保育所119園を、エリア・受入年齢・一時預かり・送迎バスから探せる子育て情報サイトです。市のオープンデータをもとに、所在地・開所時間・定員をまとめています。',
 })
 
+const site = useSiteConfig()
+
+/*
+ * サイト自体の構造化データ (#151)。運営主体の Organization と WebSite を
+ * トップにだけ置く。施設側の ChildCare は詳細ページで別に出しており、
+ * 運営主体と施設は別物なので混ぜない。
+ *
+ * SearchAction（サイト内検索をGoogleに知らせる指定）は書いていない。
+ * 出しても検索結果に反映されるのは一部の大規模サイトに限られ、
+ * このサイトの規模では実態のない宣言になるため。
+ */
+useHead(() => ({
+  script: [
+    jsonLdScript({
+      '@type': 'WebSite',
+      '@id': `${site.url}#website`,
+      'url': site.url,
+      'name': '子育てポータル',
+      'inLanguage': 'ja-JP',
+      'publisher': { '@id': `${site.url}#organization` },
+    }),
+    jsonLdScript({
+      '@type': 'Organization',
+      '@id': `${site.url}#organization`,
+      'url': site.url,
+      'name': '子育てポータル',
+    }),
+  ],
+}))
+
 const validateForm = (): Record<string, string | undefined> => {
   const validationErrors: Record<string, string | undefined> = {}
   if (!form.keyword.trim()) {
