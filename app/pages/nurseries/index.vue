@@ -38,21 +38,21 @@ useSeoMeta({
     <AppBreadcrumb
       :items="links"
     />
-    <h2 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-4">
       認可保育所一覧
-    </h2>
+    </h1>
     <!--
       エリアは一覧の主導線 (#86)。
       下のフィルターがこの画面を絞るのに対し、こちらはエリア別ページへの入口で、
       URLを共有できる・検索エンジンに拾われるという別の役割を持つ。
     -->
     <section class="container mb-4">
-      <h3 class="text-sm font-medium text-muted mb-2">
+      <h2 class="text-sm font-medium text-muted mb-2">
         <ULink
           to="/nurseries/area"
           class="underline underline-offset-2 hover:text-default"
         >エリアから探す</ULink>
-      </h3>
+      </h2>
       <!--
         エリア別ページの導線と見た目を揃えている（丸型・アイコン付き）。
         以前は size="sm" の素のボタンで、「桜」のような短いラベルだと 32×28px しかなく

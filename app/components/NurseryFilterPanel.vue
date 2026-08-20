@@ -93,9 +93,9 @@ watch(isDistanceSort, (selected) => {
     見出しは支援技術のために残しつつ、視覚的には控えめなツールバーとして扱う。
   -->
   <section class="container">
-    <h3 class="sr-only">
+    <h2 class="sr-only">
       絞り込みと並び替え
-    </h3>
+    </h2>
     <div class="rounded-lg border border-default p-4 flex flex-col gap-4">
       <!-- トップページの「キーワード検索」と同じものなので、呼び方を揃えている (#106) -->
       <UFormField label="キーワード">

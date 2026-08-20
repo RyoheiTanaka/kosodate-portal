@@ -66,12 +66,12 @@ const EMPTY_CLASS = 'bg-elevated text-dimmed'
   >
     <template #header>
       <div class="space-y-1.5">
-        <h4 class="text-lg font-semibold text-center">
+        <h3 class="text-lg font-semibold text-center">
           <ULink
             :to="detailPath"
             class="after:absolute after:inset-0 after:content-[''] focus:outline-none"
           >{{ nursery.name }}</ULink>
-        </h4>
+        </h3>
         <div class="flex justify-center gap-2">
           <UBadge
             :color="nursery.classification === '公立' ? 'primary' : 'secondary'"

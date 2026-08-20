@@ -103,12 +103,13 @@ const validateForm = (): Record<string, string | undefined> => {
       -->
       <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/65 to-black/50 md:from-black/75 md:via-black/55 md:to-black/25" />
       <div class="container absolute inset-0 flex flex-col items-start justify-center text-white">
-        <h2 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
+        <h1 class="text-3xl font-bold md:mb-4 md:text-4xl lg:text-6xl">
           子育てポータル
-        </h2>
-        <h3 class="text-lg font-bold md:mb-4 lg:text-3xl">
+        </h1>
+        <!-- サイト名に添えるキャッチで、節の見出しではないので p にしている (#151) -->
+        <p class="text-lg font-bold md:mb-4 lg:text-3xl">
           子育て情報掲載サイト
-        </h3>
+        </p>
         <div class="max-w-sm mb-8 text-md lg:max-w-md text-balance">
           <p>つくば市が公開しているデータをまとめて掲載しています。</p>
         </div>

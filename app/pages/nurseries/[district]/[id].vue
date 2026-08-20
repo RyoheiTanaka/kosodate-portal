@@ -127,9 +127,9 @@ useHead(() => ({
           :ui="{ root: 'ring-0 md:ring shadow-none md:shadow-md' }"
         >
           <template #header>
-            <h2 class="text-3xl font-bold text-center mb-4">
+            <h1 class="text-3xl font-bold text-center mb-4">
               {{ nursery.name }}
-            </h2>
+            </h1>
             <div
               v-if="nursery.is_active === false"
               class="mb-4 rounded-md border border-amber-400 bg-amber-50 p-4 dark:bg-amber-950/40"

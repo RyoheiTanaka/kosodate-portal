@@ -64,9 +64,9 @@ useSeoMeta({
     <AppBreadcrumb
       :items="links"
     />
-    <h2 class="text-3xl font-bold text-center mb-1">
+    <h1 class="text-3xl font-bold text-center mb-1">
       {{ area!.name }}
-    </h2>
+    </h1>
     <p class="text-center text-sm text-muted mb-4">
       {{ area!.description }}
     </p>

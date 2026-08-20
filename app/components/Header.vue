@@ -31,12 +31,17 @@ watch(() => route.fullPath, () => {
   -->
   <header class="sticky top-0 z-40 bg-default shadow-sm">
     <div class="container flex items-center justify-between gap-2 py-3">
-      <h1 class="text-xl font-bold">
+      <!--
+        サイト名は h1 にしない (#151)。全ページで同じ文字列が h1 になると、
+        そのページが何のページなのかを見出しで示せない。h1 は各ページの主見出しが持つ。
+        見た目は変えないので、クラスはそのまま p に移している。
+      -->
+      <p class="text-xl font-bold">
         <ULink
           to="/"
           class="inline-flex items-center min-h-10 whitespace-nowrap"
         >子育てポータル</ULink>
-      </h1>
+      </p>
 
       <div class="flex items-center gap-1">
         <!--
