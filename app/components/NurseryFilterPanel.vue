@@ -9,6 +9,14 @@ import type { NurseryFilters } from '~/composables/useNurseryFilters'
  *
  * 条件が8つあるので1行に並べず、役割ごとに段を分けている。
  * キーワード / 場所と属性のセレクト / 設備のトグルと並び替え の3段。
+ *
+ * ## スマホでは畳む (#145)
+ *
+ * 8つ全部を常に出すと 458px（375×812 の画面の56%）を占め、
+ * ファーストビューにカードが1枚も入らなかった。
+ * 常に出すのは「まず打つ」キーワードと「まず並べ替える」並び替えの2つだけにして、
+ * 残りは「詳しく絞り込む」の中に畳む。
+ * sm 以上は横に余裕があり畳む理由が無いので、従来どおり開いた状態にする。
  */
 const props = defineProps<{
   filters: NurseryFilters
@@ -27,6 +35,31 @@ const { state, visible, options, nurseries, hasActiveFilters, hiddenUnknownShutt
 
 const sortId = computed(() => `${props.idPrefix ?? 'nursery'}-sort`)
 const oazaId = computed(() => `${props.idPrefix ?? 'nursery'}-oaza`)
+const advancedId = computed(() => `${props.idPrefix ?? 'nursery'}-advanced`)
+
+/*
+ * 畳んだ中で効いている条件の数 (#145)。
+ *
+ * 畳んでいると、件数が少ない理由が見えない。開かなくても分かるようにバッジで出す。
+ * キーワードと並び替えは畳まないので数えない。
+ */
+const activeAdvancedCount = computed(() => [
+  visible.area && state.area !== ALL,
+  visible.district && state.district !== ALL,
+  state.classification !== ALL,
+  state.type !== ALL,
+  state.bus,
+  state.temporary,
+].filter(Boolean).length)
+
+/*
+ * URLのクエリに条件が入った状態で開いた場合は、開いた状態で出す。
+ * 条件が効いているのに畳まれていると、件数が少ない理由が見えない。
+ *
+ * 見るのは初期値だけ。開いた後に条件を消しても勝手には閉じない。
+ * 消した直後に畳まれると、続けて条件を変えたい人の手が止まるため。
+ */
+const isAdvancedOpen = ref(activeAdvancedCount.value > 0)
 
 /*
  * 距離順ソートの基準点 (#87)。
@@ -75,66 +108,14 @@ watch(isDistanceSort, (selected) => {
         />
       </UFormField>
 
-      <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
-        <!-- エリア別・地区別ページでは、その軸はパスで決まっているのでセレクトを出さない -->
-        <UFormField
-          v-if="visible.area"
-          label="エリア"
-          class="sm:flex-1 sm:min-w-52"
-        >
-          <USelect
-            v-model="state.area"
-            :items="options.areaOptions"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          v-if="visible.district"
-          label="地区"
-          class="sm:flex-1 sm:min-w-40"
-        >
-          <USelect
-            v-model="state.district"
-            :items="options.districtOptions"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          label="区分"
-          class="sm:flex-1 sm:min-w-36"
-        >
-          <USelect
-            v-model="state.classification"
-            :items="options.classificationOptions"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          label="種別"
-          class="sm:flex-1 sm:min-w-48"
-        >
-          <USelect
-            v-model="state.type"
-            :items="options.typeOptions"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
+      <!--
+        並び替えは畳まない (#145)。「まず並べ替える」もので、開く操作を挟むと遠くなる。
 
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <UCheckbox
-          v-model="state.bus"
-          label="送迎バスあり"
-        />
-        <UCheckbox
-          v-model="state.temporary"
-          label="一時預かりあり"
-        />
-        <!--
-          並び替えは絞り込みではないので「条件をクリア」の対象に含めない。
-          件数が変わるものではなく、消したい条件でもないため。
-        -->
-        <div class="flex items-center gap-2 ms-auto">
+        並び替えは絞り込みではないので「条件をクリア」の対象に含めない。
+        件数が変わるものではなく、消したい条件でもないため。
+      -->
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <div class="flex items-center gap-2">
           <label
             :for="sortId"
             class="text-sm text-muted shrink-0"
@@ -146,8 +127,56 @@ watch(isDistanceSort, (selected) => {
             class="w-44"
           />
         </div>
+
+        <!--
+          距離順の入口 (#149)。
+
+          並び替えのセレクトを開かないと「近い順」があると分からず、
+          開かなければ無いのと同じだった。「近い順」は送迎できるか・通えるかに直結する軸なので、
+          セレクトの外に常設して見えるようにする。セレクトからも従来どおり選べる。
+
+          押すと並び替えが距離順になり、上の watch が位置情報を求める。
+          基準点が決まった後は下の基準点のUIが役目を引き継ぐので、このボタンは引っ込める。
+        -->
+        <UButton
+          v-if="!basePoint && !isDistanceSort"
+          color="neutral"
+          variant="subtle"
+          icon="i-lucide-locate-fixed"
+          @click="state.sort = 'distance'"
+        >
+          近くの園を探す
+        </UButton>
+
+        <!-- 畳むのはスマホだけ。sm 以上ではボタンごと消し、中身を常に開いた状態にする -->
+        <UButton
+          class="sm:hidden"
+          color="neutral"
+          variant="outline"
+          :icon="isAdvancedOpen ? 'i-heroicons-chevron-up' : 'i-heroicons-adjustments-horizontal'"
+          :aria-expanded="isAdvancedOpen"
+          :aria-controls="advancedId"
+          @click="isAdvancedOpen = !isAdvancedOpen"
+        >
+          詳しく絞り込む
+          <UBadge
+            v-if="activeAdvancedCount > 0"
+            color="primary"
+            variant="solid"
+            size="sm"
+            class="tabular-nums"
+          >
+            {{ activeAdvancedCount }}
+          </UBadge>
+        </UButton>
+
+        <!--
+          「条件をクリア」も畳まない。畳んだ中の条件ごと消す操作なので、
+          開かないと押せないのでは意味が無い。
+        -->
         <UButton
           v-if="hasActiveFilters"
+          class="ms-auto"
           color="neutral"
           variant="ghost"
           icon="i-heroicons-x-mark"
@@ -158,12 +187,83 @@ watch(isDistanceSort, (selected) => {
       </div>
 
       <!--
+        畳む中身 (#145)。
+        v-if ではなく CSS で隠す。SSR の HTML から条件そのものが消えると、
+        JavaScript が動く前の画面や支援技術の全文読みから条件が失われるため。
+      -->
+      <div
+        :id="advancedId"
+        class="flex-col gap-4 sm:flex"
+        :class="isAdvancedOpen ? 'flex' : 'hidden'"
+      >
+        <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
+          <!-- エリア別・地区別ページでは、その軸はパスで決まっているのでセレクトを出さない -->
+          <UFormField
+            v-if="visible.area"
+            label="エリア"
+            class="sm:flex-1 sm:min-w-52"
+          >
+            <USelect
+              v-model="state.area"
+              :items="options.areaOptions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            v-if="visible.district"
+            label="地区"
+            class="sm:flex-1 sm:min-w-40"
+          >
+            <USelect
+              v-model="state.district"
+              :items="options.districtOptions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            label="区分"
+            class="sm:flex-1 sm:min-w-36"
+          >
+            <USelect
+              v-model="state.classification"
+              :items="options.classificationOptions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            label="種別"
+            class="sm:flex-1 sm:min-w-48"
+          >
+            <USelect
+              v-model="state.type"
+              :items="options.typeOptions"
+              class="w-full"
+            />
+          </UFormField>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <UCheckbox
+            v-model="state.bus"
+            label="送迎バスあり"
+          />
+          <UCheckbox
+            v-model="state.temporary"
+            label="一時預かりあり"
+          />
+        </div>
+      </div>
+
+      <!--
         距離順ソートの基準点のUI (#87)。
         位置情報を拒否されても行き止まりにしないよう、大字を選ぶ道を必ず残す。
 
         「近い順」を選んだときだけでなく、基準点がある限り出す。
         基準点があればカードに距離が出るので、並び替えを名前順に戻した後も
         「直線距離です」の但し書きが必要になるため。
+
+        畳む中には入れない (#145)。何を基準に並んでいるかは並び順そのものの説明で、
+        開かないと読めないのでは困る。
       -->
       <div
         v-if="isDistanceSort || basePoint"
