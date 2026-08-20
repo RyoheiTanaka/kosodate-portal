@@ -73,11 +73,11 @@ useHead(() => ({
 </script>
 
 <template>
-  <main class="py-4">
+  <main class="pt-2 pb-4 sm:pt-4">
     <AppBreadcrumb
       :items="links"
     />
-    <h1 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-2 sm:mb-4">
       {{ districtName }}
     </h1>
 
@@ -88,33 +88,21 @@ useHead(() => ({
       主導線はエリアなので (#86)、ここにエリアの導線は置かない。
       地区で見に来た人が地区の中で移動できれば足りる。
     -->
-    <nav
-      class="container flex flex-wrap justify-center gap-2 mb-4"
-      aria-label="ほかの地区"
-    >
-      <UButton
-        v-for="other in globalDistricts"
-        :key="other.alphabet"
-        :to="`/nurseries/${other.alphabet}`"
-        :color="other.alphabet === district ? 'primary' : 'neutral'"
-        :variant="other.alphabet === district ? 'subtle' : 'outline'"
-        icon="i-lucide-map-pin"
-        size="sm"
-        class="min-h-10 rounded-full font-bold"
-        :aria-current="other.alphabet === district ? 'page' : undefined"
-      >
-        {{ other.name }}
-      </UButton>
-    </nav>
+    <!-- 横の余白は外側で持つ。中は端まではみ出して横に流れるため (#166) -->
+    <div class="container mb-4">
+      <NurseryChipNav
+        class="sm:justify-center"
+        :items="globalDistricts"
+        base-path="/nurseries"
+        label="ほかの地区"
+        :current="district"
+        fallback-icon="i-lucide-map-pin"
+      />
+    </div>
 
-    <NurseryFilterPanel
+    <NurseryBrowser
       :filters="filters"
       id-prefix="district"
-    />
-
-    <NurseryCardList
-      :nurseries="filters.sorted.value"
-      :status="filters.status.value"
       :total="districtTotal"
     />
     <!--

@@ -78,7 +78,7 @@ useHead(() => ({
 </script>
 
 <template>
-  <main class="py-4">
+  <main class="pt-2 pb-4 sm:pt-4">
     <AppBreadcrumb
       :items="links"
     />
@@ -90,37 +90,24 @@ useHead(() => ({
     </p>
 
     <!-- 主導線はエリアなので、他のエリアへは一覧に戻らず直接移れるようにする -->
-    <nav
-      class="container flex flex-wrap justify-center gap-2"
-      aria-label="ほかのエリア"
-    >
-      <UButton
-        v-for="other in globalAreas"
-        :key="other.alphabet"
-        :to="`/nurseries/area/${other.alphabet}`"
-        :color="other.alphabet === areaAlphabet ? 'primary' : 'neutral'"
-        :variant="other.alphabet === areaAlphabet ? 'subtle' : 'outline'"
-        :icon="other.icon"
-        size="sm"
-        class="min-h-10 rounded-full font-bold"
-        :aria-current="other.alphabet === areaAlphabet ? 'page' : undefined"
-      >
-        {{ other.name }}
-      </UButton>
-    </nav>
-
-    <div class="mt-4">
-      <NurseryFilterPanel
-        :filters="filters"
-        id-prefix="area"
+    <!-- 横の余白は外側で持つ。中は端まではみ出して横に流れるため (#166) -->
+    <div class="container">
+      <NurseryChipNav
+        class="sm:justify-center"
+        :items="globalAreas"
+        base-path="/nurseries/area"
+        label="ほかのエリア"
+        :current="areaAlphabet"
       />
     </div>
 
-    <NurseryCardList
-      :nurseries="filters.sorted.value"
-      :status="filters.status.value"
-      :total="areaTotal"
-    />
+    <div class="mt-4">
+      <NurseryBrowser
+        :filters="filters"
+        id-prefix="area"
+        :total="areaTotal"
+      />
+    </div>
     <!--
       要約はカードの下に置く (#145 / #148)。
       スマホのファーストビューに1枚目のカードを入れるために絞り込みを畳んだ経緯があり、
