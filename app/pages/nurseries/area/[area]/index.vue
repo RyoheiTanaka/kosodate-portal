@@ -90,24 +90,16 @@ useHead(() => ({
     </p>
 
     <!-- 主導線はエリアなので、他のエリアへは一覧に戻らず直接移れるようにする -->
-    <nav
-      class="container flex flex-wrap justify-center gap-2"
-      aria-label="ほかのエリア"
-    >
-      <UButton
-        v-for="other in globalAreas"
-        :key="other.alphabet"
-        :to="`/nurseries/area/${other.alphabet}`"
-        :color="other.alphabet === areaAlphabet ? 'primary' : 'neutral'"
-        :variant="other.alphabet === areaAlphabet ? 'subtle' : 'outline'"
-        :icon="other.icon"
-        size="sm"
-        class="min-h-10 rounded-full font-bold"
-        :aria-current="other.alphabet === areaAlphabet ? 'page' : undefined"
-      >
-        {{ other.name }}
-      </UButton>
-    </nav>
+    <!-- 横の余白は外側で持つ。中は端まではみ出して横に流れるため (#166) -->
+    <div class="container">
+      <NurseryChipNav
+        class="sm:justify-center"
+        :items="globalAreas"
+        base-path="/nurseries/area"
+        label="ほかのエリア"
+        :current="areaAlphabet"
+      />
+    </div>
 
     <div class="mt-4">
       <NurseryBrowser
