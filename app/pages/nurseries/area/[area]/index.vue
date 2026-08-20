@@ -60,6 +60,21 @@ useHead({
 useSeoMeta({
   description: () => `つくば市${area!.name}エリアの認可保育所${areaTotal.value ?? ''}園を一覧で紹介します。${area!.description}。受入年齢・一時預かり・送迎バスなどで絞り込めます。`,
 })
+
+const site = useSiteConfig()
+
+/*
+ * ページ自体の更新日 (#151)。掲載データは月1のオープンデータ取り込みでしか
+ * 変わらないので、検索エンジンが再クロールの要否を判断できるように出しておく。
+ */
+useHead(() => ({
+  script: [jsonLdScript(buildWebPageSchema({
+    url: `${site.url}/nurseries/area/${areaAlphabet}`,
+    name: `認可保育所一覧 ${area!.name}`,
+    siteUrl: site.url,
+    dateModified: latestDataUpdate(areaNurseries.value),
+  }))],
+}))
 </script>
 
 <template>

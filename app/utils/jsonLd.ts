@@ -14,3 +14,44 @@ export const jsonLdScript = (data: Record<string, unknown>) => ({
   type: 'application/ld+json' as const,
   innerHTML: JSON.stringify({ '@context': 'https://schema.org', ...data }),
 })
+
+/**
+ * ページ自体の構造化データ (#151)。
+ *
+ * 掲載データは月1回のオープンデータ取り込みでしか変わらない。`dateModified` を
+ * 出しておくと、検索エンジンが再クロールの要否を判断しやすくなる。
+ *
+ * 値は施設の `updatedAt`（取り込み時に更新される）を使い、無い場合はデータ基準日
+ * （`source_date`）に落とす。どちらも無ければ項目ごと出さない。推測の日付は入れない。
+ */
+export const buildWebPageSchema = (params: {
+  url: string
+  name: string
+  siteUrl: string
+  dateModified?: string
+}): Record<string, unknown> => ({
+  '@type': 'WebPage',
+  '@id': `${params.url}#webpage`,
+  'url': params.url,
+  'name': params.name,
+  'inLanguage': 'ja-JP',
+  'isPartOf': { '@id': `${params.siteUrl}#website` },
+  ...(params.dateModified ? { dateModified: params.dateModified } : {}),
+})
+
+/**
+ * 施設の集まりから、いちばん新しい更新日時を ISO 8601 で返す。
+ *
+ * @returns 取り出せない場合は undefined
+ */
+export const latestDataUpdate = (
+  nurseries: Array<{ updatedAt?: Date | string, source_date?: string }>,
+): string | undefined => {
+  const times = nurseries
+    .map(nursery => nursery.updatedAt ?? nursery.source_date)
+    .filter((value): value is Date | string => Boolean(value))
+    .map(value => new Date(value).getTime())
+    .filter(time => Number.isFinite(time))
+
+  return times.length > 0 ? new Date(Math.max(...times)).toISOString() : undefined
+}
