@@ -23,6 +23,7 @@
     "nodemailer": "^9.0.5",
     "nuxt": "^4.5.2",
     "nuxt-csurf": "^1.6.6",
+    "nuxt-gtag": "^5.0.0",
     "nuxt-seo-utils": "^8.4.2"
   },
   "devDependencies": {

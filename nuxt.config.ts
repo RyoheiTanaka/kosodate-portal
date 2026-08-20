@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint', '@nuxtjs/robots', '@nuxtjs/sitemap', 'nuxt-seo-utils'],
+  modules: ['@nuxt/ui', '@nuxt/image', 'nuxt-csurf', '@nuxt/eslint', '@nuxtjs/robots', '@nuxtjs/sitemap', 'nuxt-seo-utils', 'nuxt-gtag'],
   devtools: { enabled: true },
   // Tailwind v4 は設定ファイルではなく CSS 側で定義する
   css: ['~/assets/css/main.css'],
@@ -51,6 +51,18 @@ export default defineNuxtConfig({
         braceStyle: '1tbs',
       },
     },
+  },
+  /*
+   * GA4 (#158)。測定IDは実行時の環境変数 NUXT_PUBLIC_GTAG_ID で渡す。
+   * VITE_* の値と違いビルド時に焼き込まれないので、Vercel 側の設定変更だけで差し替えられる。
+   * IDが未設定の環境（ローカル開発など）では nuxt-gtag が何も読み込まない。
+   *
+   * 同意バナーは出さない。改正電気通信事業法の外部送信規律で求められるのは
+   * 「通知または公表」で、プライバシーポリシーへの明記で要件を満たすため。
+   */
+  gtag: {
+    // ページ遷移の計測は gtag 側の既定（SPAの履歴変更を自動送信）に任せる
+    enabled: true,
   },
   image: {
     screens: {
