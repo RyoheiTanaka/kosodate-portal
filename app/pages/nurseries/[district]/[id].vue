@@ -62,30 +62,43 @@ useHead(() => ({
 
 const site = useSiteConfig()
 
+/** 正規URL。施設本来の地区で組み立てる。canonical と構造化データで共用する */
+const canonicalUrl = computed(() =>
+  nursery.value
+    ? `${site.url}/nurseries/${nursery.value.district_alphabet}/${nursery.value.nursery_id}`
+    : '',
+)
+
 /*
  * 詳細APIは nursery_id だけで引いており、URLの district は見ていない。
  * そのため /nurseries/oho/25 と /nurseries/yatabe/25 が同じ施設を返す。
  * 施設が実際に属する地区のURLを canonical に指定して、重複を1本に寄せる (#151)。
  */
 useHead(() => ({
-  link: nursery.value
-    ? [{
-        rel: 'canonical',
-        href: `${site.url}/nurseries/${nursery.value.district_alphabet}/${nursery.value.nursery_id}`,
-      }]
+  link: canonicalUrl.value
+    ? [{ rel: 'canonical', href: canonicalUrl.value }]
     : [],
 }))
 
 useSeoMeta({
   description: () => nursery.value ? buildNurseryDescription(nursery.value) : undefined,
 })
+
+/*
+ * 施設の構造化データ (#151)。住所・電話・座標・開所時間はすべて既存のフィールドから出す。
+ * 評価や料金は持っていないので出さない。
+ */
+useHead(() => ({
+  script: nursery.value
+    ? [jsonLdScript(buildNurserySchema(nursery.value, canonicalUrl.value))]
+    : [],
+}))
 </script>
 
 <template>
   <main class="py-4">
     <template v-if="nursery">
-      <UBreadcrumb
-        class="container pb-4"
+      <AppBreadcrumb
         :items="[
           {
             label: 'トップ',

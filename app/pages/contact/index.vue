@@ -103,8 +103,7 @@ useSeoMeta({
 
 <template>
   <main class="py-4">
-    <UBreadcrumb
-      class="container pb-4"
+    <AppBreadcrumb
       :items="links"
     />
     <UContainer class="max-w-(--breakpoint-xl) w-full">
