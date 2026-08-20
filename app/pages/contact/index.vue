@@ -95,6 +95,10 @@ useHead({
   ],
 
 })
+
+useSeoMeta({
+  description: 'つくば市の子育てポータルへのお問い合わせフォームです。掲載内容の誤りのご指摘やご要望をお送りいただけます。',
+})
 </script>
 
 <template>

@@ -14,6 +14,10 @@ const links = [
 useHead({
   title: '利用規約',
 })
+
+useSeoMeta({
+  description: '子育てポータルの利用規約です。掲載情報の取り扱いと免責事項についてご説明します。',
+})
 </script>
 
 <template>

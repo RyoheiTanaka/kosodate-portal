@@ -14,6 +14,10 @@ const links = [
 useHead({
   title: 'ライセンス',
 })
+
+useSeoMeta({
+  description: '子育てポータルが利用しているオープンデータの出典とライセンス、および使用しているソフトウェアのライセンスを掲載しています。',
+})
 </script>
 
 <template>

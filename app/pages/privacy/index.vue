@@ -14,6 +14,10 @@ const links = [
 useHead({
   title: 'プライバシーポリシー',
 })
+
+useSeoMeta({
+  description: '子育てポータルのプライバシーポリシーです。取得する情報とその利用目的、アクセス解析についてご説明します。',
+})
 </script>
 
 <template>

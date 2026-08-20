@@ -22,6 +22,26 @@ const detailRows = computed(() => nursery.value ? buildNurseryDetailRows(nursery
 useHead(() => ({
   title: nursery.value?.name,
 }))
+
+const site = useSiteConfig()
+
+/*
+ * 詳細APIは nursery_id だけで引いており、URLの district は見ていない。
+ * そのため /nurseries/oho/25 と /nurseries/yatabe/25 が同じ施設を返す。
+ * 施設が実際に属する地区のURLを canonical に指定して、重複を1本に寄せる (#151)。
+ */
+useHead(() => ({
+  link: nursery.value
+    ? [{
+        rel: 'canonical',
+        href: `${site.url}/nurseries/${nursery.value.district_alphabet}/${nursery.value.nursery_id}`,
+      }]
+    : [],
+}))
+
+useSeoMeta({
+  description: () => nursery.value ? buildNurseryDescription(nursery.value) : undefined,
+})
 </script>
 
 <template>

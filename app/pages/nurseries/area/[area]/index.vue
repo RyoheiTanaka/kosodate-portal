@@ -49,6 +49,14 @@ const links = [
 useHead({
   title: `認可保育所一覧 ${area!.name}`,
 })
+
+/*
+ * エリアの説明（runtimeConfig の description）を description の主文にしている。
+ * 7エリアで文言が被らず、かつ範囲の説明が検索結果に出る。
+ */
+useSeoMeta({
+  description: () => `つくば市${area!.name}エリアの認可保育所${areaTotal.value ?? ''}園を一覧で紹介します。${area!.description}。受入年齢・一時預かり・送迎バスなどで絞り込めます。`,
+})
 </script>
 
 <template>
