@@ -1,18 +1,21 @@
 import type { INursery } from '~~/server/types/nursery'
 
 /**
- * エリア別ページに置く「このエリアの認可保育所」の要約 (#151)。
+ * エリア別・地区別ページに置く要約 (#151)。
  *
- * 7エリアのページが見出しと施設リスト以外ほぼ同じで、重複コンテンツに見える状態だった。
+ * どちらのページも見出しと施設リスト以外ほぼ同じで、重複コンテンツに見える状態だった。
  * かといって地域の紹介文を書き起こすと、データに無いこと（駅からの徒歩分数など）を
  * 書いてしまう。ここで作るのは**すべて掲載データから数えた事実**で、
  * エリアごとに数字が変わるので結果として文面も変わる。
  *
  * 質問に短く答える塊（見出し＋箇条書き＋数値）は AI 検索にも拾われやすい。
+ *
+ * エリア（#86 の主導線）と地区（市の公式区分）は別軸だが、要約の作り方は同じなので
+ * ここは施設の配列だけを受け取る。名前に area / district を入れないのはそのため。
  */
 
-export interface AreaSummary {
-  /** エリア内の施設数 */
+export interface NurserySummary {
+  /** 施設数 */
   total: number
   /** 区分（公立・民間）ごとの件数。0件の区分は含まない */
   classifications: Array<{ label: string, count: number }>
@@ -44,7 +47,7 @@ const countBy = (values: string[]): Array<{ label: string, count: number }> => {
     .sort((a, b) => b.count - a.count)
 }
 
-export const buildAreaSummary = (nurseries: INursery[]): AreaSummary => ({
+export const buildNurserySummary = (nurseries: INursery[]): NurserySummary => ({
   total: nurseries.length,
   classifications: countBy(nurseries.map(nursery => nursery.classification)),
   types: countBy(nurseries.map(nursery => nursery.type)),
@@ -62,5 +65,5 @@ export const buildAreaSummary = (nurseries: INursery[]): AreaSummary => ({
  * テンプレート側で v-for を組むと区切り文字の前後に改行由来の空白が入るので、
  * 文字列にしてから渡す。
  */
-export const formatAreaCounts = (items: Array<{ label: string, count: number }>): string =>
+export const formatNurseryCounts = (items: Array<{ label: string, count: number }>): string =>
   items.map(item => `${item.label}${item.count}園`).join('・')
