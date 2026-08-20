@@ -69,9 +69,21 @@ useSeoMeta({
                 inactive-class="text-muted hover:text-default"
               >郵便番号データ</ULink>、日本郵便株式会社
             </li>
+            <li class="mb-2">
+              <ULink
+                to="https://nlftp.mlit.go.jp/isj/index.html"
+                target="_blank"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              >位置参照情報（大字・町丁目レベル）</ULink>、国土交通省
+            </li>
           </ul>
           <p class="mt-2 text-sm">
             住所に表示している郵便番号は、日本郵便が公開している郵便番号データから大字をもとに引いています。
+          </p>
+          <p class="mt-2 text-sm">
+            距離順の並び替えで大字を基準にしたときの座標は、国土交通省の位置参照情報にある大字の代表点を使っています。大字の中の1点なので、同じ大字の中でも実際の距離は変わります。
           </p>
           <p class="mt-2 text-sm">
             認可保育所等一覧の利用条件は

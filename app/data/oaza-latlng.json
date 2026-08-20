@@ -1,0 +1,954 @@
+{
+  "あしび野": {
+    "latitude": 35.960604,
+    "longitude": 140.112185
+  },
+  "みどりの": {
+    "latitude": 36.031713,
+    "longitude": 140.053314
+  },
+  "みどりの中央": {
+    "latitude": 36.025547,
+    "longitude": 140.060105
+  },
+  "みどりの東": {
+    "latitude": 36.012737,
+    "longitude": 140.068123
+  },
+  "みどりの南": {
+    "latitude": 36.015604,
+    "longitude": 140.051991
+  },
+  "旭": {
+    "latitude": 36.11289,
+    "longitude": 140.072495
+  },
+  "安食": {
+    "latitude": 36.167751,
+    "longitude": 140.016345
+  },
+  "磯部": {
+    "latitude": 36.189798,
+    "longitude": 140.05473
+  },
+  "稲岡": {
+    "latitude": 36.032921,
+    "longitude": 140.13788
+  },
+  "稲荷原": {
+    "latitude": 36.00894,
+    "longitude": 140.110738
+  },
+  "稲荷前": {
+    "latitude": 36.049818,
+    "longitude": 140.127509
+  },
+  "羽成": {
+    "latitude": 36.023091,
+    "longitude": 140.091829
+  },
+  "臼井": {
+    "latitude": 36.204457,
+    "longitude": 140.107
+  },
+  "栄": {
+    "latitude": 36.108554,
+    "longitude": 140.1433
+  },
+  "榎戸": {
+    "latitude": 36.041999,
+    "longitude": 140.105385
+  },
+  "遠東": {
+    "latitude": 36.099682,
+    "longitude": 140.072236
+  },
+  "横町": {
+    "latitude": 36.103683,
+    "longitude": 140.144322
+  },
+  "岡村新田": {
+    "latitude": 36.09074,
+    "longitude": 140.123329
+  },
+  "下横場": {
+    "latitude": 36.028883,
+    "longitude": 140.124524
+  },
+  "下河原崎": {
+    "latitude": 36.067378,
+    "longitude": 140.044421
+  },
+  "下萱丸": {
+    "latitude": 36.02946,
+    "longitude": 140.062727
+  },
+  "下岩崎": {
+    "latitude": 35.973808,
+    "longitude": 140.105698
+  },
+  "下原": {
+    "latitude": 36.041213,
+    "longitude": 140.132355
+  },
+  "下広岡": {
+    "latitude": 36.062219,
+    "longitude": 140.167602
+  },
+  "下大島": {
+    "latitude": 36.134969,
+    "longitude": 140.137506
+  },
+  "下平塚": {
+    "latitude": 36.08945,
+    "longitude": 140.090236
+  },
+  "下別府": {
+    "latitude": 36.071188,
+    "longitude": 140.031167
+  },
+  "花園": {
+    "latitude": 36.086894,
+    "longitude": 140.123158
+  },
+  "花室": {
+    "latitude": 36.089112,
+    "longitude": 140.129772
+  },
+  "花島新田": {
+    "latitude": 36.031344,
+    "longitude": 140.050798
+  },
+  "花畑": {
+    "latitude": 36.129889,
+    "longitude": 140.088594
+  },
+  "学園の森": {
+    "latitude": 36.095654,
+    "longitude": 140.078831
+  },
+  "学園南": {
+    "latitude": 36.078371,
+    "longitude": 140.082506
+  },
+  "梶内": {
+    "latitude": 36.034303,
+    "longitude": 140.125946
+  },
+  "葛城根崎": {
+    "latitude": 36.079841,
+    "longitude": 140.088517
+  },
+  "苅間": {
+    "latitude": 36.080414,
+    "longitude": 140.099452
+  },
+  "観音台": {
+    "latitude": 36.028217,
+    "longitude": 140.099683
+  },
+  "館野": {
+    "latitude": 36.043937,
+    "longitude": 140.112293
+  },
+  "鬼ケ窪": {
+    "latitude": 36.083191,
+    "longitude": 140.050172
+  },
+  "吉沼": {
+    "latitude": 36.140852,
+    "longitude": 140.010249
+  },
+  "吉瀬": {
+    "latitude": 36.082827,
+    "longitude": 140.151729
+  },
+  "境松": {
+    "latitude": 36.003692,
+    "longitude": 140.080908
+  },
+  "境田": {
+    "latitude": 36.013926,
+    "longitude": 140.080434
+  },
+  "玉取": {
+    "latitude": 36.133394,
+    "longitude": 140.107909
+  },
+  "金田": {
+    "latitude": 36.100148,
+    "longitude": 140.136386
+  },
+  "九万坪": {
+    "latitude": 36.004484,
+    "longitude": 140.103011
+  },
+  "駒込": {
+    "latitude": 35.996172,
+    "longitude": 140.09099
+  },
+  "栗原": {
+    "latitude": 36.124765,
+    "longitude": 140.113606
+  },
+  "君島": {
+    "latitude": 36.162404,
+    "longitude": 140.086754
+  },
+  "茎崎": {
+    "latitude": 35.990973,
+    "longitude": 140.099337
+  },
+  "研究学園": {
+    "latitude": 36.084737,
+    "longitude": 140.080833
+  },
+  "原": {
+    "latitude": 36.0783,
+    "longitude": 140.098156
+  },
+  "古館": {
+    "latitude": 36.013298,
+    "longitude": 140.073828
+  },
+  "古来": {
+    "latitude": 36.093655,
+    "longitude": 140.145791
+  },
+  "吾妻": {
+    "latitude": 36.085519,
+    "longitude": 140.113316
+  },
+  "御幸が丘": {
+    "latitude": 36.066784,
+    "longitude": 140.073823
+  },
+  "高見原": {
+    "latitude": 35.994121,
+    "longitude": 140.132501
+  },
+  "高崎": {
+    "latitude": 35.998876,
+    "longitude": 140.122041
+  },
+  "高須賀": {
+    "latitude": 36.068399,
+    "longitude": 140.022365
+  },
+  "高田": {
+    "latitude": 36.082205,
+    "longitude": 140.060823
+  },
+  "高野": {
+    "latitude": 36.106221,
+    "longitude": 140.041022
+  },
+  "高野原新田": {
+    "latitude": 36.189125,
+    "longitude": 140.050546
+  },
+  "高野台": {
+    "latitude": 36.023996,
+    "longitude": 140.118959
+  },
+  "高良田": {
+    "latitude": 36.062419,
+    "longitude": 140.01231
+  },
+  "国松": {
+    "latitude": 36.214706,
+    "longitude": 140.078906
+  },
+  "今鹿島": {
+    "latitude": 36.122246,
+    "longitude": 140.039561
+  },
+  "今泉": {
+    "latitude": 36.035036,
+    "longitude": 140.091431
+  },
+  "根崎": {
+    "latitude": 36.008394,
+    "longitude": 140.071888
+  },
+  "佐": {
+    "latitude": 36.155268,
+    "longitude": 140.083919
+  },
+  "妻木": {
+    "latitude": 36.099986,
+    "longitude": 140.114986
+  },
+  "細見": {
+    "latitude": 35.956836,
+    "longitude": 140.10328
+  },
+  "作谷": {
+    "latitude": 36.173868,
+    "longitude": 140.037016
+  },
+  "桜": {
+    "latitude": 36.112345,
+    "longitude": 140.113993
+  },
+  "桜が丘": {
+    "latitude": 36.009503,
+    "longitude": 140.10127
+  },
+  "山口": {
+    "latitude": 36.173133,
+    "longitude": 140.119873
+  },
+  "山中": {
+    "latitude": 36.063733,
+    "longitude": 140.084066
+  },
+  "山木": {
+    "latitude": 36.161626,
+    "longitude": 140.077749
+  },
+  "市之台": {
+    "latitude": 36.023004,
+    "longitude": 140.130986
+  },
+  "寺具": {
+    "latitude": 36.187156,
+    "longitude": 140.028744
+  },
+  "自由ケ丘": {
+    "latitude": 35.960019,
+    "longitude": 140.108168
+  },
+  "鹿島台": {
+    "latitude": 36.133493,
+    "longitude": 140.09792
+  },
+  "漆所": {
+    "latitude": 36.187384,
+    "longitude": 140.085483
+  },
+  "篠崎": {
+    "latitude": 36.131513,
+    "longitude": 140.062923
+  },
+  "柴崎": {
+    "latitude": 36.106425,
+    "longitude": 140.118536
+  },
+  "若栗": {
+    "latitude": 36.01448,
+    "longitude": 140.100286
+  },
+  "若森": {
+    "latitude": 36.148252,
+    "longitude": 140.086323
+  },
+  "若葉": {
+    "latitude": 36.020755,
+    "longitude": 140.103238
+  },
+  "手子生": {
+    "latitude": 36.106771,
+    "longitude": 140.027755
+  },
+  "手代木": {
+    "latitude": 36.060259,
+    "longitude": 140.096922
+  },
+  "酒丸": {
+    "latitude": 36.097668,
+    "longitude": 140.058749
+  },
+  "春日": {
+    "latitude": 36.09119,
+    "longitude": 140.10092
+  },
+  "小茎": {
+    "latitude": 35.991916,
+    "longitude": 140.114793
+  },
+  "小山": {
+    "latitude": 35.990409,
+    "longitude": 140.091509
+  },
+  "小泉": {
+    "latitude": 36.175203,
+    "longitude": 140.08308
+  },
+  "小沢": {
+    "latitude": 36.183714,
+    "longitude": 140.080686
+  },
+  "小田": {
+    "latitude": 36.15457,
+    "longitude": 140.114996
+  },
+  "小白硲": {
+    "latitude": 36.047215,
+    "longitude": 140.07494
+  },
+  "小野崎": {
+    "latitude": 36.071301,
+    "longitude": 140.109359
+  },
+  "小野川": {
+    "latitude": 36.050919,
+    "longitude": 140.117842
+  },
+  "小和田": {
+    "latitude": 36.165059,
+    "longitude": 140.112771
+  },
+  "松の里": {
+    "latitude": 36.008429,
+    "longitude": 140.12981
+  },
+  "松栄": {
+    "latitude": 36.107496,
+    "longitude": 140.146316
+  },
+  "松代": {
+    "latitude": 36.067663,
+    "longitude": 140.101677
+  },
+  "松塚": {
+    "latitude": 36.107947,
+    "longitude": 140.153703
+  },
+  "松野木": {
+    "latitude": 36.058976,
+    "longitude": 140.113441
+  },
+  "沼崎": {
+    "latitude": 36.117156,
+    "longitude": 140.057775
+  },
+  "沼田": {
+    "latitude": 36.206663,
+    "longitude": 140.08669
+  },
+  "上ノ室": {
+    "latitude": 36.081127,
+    "longitude": 140.138138
+  },
+  "上横場": {
+    "latitude": 36.0446,
+    "longitude": 140.091001
+  },
+  "上河原崎": {
+    "latitude": 36.079024,
+    "longitude": 140.03917
+  },
+  "上河原崎下河原崎入会地": {
+    "latitude": 36.072624,
+    "longitude": 140.038812
+  },
+  "上河原崎元宮本": {
+    "latitude": 36.075704,
+    "longitude": 140.036447
+  },
+  "上萱丸": {
+    "latitude": 36.033382,
+    "longitude": 140.058215
+  },
+  "上岩崎": {
+    "latitude": 35.979019,
+    "longitude": 140.096382
+  },
+  "上境": {
+    "latitude": 36.112812,
+    "longitude": 140.129125
+  },
+  "上郷": {
+    "latitude": 36.096748,
+    "longitude": 140.015488
+  },
+  "上原": {
+    "latitude": 36.054729,
+    "longitude": 140.113435
+  },
+  "上広岡": {
+    "latitude": 36.070529,
+    "longitude": 140.15386
+  },
+  "上菅間": {
+    "latitude": 36.207715,
+    "longitude": 140.059372
+  },
+  "上大島": {
+    "latitude": 36.224624,
+    "longitude": 140.074515
+  },
+  "上沢": {
+    "latitude": 36.157831,
+    "longitude": 140.070878
+  },
+  "上野": {
+    "latitude": 36.119687,
+    "longitude": 140.12431
+  },
+  "上里": {
+    "latitude": 36.123588,
+    "longitude": 140.027195
+  },
+  "城山": {
+    "latitude": 35.991802,
+    "longitude": 140.123568
+  },
+  "新井": {
+    "latitude": 36.059403,
+    "longitude": 140.086622
+  },
+  "新牧田": {
+    "latitude": 36.031645,
+    "longitude": 140.129776
+  },
+  "森の里": {
+    "latitude": 35.990817,
+    "longitude": 140.109938
+  },
+  "真瀬": {
+    "latitude": 36.048363,
+    "longitude": 140.037558
+  },
+  "神郡": {
+    "latitude": 36.197097,
+    "longitude": 140.117992
+  },
+  "水守": {
+    "latitude": 36.167183,
+    "longitude": 140.062751
+  },
+  "水堀": {
+    "latitude": 36.061293,
+    "longitude": 140.066848
+  },
+  "杉木": {
+    "latitude": 36.188222,
+    "longitude": 140.075839
+  },
+  "菅間": {
+    "latitude": 36.009972,
+    "longitude": 140.121829
+  },
+  "西の沢": {
+    "latitude": 36.013412,
+    "longitude": 140.108558
+  },
+  "西岡": {
+    "latitude": 36.06979,
+    "longitude": 140.086307
+  },
+  "西郷": {
+    "latitude": 36.070294,
+    "longitude": 140.092441
+  },
+  "西栗山": {
+    "latitude": 36.020304,
+    "longitude": 140.057604
+  },
+  "西原": {
+    "latitude": 36.103226,
+    "longitude": 140.079964
+  },
+  "西高野": {
+    "latitude": 36.146664,
+    "longitude": 140.024557
+  },
+  "西大井": {
+    "latitude": 36.015659,
+    "longitude": 140.128152
+  },
+  "西大橋": {
+    "latitude": 36.072583,
+    "longitude": 140.088773
+  },
+  "西大沼": {
+    "latitude": 36.054771,
+    "longitude": 140.105642
+  },
+  "西沢": {
+    "latitude": 36.106927,
+    "longitude": 140.078075
+  },
+  "西平塚": {
+    "latitude": 36.099885,
+    "longitude": 140.086466
+  },
+  "赤塚": {
+    "latitude": 36.042677,
+    "longitude": 140.12315
+  },
+  "千現": {
+    "latitude": 36.070867,
+    "longitude": 140.124412
+  },
+  "泉": {
+    "latitude": 36.172852,
+    "longitude": 140.082083
+  },
+  "前野": {
+    "latitude": 36.146834,
+    "longitude": 140.063634
+  },
+  "倉掛": {
+    "latitude": 36.076707,
+    "longitude": 140.129723
+  },
+  "台町": {
+    "latitude": 36.036676,
+    "longitude": 140.082392
+  },
+  "大": {
+    "latitude": 36.099635,
+    "longitude": 140.150504
+  },
+  "大わし": {
+    "latitude": 36.05396,
+    "longitude": 140.091852
+  },
+  "大井": {
+    "latitude": 36.011587,
+    "longitude": 140.138101
+  },
+  "大角豆": {
+    "latitude": 36.066902,
+    "longitude": 140.151099
+  },
+  "大貫": {
+    "latitude": 36.194231,
+    "longitude": 140.075738
+  },
+  "大久保": {
+    "latitude": 36.149805,
+    "longitude": 140.043234
+  },
+  "大形": {
+    "latitude": 36.146776,
+    "longitude": 140.133633
+  },
+  "大砂": {
+    "latitude": 36.146874,
+    "longitude": 140.034689
+  },
+  "大舟戸": {
+    "latitude": 35.966278,
+    "longitude": 140.098
+  },
+  "大曽根": {
+    "latitude": 36.136347,
+    "longitude": 140.092067
+  },
+  "大白硲": {
+    "latitude": 36.051452,
+    "longitude": 140.069942
+  },
+  "大穂": {
+    "latitude": 36.146503,
+    "longitude": 140.074179
+  },
+  "鷹野原": {
+    "latitude": 36.019471,
+    "longitude": 140.116748
+  },
+  "谷田部": {
+    "latitude": 36.026408,
+    "longitude": 140.078901
+  },
+  "池の台": {
+    "latitude": 36.017253,
+    "longitude": 140.122185
+  },
+  "池向": {
+    "latitude": 36.017946,
+    "longitude": 140.133099
+  },
+  "池田": {
+    "latitude": 36.191986,
+    "longitude": 140.064902
+  },
+  "竹園": {
+    "latitude": 36.079508,
+    "longitude": 140.119789
+  },
+  "筑波": {
+    "latitude": 36.21786,
+    "longitude": 140.100344
+  },
+  "筑穂": {
+    "latitude": 36.13268,
+    "longitude": 140.080682
+  },
+  "中根": {
+    "latitude": 36.109219,
+    "longitude": 140.136395
+  },
+  "中山": {
+    "latitude": 36.019577,
+    "longitude": 140.109762
+  },
+  "中菅間": {
+    "latitude": 36.198639,
+    "longitude": 140.065554
+  },
+  "中東": {
+    "latitude": 36.104534,
+    "longitude": 140.063642
+  },
+  "中東原新田": {
+    "latitude": 36.089551,
+    "longitude": 140.071125
+  },
+  "中内": {
+    "latitude": 36.047077,
+    "longitude": 140.108026
+  },
+  "中別府": {
+    "latitude": 36.082003,
+    "longitude": 140.029931
+  },
+  "中野": {
+    "latitude": 36.022683,
+    "longitude": 140.066658
+  },
+  "長高野": {
+    "latitude": 36.138378,
+    "longitude": 140.05067
+  },
+  "長峰": {
+    "latitude": 36.055938,
+    "longitude": 140.124879
+  },
+  "天王台": {
+    "latitude": 36.117732,
+    "longitude": 140.096584
+  },
+  "天久保": {
+    "latitude": 36.098497,
+    "longitude": 140.107119
+  },
+  "天宝喜": {
+    "latitude": 35.985052,
+    "longitude": 140.124714
+  },
+  "田水山": {
+    "latitude": 36.175897,
+    "longitude": 140.060154
+  },
+  "田倉": {
+    "latitude": 36.121795,
+    "longitude": 140.015882
+  },
+  "田中": {
+    "latitude": 36.177547,
+    "longitude": 140.070073
+  },
+  "土田": {
+    "latitude": 36.090476,
+    "longitude": 140.061679
+  },
+  "島": {
+    "latitude": 36.064098,
+    "longitude": 140.091212
+  },
+  "島名": {
+    "latitude": 36.060355,
+    "longitude": 140.051689
+  },
+  "東": {
+    "latitude": 36.057615,
+    "longitude": 140.131651
+  },
+  "東岡": {
+    "latitude": 36.094852,
+    "longitude": 140.124244
+  },
+  "東丸山": {
+    "latitude": 36.015038,
+    "longitude": 140.09199
+  },
+  "東光台": {
+    "latitude": 36.095561,
+    "longitude": 140.065862
+  },
+  "東新井": {
+    "latitude": 36.075596,
+    "longitude": 140.1131
+  },
+  "東平塚": {
+    "latitude": 36.099685,
+    "longitude": 140.095383
+  },
+  "藤本": {
+    "latitude": 36.046791,
+    "longitude": 140.0992
+  },
+  "洞下": {
+    "latitude": 36.198369,
+    "longitude": 140.046082
+  },
+  "鍋沼新田": {
+    "latitude": 36.059625,
+    "longitude": 140.035822
+  },
+  "南原": {
+    "latitude": 36.125164,
+    "longitude": 140.072734
+  },
+  "南中妻": {
+    "latitude": 36.03332,
+    "longitude": 140.1135
+  },
+  "二の宮": {
+    "latitude": 36.064712,
+    "longitude": 140.118666
+  },
+  "梅ケ丘": {
+    "latitude": 35.986514,
+    "longitude": 140.091882
+  },
+  "梅園": {
+    "latitude": 36.058979,
+    "longitude": 140.138141
+  },
+  "泊崎": {
+    "latitude": 35.954997,
+    "longitude": 140.112108
+  },
+  "八崎": {
+    "latitude": 35.954269,
+    "longitude": 140.109183
+  },
+  "八幡台": {
+    "latitude": 36.053371,
+    "longitude": 140.077695
+  },
+  "飯田": {
+    "latitude": 36.016965,
+    "longitude": 140.069078
+  },
+  "樋の沢": {
+    "latitude": 36.020349,
+    "longitude": 140.134973
+  },
+  "百家": {
+    "latitude": 36.096488,
+    "longitude": 140.050354
+  },
+  "富士見台": {
+    "latitude": 35.950468,
+    "longitude": 140.117014
+  },
+  "平": {
+    "latitude": 36.05515,
+    "longitude": 140.068111
+  },
+  "平沢": {
+    "latitude": 36.183522,
+    "longitude": 140.115229
+  },
+  "並木": {
+    "latitude": 36.064589,
+    "longitude": 140.141504
+  },
+  "片田": {
+    "latitude": 36.021354,
+    "longitude": 140.049841
+  },
+  "宝陽台": {
+    "latitude": 35.981519,
+    "longitude": 140.125302
+  },
+  "豊里の杜": {
+    "latitude": 36.101648,
+    "longitude": 140.047768
+  },
+  "房内": {
+    "latitude": 36.00841,
+    "longitude": 140.095356
+  },
+  "北郷": {
+    "latitude": 36.104929,
+    "longitude": 140.086031
+  },
+  "北原": {
+    "latitude": 36.153213,
+    "longitude": 140.049491
+  },
+  "北条": {
+    "latitude": 36.175608,
+    "longitude": 140.09422
+  },
+  "北太田": {
+    "latitude": 36.148322,
+    "longitude": 140.098137
+  },
+  "北中妻": {
+    "latitude": 36.037241,
+    "longitude": 140.107853
+  },
+  "北中島": {
+    "latitude": 36.024556,
+    "longitude": 140.139229
+  },
+  "牧園": {
+    "latitude": 36.020778,
+    "longitude": 140.127617
+  },
+  "明神": {
+    "latitude": 35.98717,
+    "longitude": 140.134047
+  },
+  "明石": {
+    "latitude": 36.182065,
+    "longitude": 140.053737
+  },
+  "面野井": {
+    "latitude": 36.076354,
+    "longitude": 140.068039
+  },
+  "木俣": {
+    "latitude": 36.0944,
+    "longitude": 140.024826
+  },
+  "野畑": {
+    "latitude": 36.096904,
+    "longitude": 140.040097
+  },
+  "柳橋": {
+    "latitude": 36.059552,
+    "longitude": 140.077374
+  },
+  "要": {
+    "latitude": 36.113184,
+    "longitude": 140.083886
+  },
+  "立原": {
+    "latitude": 36.131746,
+    "longitude": 140.074963
+  },
+  "緑が丘": {
+    "latitude": 36.00863,
+    "longitude": 140.087137
+  },
+  "緑ケ原": {
+    "latitude": 36.113567,
+    "longitude": 140.026279
+  },
+  "蓮沼": {
+    "latitude": 36.125487,
+    "longitude": 140.081094
+  },
+  "六斗": {
+    "latitude": 35.998079,
+    "longitude": 140.105071
+  },
+  "和台": {
+    "latitude": 36.158488,
+    "longitude": 140.057288
+  },
+  "和台原": {
+    "latitude": 36.164203,
+    "longitude": 140.05051
+  }
+}
