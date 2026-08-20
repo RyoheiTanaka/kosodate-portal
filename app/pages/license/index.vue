@@ -28,9 +28,9 @@ useSeoMeta({
     <UContainer class="max-w-(--breakpoint-xl) w-full">
       <UCard>
         <template #header>
-          <h2 class="text-3xl font-bold text-center">
+          <h1 class="text-3xl font-bold text-center">
             ライセンス・クレジット表記
-          </h2>
+          </h1>
         </template>
         <!--
           つくば市オープンデータ利用規約が指定する「改変して利用する場合」の出典表記。
@@ -38,9 +38,9 @@ useSeoMeta({
           および issue #113 を参照。
         -->
         <div class="mt-4">
-          <h3 class="text-xl font-bold">
+          <h2 class="text-xl font-bold">
             出典
-          </h3>
+          </h2>
           <p class="mt-2">
             このサイトは以下の著作物を改変して利用しています。
           </p>
@@ -74,9 +74,9 @@ useSeoMeta({
           </p>
         </div>
         <div class="mt-8">
-          <h3 class="text-xl font-bold">
+          <h2 class="text-xl font-bold">
             免責事項
-          </h3>
+          </h2>
           <p class="mt-2">
             掲載しているデータは、つくば市が公開しているものを転載・改変したものです。
             つくば市はデータの完全性・正確性・網羅性・安全性を保証しておらず、

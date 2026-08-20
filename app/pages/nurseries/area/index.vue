@@ -50,9 +50,9 @@ useSeoMeta({
     <AppBreadcrumb
       :items="links"
     />
-    <h2 class="text-3xl font-bold text-center mb-1">
+    <h1 class="text-3xl font-bold text-center mb-1">
       エリアから探す
-    </h2>
+    </h1>
     <p class="text-center text-sm text-muted mb-6">
       つくば市の認可保育所等を、TXの駅と生活圏を軸にした7エリアに分けています。
     </p>

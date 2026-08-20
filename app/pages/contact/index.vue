@@ -109,9 +109,9 @@ useSeoMeta({
     <UContainer class="max-w-(--breakpoint-xl) w-full">
       <UCard>
         <template #header>
-          <h2 class="text-3xl font-bold text-center">
+          <h1 class="text-3xl font-bold text-center">
             お問い合わせ
-          </h2>
+          </h1>
         </template>
         <UForm
           :state="form"

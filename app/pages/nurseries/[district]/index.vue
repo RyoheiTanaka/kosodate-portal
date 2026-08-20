@@ -59,9 +59,9 @@ useSeoMeta({
     <AppBreadcrumb
       :items="links"
     />
-    <h2 class="text-3xl font-bold text-center mb-4">
+    <h1 class="text-3xl font-bold text-center mb-4">
       {{ districtName }}
-    </h2>
+    </h1>
 
     <!--
       地区別ページには他の地区へ移る手段が無く、トップか一覧まで戻る必要があった。
