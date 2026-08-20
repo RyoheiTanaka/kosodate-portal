@@ -38,7 +38,9 @@ export const buildNurseryDetailRows = (nursery: INursery): NurseryDetailRow[] =>
   const rows: NurseryDetailRow[] = [
     { label: '区分', value: nursery.classification },
     { label: '種別', value: nursery.type },
-    { label: '住所', value: `${nursery.address ?? ''}${nursery.address_note ?? ''}` },
+    // 郵便番号は市のデータに無く、大字から引いて入れている (#151)。引けなかった施設は空なので
+    // その場合は 〒 ごと出さない
+    { label: '住所', value: `${nursery.postal_code ? `〒${nursery.postal_code} ` : ''}${nursery.address ?? ''}${nursery.address_note ?? ''}` },
     { label: '定員', value: nursery.capacity ? `${nursery.capacity}人` : '' },
     { label: '保育年齢', value: nursery.childcare_age },
     { label: '利用可能曜日', value: nursery.available_day },

@@ -12,6 +12,8 @@ export interface INursery {
   address: string
   /** 方書（ビル名・街区など） */
   address_note: string
+  /** 郵便番号（`305-0071` 形式）。大字から一意に決められない場合は空 (#151) */
+  postal_code: string
   /** 市の公式区分（6地区）。データ属性と既存URLのために維持している */
   district: string
   district_alphabet: string

@@ -60,9 +60,21 @@ useSeoMeta({
                 inactive-class="text-muted hover:text-default"
               >クリエイティブ・コモンズ・ライセンス表示4.0国際</ULink>
             </li>
+            <li class="mb-2">
+              <ULink
+                to="https://www.post.japanpost.jp/zipcode/dl/kogaki-zip.html"
+                target="_blank"
+                class="underline"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              >郵便番号データ</ULink>、日本郵便株式会社
+            </li>
           </ul>
           <p class="mt-2 text-sm">
-            利用条件は
+            住所に表示している郵便番号は、日本郵便が公開している郵便番号データから大字をもとに引いています。
+          </p>
+          <p class="mt-2 text-sm">
+            認可保育所等一覧の利用条件は
             <ULink
               to="https://www.city.tsukuba.lg.jp/opendata/1000081/1000084.html"
               target="_blank"

@@ -16,6 +16,9 @@ const NurserySchema = new Schema<INurseryDocument>({
   name_kana: { type: String, default: '' },
   address: { type: String, required: true },
   address_note: { type: String, default: '' },
+  // 郵便番号は市のデータに無く、日本郵便の郵便番号データから大字で引いて入れる (#151)。
+  // 一意に決められない大字は空のままにする（推測で埋めない）
+  postal_code: { type: String, default: '' },
   district: { type: String, required: true },
   district_alphabet: { type: String, required: true },
   // エリアは取り込み時に住所の大字から判定して入れる (#86)。
