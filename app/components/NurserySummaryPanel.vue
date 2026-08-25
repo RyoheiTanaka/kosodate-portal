@@ -9,7 +9,7 @@ import type { INursery } from '~~/server/types/nursery'
  * 区分ごとに数字も地名も変わるので、結果として文面が重ならない。
  *
  * 地域の紹介文は書き起こさない。駅からの徒歩分数のような、手元のデータに無い情報を
- * 書くことになるため。
+ * 書くことになるため。座標から計算できる直線距離だけは #178 で足した（`nurseryGeography`）。
  */
 const props = defineProps<{
   /** 見出し。「〇〇エリアの認可保育所」「〇〇の認可保育所」 */
@@ -28,6 +28,35 @@ const props = defineProps<{
 }>()
 
 const summary = computed(() => buildNurserySummary(props.nurseries))
+
+/*
+ * 位置から言えること (#178)。
+ *
+ * 件数だけを並べると全ページが同じ形になるので、掲載データの緯度経度から計算した値を
+ * 上に重ねる。どれも直線距離で、道のりでも徒歩分数でもないことを画面で断る。
+ *
+ * 施設が1つしかないと「いちばん離れた2園」は意味を持たないので、その行は出さない。
+ */
+const geography = computed(() => buildNurseryGeography(props.nurseries))
+
+/**
+ * 「約920m〜約14km」。丸めた結果が同じになる範囲は、幅があるように見せず1つだけ出す。
+ * 施設が1つのエリアでも「約2.1km〜約2.1km」にならない。
+ */
+const formatRange = (min: number, max: number): string =>
+  formatDistance(min) === formatDistance(max)
+    ? formatDistance(max)
+    : `${formatDistance(min)}〜${formatDistance(max)}`
+
+const nearestStationText = computed(() => {
+  const { nearestStations, toStationMin, toStationMax } = geography.value
+
+  return `最寄りのつくばエクスプレスの駅: ${formatNearestStations(nearestStations)}（最寄り駅までは${formatRange(toStationMin, toStationMax)}）`
+})
+
+const fromCenterText = computed(() =>
+  `つくば駅からの距離: ${formatRange(geography.value.fromCenterMin, geography.value.fromCenterMax)}`,
+)
 
 /*
  * 相互リンク。要約の最後に1行だけ置く。
@@ -79,6 +108,16 @@ const shuttleBusText = computed(() => {
       <p class="text-sm text-muted mb-3">
         {{ lead }}掲載している認可保育所は{{ summary.total }}園です。
       </p>
+      <ul
+        v-if="geography.located > 0"
+        class="text-sm space-y-1 list-disc ml-5 mb-3"
+      >
+        <li>{{ nearestStationText }}</li>
+        <li>{{ fromCenterText }}</li>
+        <li v-if="geography.spread > 0">
+          いちばん離れた2園の間: {{ formatDistance(geography.spread) }}
+        </li>
+      </ul>
       <ul class="text-sm space-y-1 list-disc ml-5">
         <li>区分: {{ formatNurseryCounts(summary.classifications) }}</li>
         <li>種別: {{ formatNurseryCounts(summary.types) }}</li>
@@ -118,7 +157,8 @@ const shuttleBusText = computed(() => {
         </ul>
       </div>
       <p class="text-xs text-muted mt-3">
-        件数はつくば市が公開しているデータ（{{ formatSourceDate(nurseries[0]?.source_date) || '公開時点' }}時点）をもとにしています。
+        件数と距離はつくば市が公開しているデータ（{{ formatSourceDate(nurseries[0]?.source_date) || '公開時点' }}時点）をもとにしています。
+        距離はいずれも施設の座標から求めた直線距離で、道のりや所要時間ではありません。駅の座標は OpenStreetMap によります。
       </p>
     </section>
   </UContainer>
