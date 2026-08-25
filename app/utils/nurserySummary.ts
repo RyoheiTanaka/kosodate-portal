@@ -35,6 +35,10 @@ export interface NurserySummary {
   earliestOpen: string
   /** 平日でいちばん遅い閉所時刻（`20:00`）。解釈できる値が無ければ空 */
   latestClose: string
+  /** いちばん小さい定員。定員が入っていない施設しか無ければ 0 */
+  capacityMin: number
+  /** いちばん大きい定員。定員が入っていない施設しか無ければ 0 */
+  capacityMax: number
   /** 施設がある大字。多い順 */
   oaza: string[]
   /**
@@ -104,6 +108,20 @@ const countBy = (values: string[]): Array<{ label: string, count: number }> => {
     .sort((a, b) => b.count - a.count)
 }
 
+/**
+ * 定員の最小・最大を返す。
+ *
+ * 定員が入っていない施設が混ざっても幅が 0 人から始まってしまわないよう、
+ * 正の値だけを見る。取り出せる値が無ければ 0 を返し、呼び出し側で出し分ける。
+ */
+const pickCapacity = (nurseries: INursery[], kind: 'min' | 'max'): number => {
+  const values = nurseries.map(nursery => nursery.capacity).filter(capacity => Number(capacity) > 0)
+
+  if (values.length === 0) return 0
+
+  return kind === 'min' ? Math.min(...values) : Math.max(...values)
+}
+
 export const buildNurserySummary = (nurseries: INursery[]): NurserySummary => ({
   total: nurseries.length,
   classifications: countBy(nurseries.map(nursery => nursery.classification)),
@@ -117,6 +135,8 @@ export const buildNurserySummary = (nurseries: INursery[]): NurserySummary => ({
   saturday: nurseries.filter(nursery => toMinutes(nursery.open_saturday) !== null).length,
   earliestOpen: pickTime(nurseries.map(nursery => nursery.open_weekday), 'earliest'),
   latestClose: pickTime(nurseries.map(nursery => nursery.close_weekday), 'latest'),
+  capacityMin: pickCapacity(nurseries, 'min'),
+  capacityMax: pickCapacity(nurseries, 'max'),
   oaza: countBy(nurseries.map(nursery => extractOaza(nursery.address))).map(entry => entry.label),
   districts: uniqueBy(nurseries.map(nursery => ({ name: nursery.district, alphabet: nursery.district_alphabet }))),
   areas: uniqueBy(nurseries.map(nursery => ({ name: nursery.area, alphabet: nursery.area_alphabet }))),

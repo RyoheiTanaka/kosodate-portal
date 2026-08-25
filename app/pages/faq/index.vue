@@ -33,7 +33,7 @@ useHead({
 })
 
 useSeoMeta({
-  description: () => `つくば市の認可保育所について、掲載データから答えられる質問をまとめました。園の数、0歳から預けられる園、一時預かりや送迎バスのある園、土曜日の開所、開所時間などを${summary.value.total || ''}園ぶんのデータから集計しています。`,
+  description: () => `つくば市の認可保育所について、掲載データから答えられる質問をまとめました。園の数、0歳から預けられる園、一時預かりや送迎バスのある園、開所時間などを${summary.value.total || ''}園ぶんのデータから集計しています。保育所・認定こども園・小規模保育事業所の違いや、園を比べるときに見る項目、申込みや空き状況の調べ先もまとめています。`,
 })
 
 /**
@@ -101,6 +101,47 @@ const dataQuestions = computed(() => {
   ]
 })
 
+/**
+ * 園を選ぶときに知っておくこと (#177)。
+ *
+ * ここだけは掲載データの集計に留まらず、施設種別のような制度側の話にも触れる。
+ * 保活の入口で必ず出てくる問いで、これに答えられないと一覧の数字だけが並ぶことになる。
+ *
+ * ただし書くのは**つくば市が「保育所について」で説明している範囲**に限り、
+ * そこへのリンクを必ず添える。年度で変わる話（申込み・保育料・選考）は下の節で市へ送る。
+ * 個別の園の良し悪しは書かない。データに無いことは「見学で確かめてください」で止める。
+ */
+const chooseQuestions = computed(() => {
+  const s = summary.value
+
+  return [
+    {
+      question: '保育所・認定こども園・小規模保育事業所は何が違いますか？',
+      answer: `掲載している${s.total}園の種別は${formatNurseryCounts(s.types)}です。認可保育所は児童福祉法の基準に沿った定員・保育士数・施設の規模で運営されている施設、認定こども園は幼稚園と保育所の機能をあわせ持つ施設、小規模保育事業所は少人数で0〜2歳児を保育する施設です。小規模保育事業所は3歳以降の受け入れがないため、卒園にあたって別の園へ移ることになります。`,
+      to: '/nurseries?type=小規模保育事業所',
+      linkLabel: '小規模保育事業所を見る',
+    },
+    {
+      question: '公立と民間で手続きは違いますか？',
+      answer: `掲載している${s.total}園の区分は${formatNurseryCounts(s.classifications)}です。認可保育所は公立・民間とも、申込みの受付・入所の決定・保育料の徴収をつくば市が行います。認定こども園と小規模保育事業所は、申込みの受付と入所の決定は市ですが、保育料の徴収は施設が行います。`,
+      to: '/nurseries',
+      linkLabel: '一覧で区分を絞り込む',
+    },
+    {
+      question: '園ごとに何を比べればいいですか？',
+      answer: `このサイトが園ごとに載せているのは、定員・受入年齢・開所時間・開所曜日・送迎バス・一時預かり・所在地・電話番号など、つくば市が公開しているオープンデータに含まれる項目です。${s.capacityMin && s.capacityMax ? `定員だけでも${s.capacityMin}人から${s.capacityMax}人まで幅があります。` : ''}保育の方針や園の雰囲気は数字に出ないので、候補を絞ったあとは見学や電話でご確認ください。連絡先は各園の詳細ページに載せています。`,
+      to: '/nurseries?sort=capacity-desc',
+      linkLabel: '定員が多い順で一覧を見る',
+    },
+    {
+      question: '開所時間のあいだ、ずっと預けられますか？',
+      answer: `開所時間は園が開いている時間で、実際に利用できる時間は認定区分（保育標準時間・保育短時間）によって決まります。掲載している園の平日の開所は${s.earliestOpen}〜${s.latestClose}の範囲で、認定区分ごとの時間帯は詳細ページの「標準保育時間」に園ごとに載せています。どの認定区分になるかはつくば市が決めます。`,
+      to: '/nurseries',
+      linkLabel: '園ごとの開所時間を見る',
+    },
+  ]
+})
+
 /*
  * FAQPage の構造化データ。
  *
@@ -108,7 +149,7 @@ const dataQuestions = computed(() => {
  * これで検索結果の見た目が変わることは期待していない。ページの意味を機械可読にする
  * ためだけに出している。回答は画面に出しているものと同じ文言で、ここだけの内容は書かない。
  *
- * この呼び出しは dataQuestions の定義より**後**に置く必要がある。クライアントでは
+ * この呼び出しは dataQuestions と chooseQuestions の定義より**後**に置く必要がある。クライアントでは
  * useHead が渡した関数を setup 中に同期で1度評価するため、前に置くと const の TDZ に
  * 当たってハイドレーションが落ちる。SSR では評価が遅延されるので気づけない (#176)。
  */
@@ -116,7 +157,7 @@ useHead(() => ({
   script: nurseries.value
     ? [jsonLdScript({
         '@type': 'FAQPage',
-        'mainEntity': dataQuestions.value.map(item => ({
+        'mainEntity': [...dataQuestions.value, ...chooseQuestions.value].map(item => ({
           '@type': 'Question',
           'name': item.question,
           'acceptedAnswer': { '@type': 'Answer', 'text': item.answer },
@@ -160,6 +201,48 @@ const cityLinks = [
     ],
   },
   {
+    question: '空きがある園はどこですか？',
+    note: '空き状況は毎月更新されるため、このサイトでは扱っていません。',
+    items: [
+      { label: '保育施設の空き状況', to: 'https://www.city.tsukuba.lg.jp/kosodate/oshirase/1005950.html' },
+    ],
+  },
+  {
+    question: '希望した園に必ず入れますか？',
+    note: '希望者が定員を超えた場合は、市の基準による利用調整（選考）で決まります。',
+    items: [
+      { label: '利用調整（選考）の基準について', to: 'https://www.city.tsukuba.lg.jp/kosodate/kosodate/hoikujo/1005842.html#kijun' },
+    ],
+  },
+  {
+    question: '保活について相談できる窓口はありますか？',
+    note: '市に保育コンシェルジュがいて、保育サービスの相談ができます。',
+    items: [
+      { label: '保育コンシェルジュによる保育サービス相談', to: 'https://www.city.tsukuba.lg.jp/kosodate/kosodate/hoikujo/1001119.html' },
+    ],
+  },
+  {
+    question: '保育料が無償になると聞きましたが？',
+    note: '対象になる年齢や条件は制度側で決まっています。',
+    items: [
+      { label: '幼保無償化', to: 'https://www.city.tsukuba.lg.jp/kosodate/kosodate/1007930/index.html' },
+    ],
+  },
+  {
+    question: 'つくば市外の園に申し込めますか？',
+    note: '市外の施設への申込みや、市外から市内への申込みは広域入所の扱いになります。',
+    items: [
+      { label: '広域入所（つくば市への転入・つくば市外への申込み等）', to: 'https://www.city.tsukuba.lg.jp/kosodate/kosodate/hoikujo/1015516.html' },
+    ],
+  },
+  {
+    question: '子どもが病気のときに預けられるところはありますか？',
+    note: 'このサイトが掲載しているのは認可保育所等のみで、病児・病後児保育は別の制度です。',
+    items: [
+      { label: '病児・病後児保育', to: 'https://www.city.tsukuba.lg.jp/kosodate/kosodate/hoikujo/1001118.html' },
+    ],
+  },
+  {
     question: '一時預かりの制度について知りたい',
     note: 'どの園が実施しているかはこのサイトで絞り込めますが、制度の説明は市のページにあります。',
     items: [
@@ -188,6 +271,46 @@ const cityLinks = [
         <div class="space-y-5">
           <div
             v-for="item in dataQuestions"
+            :key="item.question"
+            class="rounded-lg border border-default p-4"
+          >
+            <h3 class="font-bold mb-2">
+              {{ item.question }}
+            </h3>
+            <p class="text-sm">
+              {{ item.answer }}
+            </p>
+            <p class="mt-2">
+              <ULink
+                :to="item.to"
+                class="inline-flex items-center min-h-10 text-sm"
+                active-class="text-primary"
+                inactive-class="text-muted hover:text-default"
+              ><span class="underline underline-offset-4">{{ item.linkLabel }}</span></ULink>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!--
+        制度そのものの説明はつくば市のページが正本なので、ここでは要点だけを書いて
+        必ずそこへ送る。園ごとの優劣は書かない (#177)。
+      -->
+      <section class="mt-8">
+        <h2 class="text-xl font-bold mb-1">
+          園を選ぶときに知っておくこと
+        </h2>
+        <p class="text-sm text-muted mb-4">
+          施設の種別や手続きの区分は、つくば市の<ULink
+            to="https://www.city.tsukuba.lg.jp/kosodate/kosodate/hoikujo/1015514.html"
+            target="_blank"
+            class="underline underline-offset-4 hover:text-default"
+          >保育所について</ULink>の説明にもとづいています。
+        </p>
+
+        <div class="space-y-5">
+          <div
+            v-for="item in chooseQuestions"
             :key="item.question"
             class="rounded-lg border border-default p-4"
           >
