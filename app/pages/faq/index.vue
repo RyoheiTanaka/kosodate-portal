@@ -36,26 +36,6 @@ useSeoMeta({
   description: () => `つくば市の認可保育所について、掲載データから答えられる質問をまとめました。園の数、0歳から預けられる園、一時預かりや送迎バスのある園、土曜日の開所、開所時間などを${summary.value.total || ''}園ぶんのデータから集計しています。`,
 })
 
-/*
- * FAQPage の構造化データ。
- *
- * Google はリッチリザルトとしての FAQ 表示を政府・医療系のサイトに絞っているため、
- * これで検索結果の見た目が変わることは期待していない。ページの意味を機械可読にする
- * ためだけに出している。回答は画面に出しているものと同じ文言で、ここだけの内容は書かない。
- */
-useHead(() => ({
-  script: nurseries.value
-    ? [jsonLdScript({
-        '@type': 'FAQPage',
-        'mainEntity': dataQuestions.value.map(item => ({
-          '@type': 'Question',
-          'name': item.question,
-          'acceptedAnswer': { '@type': 'Answer', 'text': item.answer },
-        })),
-      })]
-    : [],
-}))
-
 /**
  * 掲載データから答えられる質問。
  * 回答の文言は構造化データと共用するので、テンプレートに直接書かずここで組み立てる。
@@ -120,6 +100,30 @@ const dataQuestions = computed(() => {
     },
   ]
 })
+
+/*
+ * FAQPage の構造化データ。
+ *
+ * Google はリッチリザルトとしての FAQ 表示を政府・医療系のサイトに絞っているため、
+ * これで検索結果の見た目が変わることは期待していない。ページの意味を機械可読にする
+ * ためだけに出している。回答は画面に出しているものと同じ文言で、ここだけの内容は書かない。
+ *
+ * この呼び出しは dataQuestions の定義より**後**に置く必要がある。クライアントでは
+ * useHead が渡した関数を setup 中に同期で1度評価するため、前に置くと const の TDZ に
+ * 当たってハイドレーションが落ちる。SSR では評価が遅延されるので気づけない (#176)。
+ */
+useHead(() => ({
+  script: nurseries.value
+    ? [jsonLdScript({
+        '@type': 'FAQPage',
+        'mainEntity': dataQuestions.value.map(item => ({
+          '@type': 'Question',
+          'name': item.question,
+          'acceptedAnswer': { '@type': 'Answer', 'text': item.answer },
+        })),
+      })]
+    : [],
+}))
 
 /*
  * 掲載データでは答えられない質問。制度側の話や年度ごとに変わる情報なので、
