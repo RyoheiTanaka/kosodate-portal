@@ -159,19 +159,37 @@ useHead(() => ({
               812px の画面で 480px 固定だと画面の59%を占め、開いた直後は地図しか見えず、
               園名・住所・定員といった判断に要る情報が最初の画面に入らなかった。
 
-              読み込みは遅延させる。地図は最初の画面に収まらない位置に来ることも多く、
-              開いた瞬間に外部の埋め込みを取りに行く必要はない。
+              以前は loading="lazy" を付けていたが、地図は h1 のすぐ下（スマホでも最初の
+              画面の中）にあり、遅延で得るものが無い。それどころか読み込みがいつまでも
+              始まらず、10秒以上まっさらなままになることがあった (#179)。
+              埋め込み自体の応答は 0.6 秒ほどで、遅いのは読み込みの開始だった。
             -->
-            <iframe
-              class="w-full h-56 sm:h-80 lg:h-[30rem]"
-              frameborder="0"
-              style="border:0"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              :src="`https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${nursery.name},${nursery.address}&center=${nursery.latitude},${nursery.longitude}`"
-              allowfullscreen
-              :title="`${nursery.name}の地図`"
-            />
+            <div class="relative w-full h-56 sm:h-80 lg:h-[30rem]">
+              <!--
+                読み込み中に出す文言。iframe は読み込みが終わるまで透けているので、
+                下に敷いておけば地図が出た時点で隠れる。JS も状態も要らない。
+                iframe 側に title があるので、読み上げには出さない。
+              -->
+              <p
+                class="absolute inset-0 flex items-center justify-center text-sm text-muted"
+                aria-hidden="true"
+              >
+                地図を読み込んでいます…
+              </p>
+              <!--
+                q は施設名と住所。Google 側で場所を特定させるために渡すので、
+                名前に & や # が入っても壊れないよう encodeURIComponent を通す。
+              -->
+              <iframe
+                class="relative w-full h-full"
+                frameborder="0"
+                style="border:0"
+                referrerpolicy="no-referrer-when-downgrade"
+                :src="`https://www.google.com/maps/embed/v1/place?key=${API_KEY}&q=${encodeURIComponent(`${nursery.name},${nursery.address}`)}&center=${nursery.latitude},${nursery.longitude}`"
+                allowfullscreen
+                :title="`${nursery.name}の地図`"
+              />
+            </div>
             <!--
               一覧の距離は直線距離で、大字を基準にした場合は大字の中心からの目安でしかない (#139)。
               道のりや所要時間を正確に知りたい人はここから Google マップへ送る。
