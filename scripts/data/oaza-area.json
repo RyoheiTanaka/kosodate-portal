@@ -286,5 +286,17 @@
   "蓮沼": {
     "name": "北部（筑波・大穂・豊里）",
     "alphabet": "hokubu"
+  },
+  "横町": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "小茎": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "東": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
   }
 }

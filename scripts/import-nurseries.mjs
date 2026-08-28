@@ -12,6 +12,7 @@ import path from 'node:path'
 import dns from 'node:dns'
 import mongoose from 'mongoose'
 import { assertWritable, resolveUri } from './lib/db.mjs'
+import { toArea, toOaza, toPostalCode } from './lib/oaza.mjs'
 
 // この開発機では Node 内蔵の DNS クライアント（c-ares）がアダプタの設定を読めず
 // 127.0.0.1 を掴むため、mongodb+srv:// の SRV 解決が ECONNREFUSED で落ちる。
@@ -71,28 +72,16 @@ const parseCsv = (text) => {
   return rows.filter(r => r.some(v => v !== '')).map(r => Object.fromEntries(header.map((h, i) => [h.trim(), (r[i] ?? '').trim()])))
 }
 
-// 住所から大字を切り出す。「茨城県つくば市島名2711番地1」→「島名」
-// 地区マップ・エリアマップの両方で使うキー
-const toOaza = s => String(s).replace(/^茨城県?/, '').replace(/^つくば市/, '')
-  .replace(/[0-9０-９].*$/, '').replace(/(丁目|番地|字).*$/, '').trim()
-
-const AREA_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-area.json'), 'utf8'))
-const POSTAL_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/oaza-postal.json'), 'utf8'))
-
-// 郵便番号もCSVに列が無く、住所の大字から引く (#151)。日本郵便の郵便番号データ由来で、
-// 表は scripts/build-oaza-postal.mjs が作る。
+// 大字まわりの解決（エリア・郵便番号・地区）は scripts/lib/oaza.mjs にある。
+// 施設側の取り込み（scripts/import-facilities.mjs）と共用しているので、
+// 大字の切り出し方を変えるときは両方の取り込みに効くことに注意する。
 //
-// エリアと違って、引けなくても取り込みは止めない。郵便番号は表示と構造化データの
-// 補足情報にすぎず、空でも一覧・絞り込みは成立するため。推測で埋めるほうが害が大きい。
-const toPostalCode = address => POSTAL_MAP[toOaza(address)] ?? ''
-
-// エリアはCSVに列が無く、住所の大字から判定する（地区マップと同じ方式）。
-// 地区がCSV由来なのに対しエリアは導出値なので、判定できない大字が出たら
-// 取り込みを止める。空のまま入れるとその園がエリア絞り込みから消えるため (#86)。
-const toArea = (address) => {
-  const hit = AREA_MAP[toOaza(address)]
-  return { area: hit?.name ?? '', area_alphabet: hit?.alphabet ?? '' }
-}
+// - 郵便番号はCSVに列が無く、日本郵便のデータ由来の表から引く (#151)。
+//   引けなくても取り込みは止めない。表示と構造化データの補足情報にすぎず、
+//   空でも一覧・絞り込みは成立するため。推測で埋めるほうが害が大きい。
+// - エリアもCSVに列が無く、住所の大字から判定する導出値 (#86)。
+//   こちらは判定できない大字が出たら取り込みを止める。空のまま入れると
+//   その園がエリア絞り込みから消えるため。
 
 const toDoc = row => ({
   nursery_id: Number(row.nursery_id),

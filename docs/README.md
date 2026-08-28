@@ -25,3 +25,4 @@
 - [maintenance.md](maintenance.md) — 保守モードの運用手順。月1回のメンテ枠と、長く放置した後の復帰手順
 - [nursery-data-update-plan.md](nursery-data-update-plan.md) — 保育園データの更新手順とデータソース。年次更新のたびに参照する
 - [opendata-survey.md](opendata-survey.md) — つくば市オープンデータの棚卸し（#112）。何を載せて何を載せないかの判断と、その根拠になった実測値
+- [facility-data-update.md](facility-data-update.md) — 保育所以外の子育て施設データの取り込み手順。保育所と運用が違うところを中心に

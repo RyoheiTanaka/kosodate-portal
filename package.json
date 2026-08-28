@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare",
     "backup:nurseries": "node scripts/backup-nurseries.mjs",
     "import:nurseries": "node scripts/import-nurseries.mjs",
+    "import:facilities": "node scripts/import-facilities.mjs",
     "typecheck": "nuxt typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
