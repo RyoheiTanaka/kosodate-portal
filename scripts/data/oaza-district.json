@@ -286,5 +286,17 @@
   "鬼ケ窪": {
     "name": "谷田部地区",
     "alphabet": "yatabe"
+  },
+  "横町": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "小茎": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "東": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
   }
 }
