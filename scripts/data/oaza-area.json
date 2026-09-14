@@ -298,5 +298,65 @@
   "東": {
     "name": "南部（並木・茎崎）",
     "alphabet": "nanbu"
+  },
+  "上岩崎": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "柳橋": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
+  },
+  "境田": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "みどりの南": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "栗原": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "館野": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "前野": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "緑が丘": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "山口": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "万博公園西": {
+    "name": "万博記念公園",
+    "alphabet": "banpaku"
+  },
+  "玉取": {
+    "name": "北部（筑波・大穂・豊里）",
+    "alphabet": "hokubu"
+  },
+  "栄": {
+    "name": "桜",
+    "alphabet": "sakura"
+  },
+  "梅園": {
+    "name": "南部（並木・茎崎）",
+    "alphabet": "nanbu"
+  },
+  "小白硲": {
+    "name": "みどりの・谷田部",
+    "alphabet": "midorino"
+  },
+  "山中": {
+    "name": "研究学園",
+    "alphabet": "kenkyugakuen"
   }
 }

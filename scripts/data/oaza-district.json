@@ -298,5 +298,65 @@
   "東": {
     "name": "谷田部地区",
     "alphabet": "yatabe"
+  },
+  "上岩崎": {
+    "name": "茎崎地区",
+    "alphabet": "kukisaki"
+  },
+  "柳橋": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "境田": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "みどりの南": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "栗原": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "館野": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "前野": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "緑が丘": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "山口": {
+    "name": "筑波地区",
+    "alphabet": "tsukuba"
+  },
+  "万博公園西": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "玉取": {
+    "name": "大穂地区",
+    "alphabet": "oho"
+  },
+  "栄": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "梅園": {
+    "name": "桜地区",
+    "alphabet": "sakura"
+  },
+  "小白硲": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
+  },
+  "山中": {
+    "name": "谷田部地区",
+    "alphabet": "yatabe"
   }
 }
