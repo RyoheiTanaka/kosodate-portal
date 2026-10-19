@@ -19,7 +19,7 @@
     "@nuxt/image": "^2.1.0",
     "@nuxt/ui": "^4.11.3",
     "@nuxtjs/robots": "^6.2.4",
-    "@nuxtjs/sitemap": "^8.6.1",
+    "@nuxtjs/sitemap": "^9.1.0",
     "mongoose": "^9.11.1",
     "nodemailer": "^10.0.16",
     "nuxt": "^4.6.0",
