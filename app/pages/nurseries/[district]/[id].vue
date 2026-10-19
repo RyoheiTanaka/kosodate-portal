@@ -237,13 +237,18 @@ useHead(() => ({
                 </dd>
               </div>
             </dl>
+            <!--
+              nursery?. の ? は実行時には不要（v-if="nursery" の内側）。
+              vue-tsc 3.3.12 以降、ULink のスロットより後ろの補間では v-if の絞り込みが
+              効かなくなり、型チェックが TS18048 で落ちるため付けている。
+            -->
             <p class="mt-6 text-sm text-muted">
               掲載内容は<ULink
                 to="/license"
                 class="underline"
                 active-class="text-primary"
                 inactive-class="text-muted hover:text-default"
-              >つくば市が公開しているオープンデータ</ULink>をもとにしています（{{ formatSourceDate(nursery.source_date) || '公開時点' }}時点）。
+              >つくば市が公開しているオープンデータ</ULink>をもとにしています（{{ formatSourceDate(nursery?.source_date) || '公開時点' }}時点）。
               定員・開所時間・送迎バス・一時預かりなどは変更される場合があります。
               <strong class="font-bold">最新の情報は各施設へ直接お問い合わせください。</strong>
             </p>
